@@ -1,0 +1,34 @@
+﻿@{
+    ViewBag.Title = "Sobre Nosotros";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Asegúrate de tener tu layout configurado si lo usas
+}
+
+<div class="container mt-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Acerca de nosotros</li>
+        </ol>
+    </nav>
+
+    <div class="row align-items-center">
+        <!-- Texto -->
+        <div class="col-md-6">
+            <h2 class="fw-bold mb-4">Nuestra historia</h2>
+            <p>
+                Somos TechFood, creada en 2005 por nuestro CEO Carlos Alvarenga, quien quiso unir la forma de crear una aplicación de uso fácil para conectar a las personas con sus restaurantes favoritos de manera rápida, segura y eficiente.
+            </p>
+            <p>
+                Desde nuestros inicios, nos propusimos transformar la experiencia de pedir comida a domicilio, combinando tecnología de vanguardia con un enfoque centrado en el usuario. Hoy, TechFood es una de las plataformas líderes en delivery, operando en múltiples ciudades y ofreciendo acceso a una amplia variedad de opciones gastronómicas, desde pequeños emprendimientos locales hasta grandes cadenas.
+            </p>
+            <p>
+                Creemos que pedir comida no debería ser complicado. Por eso, trabajamos todos los días por hacer tu vida más simple, acercando los sabores que más te gustan con solo unos clics.
+            </p>
+        </div>
+
+        <!-- Imagen -->
+        <div class="col-md-6 text-center">
+            <img src="~/images/sobrenosotros.png" alt="Bolsa de comida" class="img-fluid" style="max-width: 300px;" />
+        </div>
+    </div>
+</div>
