@@ -1,0 +1,52 @@
+﻿@model TechFood_Solutions.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Imagen lado izquierdo -->
+        <div class="col-md-6 text-center">
+            <img src="~/images/login-bag.png" alt="Logo TechFood" class="img-fluid" style="max-width: 70%;">
+        </div>
+
+        <!-- Formulario lado derecho -->
+        <div class="col-md-6">
+            <h2 class="mb-3">Iniciar Sesión</h2>
+            <p class="text-muted">Digite sus credenciales</p>
+
+            <form asp-action="Login" method="post">
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" placeholder="Correo electrónico" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="Contraseña" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-danger w-100 mb-3">Entrar</button>
+
+                <div class="d-grid mb-3">
+                    <a href="#" class="btn btn-outline-secondary">
+                        <img src="https://www.svgrepo.com/show/355037/google.svg" width="20" class="me-2" />
+                        Iniciar sesión con Google
+                    </a>
+                </div>
+
+                <p class="text-muted">
+                    ¿No tienes cuenta? <a href="/Account/Register">Crear Cuenta</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

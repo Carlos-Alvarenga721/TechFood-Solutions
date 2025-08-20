@@ -10,37 +10,60 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">TechFood_Solutions</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#e74c3c;">
+            <div class="container">
+                <a class="navbar-brand fw-bold text-white" href="/">
+                    <img src="~/images/login-bag.png" alt="TechFood" width="40" class="me-2">
+                    TechFood
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link text-white" href="/Home/Menu">Menu</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="/Home/Contacto">Contacto</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="/Home/SobreNosotros">Sobre Nosotros</a></li>
+                        <li class="nav-item"><a class="nav-link text-white fw-bold" href="/Account/Login">Iniciar Sesión</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="bg-dark text-white mt-5 py-4">
         <div class="container">
-            &copy; 2025 - TechFood_Solutions - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Soporte Técnico</h5>
+                    <p>Antiguo Cuscatlán, El Salvador</p>
+                    <p>TechFood@gmail.com</p>
+                    <p>+503-7258-1524</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Cuenta</h5>
+                    <p><a href="/Account/Login" class="text-white">Iniciar Sesión / Registrarse</a></p>
+                    <p><a href="/Carrito" class="text-white">Carrito</a></p>
+                    <p><a href="/Tienda" class="text-white">Tienda</a></p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Redes Sociales</h5>
+                    <a href="#" class="text-white me-2"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="text-white me-2"><i class="bi bi-linkedin"></i></a>
+                    <a href="#" class="text-white me-2"><i class="bi bi-facebook"></i></a>
+                </div>
+            </div>
+            <hr class="border-light">
+            <p class="text-center mb-0">© Copyright Rimmel 2025. All rights reserved</p>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
