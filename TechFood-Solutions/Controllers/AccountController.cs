@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TechFood_Solutions.Models;
 
 namespace TechFood_Solutions.Controllers
 {
@@ -27,5 +28,26 @@ namespace TechFood_Solutions.Controllers
             ViewBag.Error = "Correo o contraseña incorrectos.";
             return View();
         }
+
+        // GET: /Account/Register
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        // POST: /Account/Register
+        [HttpPost]
+        public IActionResult Register(RegisterViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Aquí iría la lógica para guardar usuario en BD
+                TempData["Success"] = "Usuario registrado correctamente.";
+                return RedirectToAction("Login");
+            }
+
+            return View(model);
+        }
+
     }
 }
