@@ -1,8 +1,137 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewBag.Title = "Inicio";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container-fluid px-0">
+    <!-- Banner principal -->
+    <div class="position-relative mb-4">
+        <div class="bg-danger text-white p-4" style="background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge bg-white text-danger me-2 px-2 py-1">PIZZA HUT</span>
+                        <small class="text-white-50">DESDE $5.99</small>
+                    </div>
+                    <h1 class="fw-bold mb-2" style="font-size: 2.5rem;">CUANDO A TODO EL GRUPO<br>SE LE ANTOJA PIZZA</h1>
+                    <h4 class="mb-3">TRIO HUT COMBOS<br><small>DE UN INGREDIENTE</small></h4>
+                    <div class="d-flex align-items-baseline">
+                        <span class="display-4 fw-bold me-2">$12</span>
+                        <span class="fs-4">.99</span>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <img src="~/images/pizza-combo.jpg" alt="Pizza Combo" class="img-fluid rounded" style="max-height: 200px;max-width: 280px; border-radius: 15px !important;" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Sección de restaurantes -->
+        <div class="mb-4">
+            <h6 class="text-danger fw-bold mb-1" style="font-size: 0.9rem;">Nuestros Restaurantes</h6>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold mb-0">¿Qué quieres comer hoy?</h2>
+                <div class="d-flex">
+                    <button class="btn btn-light btn-sm me-2 rounded-circle" style="width: 35px; height: 35px;">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <button class="btn btn-light btn-sm rounded-circle" style="width: 35px; height: 35px;">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grid de restaurantes -->
+        <div class="row g-3 mb-4">
+            @{
+                var restaurantes = new[]
+                {
+                        new { Nombre = "Burger King", Imagen = "burgerking.png", Rating = 4.5, Reviews = 234 },
+                        new { Nombre = "Pizza Hut", Imagen = "pizzahut.png", Rating = 4.6, Reviews = 189 },
+                        new { Nombre = "McDonald's", Imagen = "mcdonalds.png", Rating = 4.7, Reviews = 567 },
+                        new { Nombre = "China Wok", Imagen = "chinawok.png", Rating = 4.3, Reviews = 123 },
+                        new { Nombre = "Panda Express", Imagen = "pandaexpress.webp", Rating = 4.4, Reviews = 89 },
+                        new { Nombre = "Little Caesars", Imagen = "littlecaesars.png", Rating = 4.2, Reviews = 156 },
+                        new { Nombre = "Pollo Campero", Imagen = "pollocampero.png", Rating = 4.1, Reviews = 234 },
+                        new { Nombre = "Restaurante La Tecleña", Imagen = "lateclena.png", Rating = 4.8, Reviews = 345 }
+                        };
+            }
+
+            @for (int i = 0; i < restaurantes.Length; i++)
+            {
+                var r = restaurantes[i];
+                <div class="col-6 col-sm-4 col-md-3">
+                    <div class="card h-100 border-0 shadow-sm position-relative" style="border-radius: 15px; overflow: hidden;">
+                        <div class="position-absolute top-0 end-0 p-2 z-index-1">
+                            <i class="bi bi-heart text-muted" style="font-size: 1.2rem; cursor: pointer;"></i>
+                        </div>
+                        <div class="card-body text-center p-3">
+                            <div class="mb-3">
+                                <img src="~/images/@r.Imagen"
+                                     alt="@r.Nombre"
+                                     class="rounded-circle border"
+                                     style="width: 80px; height: 80px; object-fit: cover;" />
+                            </div>
+                            <h6 class="card-title fw-bold mb-1" style="font-size: 0.9rem;">@r.Nombre</h6>
+                            <div class="d-flex justify-content-center align-items-center">
+                                <div class="text-warning me-1">
+                                    @for (int j = 0; j < Math.Floor(r.Rating); j++)
+                                    {
+                                        <i class="bi bi-star-fill" style="font-size: 0.8rem;"></i>
+                                    }
+                                    @if (r.Rating % 1 >= 0.5)
+                                    {
+                                        <i class="bi bi-star-half" style="font-size: 0.8rem;"></i>
+                                    }
+                                </div>
+                                <small class="text-muted">(@r.Reviews)</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Botón Ver All Productos -->
+        <div class="text-center my-5">
+            <a href="#" class="btn btn-danger px-5 py-2 fw-bold" style="border-radius: 25px;">Ver All Products</a>
+        </div>
+
+        <!-- Sección de beneficios -->
+        <div class="row text-center py-5">
+            <div class="col-md-4 mb-4">
+                <div class="d-flex flex-column align-items-center">
+                    <div class="bg-danger rounded-circle d-flex align-items-center justify-content-center mb-3"
+                         style="width: 60px; height: 60px;">
+                        <i class="bi bi-lightning-charge text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <h6 class="fw-bold mb-2">ENVÍO RÁPIDO</h6>
+                    <p class="text-muted small mb-0">Pedidos con envío en 30-50 minutos</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="d-flex flex-column align-items-center">
+                    <div class="bg-danger rounded-circle d-flex align-items-center justify-content-center mb-3"
+                         style="width: 60px; height: 60px;">
+                        <i class="bi bi-headset text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <h6 class="fw-bold mb-2">SERVICIO AL CLIENTE</h6>
+                    <p class="text-muted small mb-0">Atención al cliente amigable 24/7</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="d-flex flex-column align-items-center">
+                    <div class="bg-danger rounded-circle d-flex align-items-center justify-content-center mb-3"
+                         style="width: 60px; height: 60px;">
+                        <i class="bi bi-shield-check text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <h6 class="fw-bold mb-2">Garantía de Seguridad</h6>
+                    <p class="text-muted small mb-0">Pago 100% seguro</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

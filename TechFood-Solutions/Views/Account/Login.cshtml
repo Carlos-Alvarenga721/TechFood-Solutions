@@ -1,0 +1,104 @@
+﻿@{
+    ViewBag.Title = "Iniciar Sesión";
+    Layout = null; // Para evitar que el layout general interfiera con el diseño
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            height: 100vh;
+            display: flex;
+            margin: 0;
+        }
+
+        .left-img {
+            flex: 1;
+            background: #e9f0fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .left-img img {
+                max-width: 80%;
+                height: auto;
+            }
+
+        .right-form {
+            flex: 1;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-control {
+            border: none;
+            border-bottom: 1px solid #ccc;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+            .form-control:focus {
+                border-color: #dc3545;
+                box-shadow: none;
+            }
+
+        .btn-custom {
+            background-color: #dc3545;
+            color: white;
+        }
+
+            .btn-custom:hover {
+                background-color: #c82333;
+            }
+
+        .forgot-link {
+            color: #dc3545;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+            .forgot-link:hover {
+                text-decoration: underline;
+            }
+    </style>
+</head>
+<body>
+    <!-- Imagen a la izquierda -->
+    <div class="left-img">
+        <img src="~/images/sobrenosotros.png" alt="Logo bolsa" />
+    </div>
+
+    <!-- Formulario a la derecha -->
+    <div class="right-form">
+        <h3 class="fw-bold">Iniciar sesión</h3>
+        <p class="text-muted mb-4">Digite sus datos en los campos</p>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
+
+        @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+        {
+            <div class="mb-3">
+                @Html.TextBox("email", null, new { @class = "form-control", placeholder = "correo electrónico" })
+            </div>
+            <div class="mb-4">
+                @Html.Password("password", null, new { @class = "form-control", placeholder = "contraseña" })
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <button type="submit" class="btn btn-custom">Iniciar sesión</button>
+                <a href="#" class="forgot-link">¿Olvidó su contraseña?</a>
+            </div>
+        }
+    </div>
+</body>
+</html>
