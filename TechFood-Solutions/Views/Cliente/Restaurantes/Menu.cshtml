@@ -1,0 +1,18 @@
+﻿@model TechFood_Solutions.Models.Restaurant
+
+<h1>@Model.Nombre</h1>
+<img src="@Model.LogoUrl" alt="@Model.Nombre" width="150" />
+<p>@Model.Descripcion</p>
+
+<hr />
+
+<h2>Menú</h2>
+@foreach (var item in Model.MenuItems)
+{
+    <div class="menu-item">
+        <h3>@item.Nombre</h3>
+        <p>@item.Descripcion</p>
+        <p>Precio: $@item.Precio</p>
+        <img src="@item.ImagenUrl" alt="@item.Nombre" width="100" />
+    </div>
+}
