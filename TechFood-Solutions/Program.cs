@@ -1,7 +1,14 @@
+using TechFood_Solutions.Models;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Add DbContext
+builder.Services.AddDbContext<TechFoodDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("TechFoodCN")));
 
 var app = builder.Build();
 
@@ -19,11 +26,6 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
-
-app.MapControllerRoute(
-    name: "cliente",
-    pattern: "Cliente/{controller=Restaurantes}/{action=Index}/{id?}");
-
 
 app.MapControllerRoute(
     name: "default",
