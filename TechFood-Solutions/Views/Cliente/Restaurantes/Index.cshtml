@@ -5,7 +5,7 @@
 @foreach (var restaurante in Model)
 {
     <div class="restaurante">
-        <img src="~/images/@restaurante.LogoUrl" alt="@restaurante.Nombre" width="100" />
+        <img src="~/images/restaurantes/@restaurante.LogoUrl" alt="@restaurante.Nombre" width="100" />
         <h2>@restaurante.Nombre</h2>
         <p>@restaurante.Descripcion</p>
         <a asp-action="Menu" asp-route-id="@restaurante.Id">Ver Menú</a>
