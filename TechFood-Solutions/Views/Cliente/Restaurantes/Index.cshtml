@@ -1,13 +1,477 @@
 ﻿@model IEnumerable<TechFood_Solutions.Models.Restaurant>
 
-<h1>Restaurantes Disponibles</h1>
+@{
+    ViewData["Title"] = "Restaurantes Disponibles";
+}
 
-@foreach (var restaurante in Model)
-{
-    <div class="restaurante">
-        <img src="~/images/restaurantes/@restaurante.LogoUrl" alt="@restaurante.Nombre" width="100" />
-        <h2>@restaurante.Nombre</h2>
-        <p>@restaurante.Descripcion</p>
-        <a asp-action="Menu" asp-route-id="@restaurante.Id">Ver Menú</a>
+<style>
+    .restaurants-page {
+        padding: 40px 0;
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 200px);
+    }
+
+    .restaurants-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    /* Header de la página */
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+        }
+
+    /* Barra de búsqueda y filtros */
+    .filters-section {
+        background: white;
+        border-radius: 15px;
+        padding: 20px 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        flex: 1;
+        min-width: 250px;
+        position: relative;
+    }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 45px 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+            .search-box input:focus {
+                outline: none;
+                border-color: #e74c3c;
+            }
+
+    .search-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #7f8c8d;
+        font-size: 1.2rem;
+    }
+
+    .filter-btn {
+        padding: 12px 25px;
+        background: white;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        color: #2c3e50;
+        transition: all 0.3s;
+        white-space: nowrap;
+    }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+
+    /* Lista de restaurantes */
+    .restaurants-list {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .restaurant-card {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        display: flex;
+        gap: 25px;
+        align-items: center;
+        transition: transform 0.3s, box-shadow 0.3s;
+        cursor: pointer;
+    }
+
+        .restaurant-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+    .restaurant-logo-container {
+        flex-shrink: 0;
+        position: relative;
+    }
+
+    .restaurant-logo {
+        width: 120px;
+        height: 120px;
+        border-radius: 20px;
+        object-fit: cover;
+        border: 3px solid #f0f0f0;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .status-badge {
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #27ae60;
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+    }
+
+    .restaurant-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .restaurant-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .restaurant-name {
+        font-size: 1.8rem;
+        color: #2c3e50;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .favorite-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid #e74c3c;
+        background: white;
+        color: #e74c3c;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+        .favorite-icon:hover {
+            background: #e74c3c;
+            color: white;
+            transform: scale(1.1);
+        }
+
+    .restaurant-rating {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .rating-stars {
+        color: #f39c12;
+        font-size: 1.1rem;
+    }
+
+    .rating-number {
+        font-weight: bold;
+        color: #2c3e50;
+    }
+
+    .rating-count {
+        color: #95a5a6;
+        font-size: 0.9rem;
+    }
+
+    .restaurant-description {
+        color: #7f8c8d;
+        font-size: 1rem;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .restaurant-tags {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .tag {
+        padding: 5px 15px;
+        background: #f8f9fa;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        border: 1px solid #e0e0e0;
+    }
+
+    .restaurant-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 15px;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .delivery-info {
+        display: flex;
+        gap: 20px;
+        font-size: 0.9rem;
+        color: #7f8c8d;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .info-icon {
+        font-size: 1rem;
+    }
+
+    .view-menu-btn {
+        padding: 12px 30px;
+        background: #e74c3c;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .view-menu-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+            color: white;
+        }
+
+    /* Estado vacío */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 20px;
+    }
+
+        .empty-state img {
+            width: 200px;
+            opacity: 0.5;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h2 {
+            color: #7f8c8d;
+            font-size: 1.5rem;
+        }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .restaurant-card {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .restaurant-header-row {
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .restaurant-footer {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .filters-section {
+            flex-direction: column;
+        }
+
+        .search-box {
+            width: 100%;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+        }
+    }
+</style>
+
+<div class="restaurants-page">
+    <div class="restaurants-container">
+        <!-- Header de la página -->
+        <div class="page-header">
+            <h1>Restaurantes Disponibles</h1>
+            <p>Descubre los mejores restaurantes y haz tu pedido</p>
+        </div>
+
+        <!-- Barra de búsqueda y filtros -->
+        <div class="filters-section">
+            <div class="search-box">
+                <input type="text" placeholder="Buscar restaurantes..." id="searchInput">
+                <span class="search-icon">🔍</span>
+            </div>
+            <button class="filter-btn active">Todos</button>
+            <button class="filter-btn">Pizza</button>
+            <button class="filter-btn">Sushi</button>
+            <button class="filter-btn">Hamburguesas</button>
+            <button class="filter-btn">Comida Rápida</button>
+        </div>
+
+        <!-- Lista de restaurantes -->
+        <div class="restaurants-list">
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var restaurante in Model)
+                {
+                    <div class="restaurant-card">
+                        <div class="restaurant-logo-container">
+                            <img src="~/images/restaurantes/@restaurante.LogoUrl" alt="@restaurante.Nombre" class="restaurant-logo">
+                            <span class="status-badge">Abierto</span>
+                        </div>
+
+                        <div class="restaurant-info">
+                            <div class="restaurant-header-row">
+                                <h2 class="restaurant-name">@restaurante.Nombre</h2>
+                                <button class="favorite-icon">♥</button>
+                            </div>
+
+                            <div class="restaurant-rating">
+                                <span class="rating-stars">★★★★☆</span>
+                                <span class="rating-number">4.5</span>
+                                <span class="rating-count">(120+ reseñas)</span>
+                            </div>
+
+                            <p class="restaurant-description">@restaurante.Descripcion</p>
+
+                            <div class="restaurant-tags">
+                                @if (restaurante.MenuItems != null && restaurante.MenuItems.Any())
+                                {
+                                    <span class="tag">@restaurante.MenuItems.Count() productos</span>
+                                }
+                                <span class="tag">Delivery disponible</span>
+                                <span class="tag">Pago online</span>
+                            </div>
+
+                            <div class="restaurant-footer">
+                                <div class="delivery-info">
+                                    <div class="info-item">
+                                        <span class="info-icon">🚚</span>
+                                        <span>20-30 min</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-icon">💵</span>
+                                        <span>Mínimo $10</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-icon">📍</span>
+                                        <span>2.5 km</span>
+                                    </div>
+                                </div>
+                                <a asp-action="Menu" asp-route-id="@restaurante.Id" class="view-menu-btn">Ver Menú</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty-state">
+                    <h2>No hay restaurantes disponibles</h2>
+                    <p>Por favor, intenta de nuevo más tarde</p>
+                </div>
+            }
+        </div>
     </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Búsqueda en tiempo real
+        const searchInput = document.getElementById('searchInput');
+        const restaurantCards = document.querySelectorAll('.restaurant-card');
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+
+            restaurantCards.forEach(card => {
+                const name = card.querySelector('.restaurant-name').textContent.toLowerCase();
+                const description = card.querySelector('.restaurant-description').textContent.toLowerCase();
+
+                if (name.includes(searchTerm) || description.includes(searchTerm)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Botones de filtro
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                // Aquí puedes agregar lógica de filtrado por categoría
+                console.log('Filtro seleccionado:', this.textContent);
+            });
+        });
+
+        // Botones de favoritos
+        document.querySelectorAll('.favorite-icon').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                this.style.transform = 'scale(1.3)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 200);
+            });
+        });
+
+        // Click en card para ver menú
+        restaurantCards.forEach(card => {
+            card.addEventListener('click', function(e) {
+                // Evitar que se active si se hace click en el botón o favorito
+                if (!e.target.closest('.view-menu-btn') && !e.target.closest('.favorite-icon')) {
+                    const menuBtn = this.querySelector('.view-menu-btn');
+                    if (menuBtn) {
+                        menuBtn.click();
+                    }
+                }
+            });
+        });
+    </script>
 }
