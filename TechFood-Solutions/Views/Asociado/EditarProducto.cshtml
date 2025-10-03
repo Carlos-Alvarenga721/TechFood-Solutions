@@ -1,0 +1,452 @@
+@model TechFood_Solutions.Models.MenuItem
+
+@{
+    ViewData["Title"] = "Editar Producto";
+}
+
+<style>
+    .edit-product-page {
+        padding: 40px 0;
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 120px);
+    }
+
+    .edit-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .page-header h1 {
+        font-size: 2.5rem;
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+
+    .page-header p {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+    }
+
+    .breadcrumb-nav {
+        background: white;
+        padding: 15px 30px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+        margin-bottom: 25px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-control {
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 15px 20px;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: #e74c3c;
+        box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+    }
+
+    .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+
+    .invalid-feedback {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 5px;
+    }
+
+    .form-text {
+        color: #6c757d;
+        font-size: 0.875rem;
+        margin-top: 5px;
+    }
+
+    /* Preview de imagen */
+    .image-preview-section {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 30px;
+        background: #f8f9fa;
+        border-radius: 15px;
+        border: 2px dashed #e0e0e0;
+    }
+
+    .current-image {
+        width: 200px;
+        height: 200px;
+        border-radius: 15px;
+        object-fit: cover;
+        border: 3px solid #e0e0e0;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        margin-bottom: 15px;
+    }
+
+    .image-info {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+    }
+
+    /* Información del restaurante */
+    .restaurant-info {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .restaurant-logo {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: 3px solid rgba(255,255,255,0.3);
+        object-fit: cover;
+    }
+
+    .restaurant-details h3 {
+        margin: 0 0 5px 0;
+        font-size: 1.3rem;
+    }
+
+    .restaurant-details p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }
+
+    /* Input de precio con estilo especial */
+    .price-input-group {
+        position: relative;
+    }
+
+    .price-input-group::before {
+        content: '$';
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #e74c3c;
+        z-index: 2;
+    }
+
+    .price-input {
+        padding-left: 40px !important;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    /* Botones de acción */
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 2px solid #f0f0f0;
+    }
+
+    .btn-primary {
+        background: #e74c3c;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+        background: #c0392b;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+
+    /* Alertas */
+    .alert {
+        border-radius: 10px;
+        padding: 15px 20px;
+        margin-bottom: 25px;
+        border: none;
+    }
+
+    .alert-success {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .alert-danger {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .form-card {
+            padding: 25px;
+            margin: 0 10px;
+        }
+
+        .form-row {
+             grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .restaurant-info {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+        }
+
+        .current-image {
+            width: 150px;
+            height: 150px;
+        }
+    }
+</style>
+
+<div class="edit-product-page">
+    <div class="edit-container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb-nav">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Asociado")">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("GestionarMenu")">Gestionar Menú</a></li>
+                <li class="breadcrumb-item active">Editar Producto</li>
+            </ol>
+        </nav>
+
+        <!-- Header -->
+        <div class="page-header">
+            <h1>??? Editar Producto</h1>
+            <p>Actualiza la información del producto</p>
+        </div>
+
+        <!-- Info del restaurante -->
+        @if (Model.Restaurant != null)
+        {
+            <div class="restaurant-info">
+                <img src="~/images/restaurantes/@Model.Restaurant.LogoUrl" alt="@Model.Restaurant.Nombre" class="restaurant-logo">
+                <div class="restaurant-details">
+                    <h3>@Model.Restaurant.Nombre</h3>
+                    <p>Editando producto del menú</p>
+                </div>
+            </div>
+        }
+
+        <!-- Alertas -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show">
+                <strong>¡Éxito!</strong> @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show">
+                <strong>Error:</strong> @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <!-- Formulario -->
+        <div class="form-card">
+            <!-- Preview de imagen actual -->
+            <div class="image-preview-section">
+                <img src="~/images/items/@(Model.Restaurant?.Nombre)/@Model.ImagenUrl" alt="@Model.Nombre" class="current-image" 
+                     onerror="this.src='/images/default-food.png';" id="imagePreview" />
+                <div class="image-info">
+                    <strong>Imagen actual del producto</strong><br>
+                    <small>Se actualizará automáticamente al cambiar el nombre del archivo</small>
+                </div>
+            </div>
+
+            <form asp-action="EditarProducto" method="post">
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="RestaurantId" />
+                
+                <div class="form-group">
+                    <label asp-for="Nombre" class="form-label">
+                        ??? Nombre del Producto
+                    </label>
+                    <input asp-for="Nombre" class="form-control" placeholder="Ej: Pizza Margherita Especial" />
+                    <span asp-validation-for="Nombre" class="invalid-feedback"></span>
+                    <div class="form-text">Un nombre atractivo y descriptivo</div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Descripcion" class="form-label">
+                        ?? Descripción
+                    </label>
+                    <textarea asp-for="Descripcion" class="form-control" rows="4" 
+                              placeholder="Describe los ingredientes, sabor, preparación..."></textarea>
+                    <span asp-validation-for="Descripcion" class="invalid-feedback"></span>
+                    <div class="form-text">Detalla qué hace especial a este producto</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Precio" class="form-label">
+                            ?? Precio
+                        </label>
+                        <div class="price-input-group">
+                            <input asp-for="Precio" class="form-control price-input" step="0.01" placeholder="0.00" />
+                        </div>
+                        <span asp-validation-for="Precio" class="invalid-feedback"></span>
+                        <div class="form-text">Precio en dólares (ej: 12.50)</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="ImagenUrl" class="form-label">
+                            ??? Imagen del Producto
+                        </label>
+                        <input asp-for="ImagenUrl" class="form-control" placeholder="nombre-imagen.jpg" id="imageUrlInput" />
+                        <span asp-validation-for="ImagenUrl" class="invalid-feedback"></span>
+                        <div class="form-text">Nombre del archivo de imagen</div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        ?? Guardar Cambios
+                    </button>
+                    <a href="@Url.Action("GestionarMenu")" class="btn btn-secondary">
+                        ? Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Preview en tiempo real de la imagen
+        document.getElementById('imageUrlInput').addEventListener('input', function(e) {
+            const imagePreview = document.getElementById('imagePreview');
+            const restaurantName = '@(Model.Restaurant?.Nombre ?? "")';
+            const newImageUrl = `/images/items/${restaurantName}/${e.target.value}`;
+            
+            if (e.target.value.trim() !== '') {
+                imagePreview.src = newImageUrl;
+            }
+        });
+
+        // Validación en tiempo real
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.value.trim() === '' && this.hasAttribute('data-val-required')) {
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                }
+            });
+        });
+
+        // Formateo automático del precio
+        const priceInput = document.querySelector('.price-input');
+        priceInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^0-9.]/g, '');
+            // Permitir solo un punto decimal
+            const parts = value.split('.');
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts.slice(1).join('');
+            }
+            // Limitar a 2 decimales
+            if (parts[1] && parts[1].length > 2) {
+                value = parts[0] + '.' + parts[1].substring(0, 2);
+            }
+            e.target.value = value;
+        });
+
+        // Auto-dismiss alerts
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                if (alert.classList.contains('show')) {
+                    alert.classList.remove('show');
+                    setTimeout(() => alert.remove(), 150);
+                }
+            });
+        }, 5000);
+
+        // Animación de entrada
+        document.addEventListener('DOMContentLoaded', function() {
+            const formCard = document.querySelector('.form-card');
+            formCard.style.opacity = '0';
+            formCard.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                formCard.style.transition = 'all 0.5s ease';
+                formCard.style.opacity = '1';
+                formCard.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+}

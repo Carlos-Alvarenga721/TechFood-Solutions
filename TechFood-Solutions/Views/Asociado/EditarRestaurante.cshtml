@@ -1,0 +1,325 @@
+@model TechFood_Solutions.Models.Restaurant
+
+@{
+    ViewData["Title"] = "Editar Restaurante";
+}
+
+<style>
+    .edit-restaurant-page {
+        padding: 40px 0;
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 120px);
+    }
+
+    .edit-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .page-header h1 {
+        font-size: 2.5rem;
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+
+    .page-header p {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+    }
+
+    .breadcrumb-nav {
+        background: white;
+        padding: 15px 30px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-control {
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 15px 20px;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: #e74c3c;
+        box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+    }
+
+    .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+
+    .invalid-feedback {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 5px;
+    }
+
+    .form-text {
+        color: #6c757d;
+        font-size: 0.875rem;
+        margin-top: 5px;
+    }
+
+    /* Preview del logo */
+    .logo-preview {
+        margin-top: 15px;
+        text-align: center;
+    }
+
+    .current-logo {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #e0e0e0;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    /* Botones de acción */
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 2px solid #f0f0f0;
+    }
+
+    .btn-primary {
+        background: #e74c3c;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+        background: #c0392b;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+
+    /* Alertas */
+    .alert {
+        border-radius: 10px;
+        padding: 15px 20px;
+        margin-bottom: 25px;
+        border: none;
+    }
+
+    .alert-success {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .alert-danger {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .form-card {
+            padding: 25px;
+            margin: 0 10px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+        }
+    }
+</style>
+
+<div class="edit-restaurant-page">
+    <div class="edit-container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb-nav">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Asociado")">Dashboard</a></li>
+                <li class="breadcrumb-item active">Editar Restaurante</li>
+            </ol>
+        </nav>
+
+        <!-- Header -->
+        <div class="page-header">
+            <h1>?? Editar Restaurante</h1>
+            <p>Actualiza la información de tu restaurante</p>
+        </div>
+
+        <!-- Alertas -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show">
+                <strong>¡Éxito!</strong> @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show">
+                <strong>Error:</strong> @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <!-- Formulario -->
+        <div class="form-card">
+            <form asp-action="EditarRestaurante" method="post">
+                <input type="hidden" asp-for="Id" />
+                
+                <div class="form-group">
+                    <label asp-for="Nombre" class="form-label">
+                        ??? Nombre del Restaurante
+                    </label>
+                    <input asp-for="Nombre" class="form-control" placeholder="Ej: Pizzería Don Mario" />
+                    <span asp-validation-for="Nombre" class="invalid-feedback"></span>
+                    <div class="form-text">El nombre que verán tus clientes</div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Descripcion" class="form-label">
+                        ?? Descripción
+                    </label>
+                    <textarea asp-for="Descripcion" class="form-control" rows="4" 
+                              placeholder="Describe tu restaurante, especialidades, ambiente..."></textarea>
+                    <span asp-validation-for="Descripcion" class="invalid-feedback"></span>
+                    <div class="form-text">Una descripción atractiva ayuda a atraer más clientes</div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="LogoUrl" class="form-label">
+                        ??? Logo del Restaurante
+                    </label>
+                    <input asp-for="LogoUrl" id="LogoUrl" class="form-control" placeholder="nombre-logo.png" />
+                    <span asp-validation-for="LogoUrl" class="invalid-feedback"></span>
+                    <div class="form-text">Nombre del archivo de imagen (debe estar en /images/restaurantes/)</div>
+                    
+                    <!-- Preview del logo actual -->
+                    <div class="logo-preview">
+                        <p><strong>Logo actual:</strong></p>
+                        <img src="~/images/restaurantes/@Model.LogoUrl" alt="Logo actual" class="current-logo" 
+                             onerror="this.src='/images/default-restaurant.png';" id="logoPreviewImg" />
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        ?? Guardar Cambios
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">
+                        ? Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Preview en tiempo real del logo
+        const logoInput = document.getElementById('LogoUrl');
+        const logoPreview = document.getElementById('logoPreviewImg');
+        
+        if (logoInput && logoPreview) {
+            logoInput.addEventListener('input', function(e) {
+                const newLogoUrl = '/images/restaurantes/' + e.target.value;
+                
+                if (e.target.value.trim() !== '') {
+                    logoPreview.src = newLogoUrl;
+                }
+            });
+        }
+
+        // Validación en tiempo real
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.value.trim() === '' && this.hasAttribute('data-val-required')) {
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                }
+            });
+        });
+
+        // Auto-dismiss alerts
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                if (alert.classList.contains('show')) {
+                    alert.classList.remove('show');
+                    setTimeout(() => alert.remove(), 150);
+                }
+            });
+        }, 5000);
+
+        // Debug: Mostrar datos del formulario antes del envío
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const formData = new FormData(this);
+            console.log('=== DATOS DEL FORMULARIO ===');
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}: ${value}`);
+            }
+            console.log('============================');
+        });
+
+        // Debug: Verificar si la acción del formulario es correcta
+        console.log('Acción del formulario:', document.querySelector('form').action);
+    </script>
+}
