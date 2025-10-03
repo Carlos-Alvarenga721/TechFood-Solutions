@@ -1,0 +1,421 @@
+﻿@model TechFood_Solutions.Models.Restaurant
+
+@{
+    ViewData["Title"] = "Panel de Asociado - " + Model.Nombre;
+}
+
+<style>
+    .asociado-dashboard {
+        padding: 20px 0;
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 120px);
+    }
+
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    /* Header del dashboard */
+    .dashboard-header {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+
+    .header-content {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+    }
+
+    .restaurant-logo {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 4px solid rgba(255,255,255,0.3);
+        object-fit: cover;
+    }
+
+    .header-info h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+
+    .header-info p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-bottom: 20px;
+    }
+
+    .quick-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .quick-btn {
+        padding: 12px 25px;
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .quick-btn:hover {
+        background: white;
+        color: #e74c3c;
+        text-decoration: none;
+    }
+
+    /* Cards de estadísticas */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        text-align: center;
+        transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #e74c3c;
+        margin-bottom: 10px;
+    }
+
+    .stat-label {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    /* Iconos de estadísticas como imágenes */
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 15px;
+        opacity: 0.8;
+        filter: grayscale(20%);
+        transition: all 0.3s;
+    }
+
+    .stat-card:hover .stat-icon {
+        opacity: 1;
+        filter: none;
+        transform: scale(1.1);
+    }
+
+    /* Secciones principales */
+    .main-sections {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 30px;
+    }
+
+    .section-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        color: #2c3e50;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .section-title::before {
+        content: '';
+        width: 4px;
+        height: 25px;
+        background: #e74c3c;
+        border-radius: 2px;
+    }
+
+    /* Lista de productos recientes */
+    .recent-products {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .product-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        transition: background 0.3s;
+    }
+
+    .product-item:hover {
+        background: #e9ecef;
+    }
+
+    .product-image {
+        width: 60px;
+        height: 60px;
+        border-radius: 10px;
+        object-fit: cover;
+        border: 2px solid #e0e0e0;
+    }
+
+    .product-info {
+        flex: 1;
+    }
+
+    .product-name {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 5px;
+    }
+
+    .product-price {
+        color: #e74c3c;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+    .edit-btn {
+        padding: 8px 15px;
+        background: #e74c3c;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: background 0.3s;
+    }
+
+    .edit-btn:hover {
+        background: #c0392b;
+        color: white;
+        text-decoration: none;
+    }
+
+    /* Acciones rápidas laterales */
+    .quick-links {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .quick-link {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        text-decoration: none;
+        color: #2c3e50;
+        transition: all 0.3s;
+        border-left: 4px solid transparent;
+    }
+
+    .quick-link:hover {
+        background: #e74c3c;
+        color: white;
+        text-decoration: none;
+        border-left-color: #c0392b;
+    }
+
+    .quick-link-icon {
+        font-size: 1.5rem;
+        width: 40px;
+        text-align: center;
+    }
+
+    .quick-link-text {
+        font-weight: 600;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .header-content {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .main-sections {
+            grid-template-columns: 1fr;
+        }
+
+        .quick-actions {
+            justify-content: center;
+        }
+
+        .header-info h1 {
+            font-size: 2rem;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+        }
+    }
+</style>
+
+<div class="asociado-dashboard">
+    <div class="dashboard-container">
+        <!-- Header del Dashboard -->
+        <div class="dashboard-header">
+            <div class="header-content">
+                <img src="~/images/restaurantes/@Model.LogoUrl" alt="@Model.Nombre" class="restaurant-logo">
+                <div class="header-info">
+                    <h1>¡Bienvenido, @Model.Nombre!</h1>
+                    <p>@Model.Descripcion</p>
+                    <div class="quick-actions">
+                        <a href="@Url.Action("EditarRestaurante", new { id = Model.Id })" class="quick-btn">
+                            Editar Restaurante
+                        </a>
+                        <a href="@Url.Action("GestionarMenu")" class="quick-btn">
+                            Gestionar Menú
+                        </a>
+                        <a href="@Url.Action("CrearProducto")" class="quick-btn">
+                            Nuevo Producto
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <img src="~/images/App_Icon/itemicon.png" alt="Productos" class="stat-icon">
+                <div class="stat-number">@(Model.MenuItems?.Count() ?? 0)</div>
+                <div class="stat-label">Productos en Menú</div>
+            </div>
+            <div class="stat-card">
+                <img src="~/images/App_Icon/dinero.png" alt="Dinero" class="stat-icon">
+                <div class="stat-number">$@((Model.MenuItems?.Any() == true ? Model.MenuItems.Average(m => m.Precio) : 0).ToString("F2"))</div>
+                <div class="stat-label">Precio Promedio</div>
+            </div>
+            <div class="stat-card">
+                <img src="~/images/App_Icon/estrella.png" alt="Valoración" class="stat-icon">
+                <div class="stat-number">4.5</div>
+                <div class="stat-label">Valoración</div>
+            </div>
+            <div class="stat-card">
+                <img src="~/images/App_Icon/logistica.png" alt="Pedidos" class="stat-icon">
+                <div class="stat-number">85</div>
+                <div class="stat-label">Pedidos Este Mes</div>
+            </div>
+        </div>
+
+        <!-- Secciones principales -->
+        <div class="main-sections">
+            <!-- Productos recientes -->
+            <div class="section-card">
+                <h2 class="section-title">Productos en tu Menú</h2>
+                <div class="recent-products">
+                    @if (Model.MenuItems != null && Model.MenuItems.Any())
+                    {
+                        @foreach (var item in Model.MenuItems.Take(5))
+                        {
+                            <div class="product-item">
+                                <img src="~/images/items/@Model.Nombre/@item.ImagenUrl" alt="@item.Nombre" class="product-image">
+                                <div class="product-info">
+                                    <div class="product-name">@item.Nombre</div>
+                                    <div class="product-price">$@item.Precio.ToString("F2")</div>
+                                </div>
+                                <a href="@Url.Action("EditarProducto", new { id = item.Id })" class="edit-btn">Editar</a>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted">No tienes productos en tu menú aún.</p>
+                    }
+                </div>
+                @if (Model.MenuItems != null && Model.MenuItems.Count() > 5)
+                {
+                    <div class="text-center mt-3">
+                        <a href="@Url.Action("GestionarMenu")" class="btn btn-outline-primary">Ver todos los productos</a>
+                    </div>
+                }
+            </div>
+
+            <!-- Acciones rápidas -->
+            <div class="section-card">
+                <h2 class="section-title">Acciones Rápidas</h2>
+                <div class="quick-links">
+                    <a href="@Url.Action("EditarRestaurante", new { id = Model.Id })" class="quick-link">
+                        <span class="quick-link-icon">🏪</span>
+                        <div>
+                            <div class="quick-link-text">Editar Restaurante</div>
+                            <small>Actualizar información general</small>
+                        </div>
+                    </a>
+                    <a href="@Url.Action("GestionarMenu")" class="quick-link">
+                        <span class="quick-link-icon">📋</span>
+                        <div>
+                            <div class="quick-link-text">Gestionar Menú</div>
+                            <small>Ver todos los productos</small>
+                        </div>
+                    </a>
+                    <a href="@Url.Action("CrearProducto")" class="quick-link">
+                        <span class="quick-link-icon">➕</span>
+                        <div>
+                            <div class="quick-link-text">Agregar Producto</div>
+                            <small>Crear nuevo producto</small>
+                        </div>
+                    </a>
+                    <a href="#" class="quick-link">
+                        <span class="quick-link-icon">📊</span>
+                        <div>
+                            <div class="quick-link-text">Ver Reportes</div>
+                            <small>Estadísticas y ventas</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Actualizar estadísticas en tiempo real (opcional)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Agregar animaciones de entrada
+            const cards = document.querySelectorAll('.stat-card, .section-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+}
