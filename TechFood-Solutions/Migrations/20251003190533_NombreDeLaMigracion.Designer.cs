@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TechFood_Solutions.Models;
 
@@ -10,9 +11,11 @@ using TechFood_Solutions.Models;
 namespace TechFood_Solutions.Migrations
 {
     [DbContext(typeof(TechFoodDbContext))]
-    partial class TechFoodDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251003190533_NombreDeLaMigracion")]
+    partial class NombreDeLaMigracion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -127,42 +130,6 @@ namespace TechFood_Solutions.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TechFood_Solutions.Models.User", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Apellido")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Dui")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("RestaurantId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Rol")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RestaurantId");
-
-                    b.ToTable("Users");
-                });
-
             modelBuilder.Entity("TechFood_Solutions.Models.MenuItem", b =>
                 {
                     b.HasOne("TechFood_Solutions.Models.Restaurant", "Restaurant")
@@ -174,21 +141,9 @@ namespace TechFood_Solutions.Migrations
                     b.Navigation("Restaurant");
                 });
 
-            modelBuilder.Entity("TechFood_Solutions.Models.User", b =>
-                {
-                    b.HasOne("TechFood_Solutions.Models.Restaurant", "Restaurant")
-                        .WithMany("Users")
-                        .HasForeignKey("RestaurantId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Restaurant");
-                });
-
             modelBuilder.Entity("TechFood_Solutions.Models.Restaurant", b =>
                 {
                     b.Navigation("MenuItems");
-
-                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }
