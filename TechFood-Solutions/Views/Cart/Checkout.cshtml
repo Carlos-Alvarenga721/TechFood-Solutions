@@ -1,0 +1,420 @@
+﻿@model TechFood_Solutions.ViewModels.CheckoutViewModel
+
+@{
+    ViewData["Title"] = "Finalizar Compra";
+}
+
+<style>
+    .checkout-page {
+        padding: 40px 0;
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 200px);
+    }
+
+    .checkout-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        color: #2c3e50;
+        font-weight: bold;
+        margin-bottom: 40px;
+        text-align: center;
+    }
+
+    .checkout-layout {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 30px;
+        align-items: start;
+    }
+
+    /* Formulario */
+    .checkout-form-section {
+        background: white;
+        border-radius: 15px;
+        padding: 35px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        color: #2c3e50;
+        font-weight: bold;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 1rem;
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+        .form-label .required {
+            color: #e74c3c;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #e74c3c;
+        }
+
+        .form-control.is-invalid {
+            border-color: #e74c3c;
+        }
+
+    .invalid-feedback {
+        color: #e74c3c;
+        font-size: 0.85rem;
+        margin-top: 5px;
+        display: block;
+    }
+
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    /* Resumen del pedido */
+    .order-summary-section {
+        position: sticky;
+        top: 20px;
+    }
+
+    .order-summary {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .summary-title {
+        font-size: 1.5rem;
+        color: #2c3e50;
+        font-weight: bold;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .item-info {
+        flex: 1;
+    }
+
+    .item-name {
+        font-size: 1rem;
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .item-quantity {
+        font-size: 0.85rem;
+        color: #7f8c8d;
+    }
+
+    .item-price {
+        font-size: 1rem;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .summary-totals {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 2px solid #f0f0f0;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+    }
+
+    .summary-label {
+        color: #7f8c8d;
+        font-size: 1rem;
+    }
+
+    .summary-value {
+        color: #2c3e50;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px 0;
+        margin-top: 10px;
+        border-top: 2px solid #2c3e50;
+    }
+
+    .total-label {
+        color: #2c3e50;
+        font-size: 1.3rem;
+        font-weight: bold;
+    }
+
+    .total-value {
+        color: #e74c3c;
+        font-size: 1.8rem;
+        font-weight: bold;
+    }
+
+    /* Botones */
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .btn-back {
+        flex: 1;
+        padding: 15px;
+        background: white;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        color: #2c3e50;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        text-align: center;
+        display: block;
+    }
+
+        .btn-back:hover {
+            border-color: #2c3e50;
+            background: #f8f9fa;
+        }
+
+    .btn-submit {
+        flex: 2;
+        padding: 15px;
+        background: #e74c3c;
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+
+        .btn-submit:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        .btn-submit:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+    /* Responsive */
+    @@media (max-width: 968px) {
+        .checkout-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .order-summary-section {
+            position: static;
+        }
+
+        .page-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+
+<div class="checkout-page">
+    <div class="checkout-container">
+        <h1 class="page-title">Finalizar Compra</h1>
+
+        <form asp-action="ProcessCheckout" method="post">
+            <div class="checkout-layout">
+                <!-- Formulario de información -->
+                <div class="checkout-form-section">
+                    <h2 class="section-title">Información de Entrega</h2>
+
+                    <div class="form-group">
+                        <label class="form-label" asp-for="NombreCliente">
+                            Nombre completo <span class="required">*</span>
+                        </label>
+                        <input asp-for="NombreCliente" class="form-control" placeholder="Ingresa tu nombre completo" />
+                        <span asp-validation-for="NombreCliente" class="invalid-feedback"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" asp-for="TelefonoCliente">
+                            Teléfono <span class="required">*</span>
+                        </label>
+                        <input asp-for="TelefonoCliente" class="form-control" placeholder="Ej: 7890-1234" />
+                        <span asp-validation-for="TelefonoCliente" class="invalid-feedback"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" asp-for="DireccionEntrega">
+                            Dirección de entrega <span class="required">*</span>
+                        </label>
+                        <textarea asp-for="DireccionEntrega" class="form-control"
+                                  placeholder="Calle, número, colonia, referencias..."></textarea>
+                        <span asp-validation-for="DireccionEntrega" class="invalid-feedback"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" asp-for="Notas">
+                            Notas adicionales (opcional)
+                        </label>
+                        <textarea asp-for="Notas" class="form-control"
+                                  placeholder="Instrucciones especiales para tu pedido..."></textarea>
+                        <span asp-validation-for="Notas" class="invalid-feedback"></span>
+                    </div>
+
+                    <div asp-validation-summary="ModelOnly" class="invalid-feedback" style="font-size: 1rem;"></div>
+
+                    <div class="form-actions">
+                        <a asp-action="Index" class="btn-back">Volver al Carrito</a>
+                        <button type="submit" class="btn-submit">Confirmar Pedido</button>
+                    </div>
+                </div>
+
+                <!-- Resumen del pedido -->
+                <div class="order-summary-section">
+                    <div class="order-summary">
+                        <h3 class="summary-title">Resumen del Pedido</h3>
+
+                        @if (Model.Cart != null && Model.Cart.Items.Any())
+                        {
+                            @foreach (var item in Model.Cart.Items)
+                            {
+                                <div class="order-item">
+                                    <div class="item-info">
+                                        <div class="item-name">@item.Nombre</div>
+                                        <div class="item-quantity">Cantidad: @item.Cantidad</div>
+                                    </div>
+                                    <div class="item-price">$@item.Subtotal.ToString("F2")</div>
+                                </div>
+                            }
+
+                            <div class="summary-totals">
+                                <div class="summary-row">
+                                    <span class="summary-label">Subtotal:</span>
+                                    <span class="summary-value">$@Model.Cart.Total.ToString("F2")</span>
+                                </div>
+
+                                <div class="summary-row">
+                                    <span class="summary-label">Envío:</span>
+                                    <span class="summary-value">$2.50</span>
+                                </div>
+
+                                <div class="summary-total">
+                                    <span class="total-label">Total:</span>
+                                    <span class="total-value">$@((Model.Cart.Total + 2.50m).ToString("F2"))</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </form>
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div style="background: #ffebee; padding: 20px; margin: 20px 0; border-radius: 10px;">
+                <h3>Errores de validación:</h3>
+                <ul>
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <li>@error.ErrorMessage</li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Validación en tiempo real
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.value.trim() === '' && this.hasAttribute('data-val-required')) {
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                }
+            });
+
+            input.addEventListener('input', function() {
+                if (this.value.trim() !== '') {
+                    this.classList.remove('is-invalid');
+                }
+            });
+        });
+
+        // Confirmación antes de enviar - CON VALIDACIÓN
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const btn = this.querySelector('.btn-submit');
+
+            // Verificar si el formulario es válido
+            let isValid = true;
+            this.querySelectorAll('.form-control[data-val-required]').forEach(input => {
+                if (input.value.trim() === '') {
+                    input.classList.add('is-invalid');
+                    isValid = false;
+                }
+            });
+
+            // Solo deshabilitar el botón si el formulario es válido
+            if (isValid) {
+                btn.disabled = true;
+                btn.textContent = 'Procesando...';
+            } else {
+                e.preventDefault();
+                // Scroll al primer campo inválido
+                const firstInvalid = this.querySelector('.is-invalid');
+                if (firstInvalid) {
+                    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstInvalid.focus();
+                }
+            }
+        });
+    </script>
+}

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TechFood_Solutions.Models;
 
@@ -11,9 +12,11 @@ using TechFood_Solutions.Models;
 namespace TechFood_Solutions.Migrations
 {
     [DbContext(typeof(TechFoodDbContext))]
-    partial class TechFoodDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251003001941_AddOrdersAndOrderItems")]
+    partial class AddOrdersAndOrderItems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

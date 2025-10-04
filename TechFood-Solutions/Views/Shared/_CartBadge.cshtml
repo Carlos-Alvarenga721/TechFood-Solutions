@@ -1,0 +1,75 @@
+﻿@* Views/Shared/_CartBadge.cshtml *@
+@inject TechFood_Solutions.Services.ICartService CartService
+
+@{
+    var cartItemCount = CartService.GetCartItemCount();
+}
+
+<style>
+    .cart-link {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: #e74c3c;
+        color: white;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s;
+        box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+    }
+
+        .cart-link:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+            color: white;
+        }
+
+    .cart-icon {
+        font-size: 1.3rem;
+    }
+
+    .cart-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #e74c3c;
+        color: white;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: bold;
+        border: 2px solid white;
+        animation: pulse 2s infinite;
+    }
+
+
+
+    @@keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+    }
+
+    .cart-text {
+        font-size: 0.95rem;
+    }
+</style>
+
+<a href="@Url.Action("Index", "Cart")" class="cart-link" title="Ver Carrito">
+    <span class="cart-icon">🛒</span>
+    <span class="cart-text">Carrito</span>
+
+    <span class="cart-badge" style="display:@(cartItemCount > 0 ? "flex" : "none")"></span>
+</a>
