@@ -1,6 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
+Ôªøusing Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TechFood_Solutions.Models;
+using TechFood_Solutions.Services; // ‚Üê AGREGAR
 
 namespace TechFood_Solutions.Controllers
 {
@@ -8,19 +9,22 @@ namespace TechFood_Solutions.Controllers
     {
         private readonly TechFoodDbContext _context;
         private readonly ILogger<AsociadoController> _logger;
+        private readonly IImageService _imageService; // ‚Üê AGREGAR
 
-        public AsociadoController(TechFoodDbContext context, ILogger<AsociadoController> logger)
+        public AsociadoController(
+            TechFoodDbContext context,
+            ILogger<AsociadoController> logger,
+            IImageService imageService) // ‚Üê AGREGAR
         {
             _context = context;
             _logger = logger;
+            _imageService = imageService;
         }
 
-        // GET: Asociado - Dashboard principal del asociado
+        // GET: Asociado
         public async Task<IActionResult> Index()
         {
-            // Por ahora, simulamos que el asociado maneja el restaurante con ID = 1
-            // En una implementaciÛn real, esto vendrÌa de la sesiÛn/autenticaciÛn
-            int restaurantId = 1; // Esto deberÌa venir de la sesiÛn del usuario autenticado
+            int restaurantId = 1;
 
             var restaurant = await _context.Restaurantes
                 .Include(r => r.MenuItems)
@@ -28,7 +32,7 @@ namespace TechFood_Solutions.Controllers
 
             if (restaurant == null)
             {
-                return NotFound("No se encontrÛ el restaurante asociado a este usuario.");
+                return NotFound("No se encontr√≥ el restaurante asociado a este usuario.");
             }
 
             return View(restaurant);
@@ -37,52 +41,73 @@ namespace TechFood_Solutions.Controllers
         // GET: Asociado/EditarRestaurante/5
         public async Task<IActionResult> EditarRestaurante(int? id)
         {
-            _logger.LogInformation($"GET EditarRestaurante: ID recibido = {id}");
-            
+            _logger.LogInformation($"GET EditarRestaurante: ID = {id}");
+
             if (id == null)
             {
-                _logger.LogWarning("GET EditarRestaurante: ID es null");
                 return NotFound();
             }
 
             var restaurant = await _context.Restaurantes.FindAsync(id);
             if (restaurant == null)
             {
-                _logger.LogWarning($"GET EditarRestaurante: No se encontrÛ restaurante con ID {id}");
                 return NotFound();
             }
 
-            _logger.LogInformation($"GET EditarRestaurante: Restaurante encontrado - {restaurant.Nombre}");
             return View(restaurant);
         }
 
         // POST: Asociado/EditarRestaurante/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditarRestaurante(int id, [Bind("Id,Nombre,LogoUrl,Descripcion")] Restaurant restaurant)
+        public async Task<IActionResult> EditarRestaurante(
+            int id,
+            [Bind("Id,Nombre,LogoUrl,Descripcion")] Restaurant restaurant,
+            IFormFile logoFile) // ‚Üê PAR√ÅMETRO PARA EL ARCHIVO
         {
             _logger.LogInformation($"POST EditarRestaurante: ID = {id}");
-            _logger.LogInformation($"POST EditarRestaurante: Restaurant.Id = {restaurant.Id}");
-            _logger.LogInformation($"POST EditarRestaurante: Restaurant.Nombre = {restaurant.Nombre}");
-            _logger.LogInformation($"POST EditarRestaurante: Restaurant.Descripcion = {restaurant.Descripcion}");
-            _logger.LogInformation($"POST EditarRestaurante: Restaurant.LogoUrl = {restaurant.LogoUrl}");
-            
+
             if (id != restaurant.Id)
             {
-                _logger.LogWarning($"POST EditarRestaurante: ID mismatch. URL ID = {id}, Model ID = {restaurant.Id}");
                 return NotFound();
             }
 
-            _logger.LogInformation($"POST EditarRestaurante: ModelState.IsValid = {ModelState.IsValid}");
-            
-            if (!ModelState.IsValid)
+            // Si se subi√≥ una imagen nueva
+            if (logoFile != null && logoFile.Length > 0)
             {
-                foreach (var modelError in ModelState)
+                _logger.LogInformation($"Procesando imagen: {logoFile.FileName} ({logoFile.Length} bytes)");
+
+                // Guardar la imagen en wwwroot/images/restaurantes
+                var fileName = await _imageService.SaveImageAsync(logoFile, "restaurantes");
+
+                if (!string.IsNullOrEmpty(fileName))
                 {
-                    foreach (var error in modelError.Value.Errors)
+                    // Si hab√≠a una imagen anterior, eliminarla
+                    if (!string.IsNullOrEmpty(restaurant.LogoUrl))
                     {
-                        _logger.LogWarning($"ModelState Error - {modelError.Key}: {error.ErrorMessage}");
+                        _imageService.DeleteImage(restaurant.LogoUrl, "restaurantes");
                     }
+
+                    // Actualizar con el nuevo nombre de archivo
+                    restaurant.LogoUrl = fileName;
+                    _logger.LogInformation($"Imagen guardada: {fileName}");
+                }
+                else
+                {
+                    ModelState.AddModelError("logoFile", "Error al guardar la imagen. Verifica el formato y tama√±o.");
+                    return View(restaurant);
+                }
+            }
+            else
+            {
+                // Si no se subi√≥ imagen, mantener la existente
+                var existingRestaurant = await _context.Restaurantes
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(r => r.Id == id);
+
+                if (existingRestaurant != null)
+                {
+                    restaurant.LogoUrl = existingRestaurant.LogoUrl;
                 }
             }
 
@@ -90,45 +115,36 @@ namespace TechFood_Solutions.Controllers
             {
                 try
                 {
-                    _logger.LogInformation("POST EditarRestaurante: Iniciando actualizaciÛn en DB");
-                    
                     _context.Update(restaurant);
-                    var changes = await _context.SaveChangesAsync();
-                    
-                    _logger.LogInformation($"POST EditarRestaurante: Cambios guardados exitosamente. {changes} registros afectados");
-                    TempData["Success"] = "InformaciÛn del restaurante actualizada correctamente.";
+                    await _context.SaveChangesAsync();
+
+                    TempData["Success"] = "Informaci√≥n del restaurante actualizada correctamente.";
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    _logger.LogError(ex, $"POST EditarRestaurante: Error de concurrencia para ID {id}");
-                    
+                    _logger.LogError(ex, $"Error de concurrencia para ID {id}");
+
                     if (!RestaurantExists(restaurant.Id))
                     {
                         return NotFound();
                     }
-                    else
-                    {
-                        throw;
-                    }
+                    throw;
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"POST EditarRestaurante: Error inesperado para ID {id}");
-                    TempData["Error"] = "OcurriÛ un error al actualizar el restaurante: " + ex.Message;
+                    _logger.LogError(ex, $"Error al actualizar restaurante {id}");
+                    TempData["Error"] = "Error al actualizar: " + ex.Message;
                     return View(restaurant);
                 }
-                
-                return RedirectToAction(nameof(Index));
             }
-            
-            _logger.LogWarning("POST EditarRestaurante: ModelState no v·lido, devolviendo vista con errores");
+
             return View(restaurant);
         }
 
         // GET: Asociado/GestionarMenu
         public async Task<IActionResult> GestionarMenu()
         {
-            // Por ahora, simulamos que el asociado maneja el restaurante con ID = 1
             int restaurantId = 1;
 
             var restaurant = await _context.Restaurantes
@@ -166,13 +182,52 @@ namespace TechFood_Solutions.Controllers
         // POST: Asociado/EditarProducto/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditarProducto(int id, [Bind("Id,Nombre,Descripcion,Precio,ImagenUrl,RestaurantId")] MenuItem menuItem)
+        public async Task<IActionResult> EditarProducto(
+            int id,
+            [Bind("Id,Nombre,Descripcion,Precio,ImagenUrl,RestaurantId")] MenuItem menuItem,
+            IFormFile imagenFile) // ‚Üê Para productos tambi√©n
         {
-            _logger.LogInformation($"POST EditarProducto: ID = {id}, MenuItem.Id = {menuItem.Id}");
-            
+            _logger.LogInformation($"POST EditarProducto: ID = {id}");
+
             if (id != menuItem.Id)
             {
                 return NotFound();
+            }
+
+            // Obtener el nombre del restaurante para la subcarpeta
+            var restaurant = await _context.Restaurantes.FindAsync(menuItem.RestaurantId);
+            if (restaurant == null)
+            {
+                return NotFound("Restaurante no encontrado");
+            }
+
+            // Si se subi√≥ imagen nueva
+            if (imagenFile != null && imagenFile.Length > 0)
+            {
+                var fileName = await _imageService.SaveImageAsync(imagenFile, "items", restaurant.Nombre);
+
+                if (!string.IsNullOrEmpty(fileName))
+                {
+                    if (!string.IsNullOrEmpty(menuItem.ImagenUrl))
+                    {
+                        _imageService.DeleteImage(menuItem.ImagenUrl, "items", restaurant.Nombre);
+                    }
+                    menuItem.ImagenUrl = fileName;
+                }
+                else
+                {
+                    ModelState.AddModelError("imagenFile", "Error al guardar la imagen.");
+                    menuItem.Restaurant = restaurant;
+                    return View(menuItem);
+                }
+            }
+            else
+            {
+                var existing = await _context.MenuItems.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
+                if (existing != null)
+                {
+                    menuItem.ImagenUrl = existing.ImagenUrl;
+                }
             }
 
             if (ModelState.IsValid)
@@ -180,34 +235,27 @@ namespace TechFood_Solutions.Controllers
                 try
                 {
                     _context.Update(menuItem);
-                    var changes = await _context.SaveChangesAsync();
-                    _logger.LogInformation($"POST EditarProducto: {changes} cambios guardados para producto {menuItem.Nombre}");
+                    await _context.SaveChangesAsync();
                     TempData["Success"] = "Producto actualizado correctamente.";
+                    return RedirectToAction(nameof(GestionarMenu));
                 }
-                catch (DbUpdateConcurrencyException ex)
+                catch (DbUpdateConcurrencyException)
                 {
-                    _logger.LogError(ex, $"Error de concurrencia al actualizar producto {id}");
                     if (!MenuItemExists(menuItem.Id))
                     {
                         return NotFound();
                     }
-                    else
-                    {
-                        throw;
-                    }
+                    throw;
                 }
-                return RedirectToAction(nameof(GestionarMenu));
             }
 
-            // Si hay errores, recargar el restaurante para la vista
-            menuItem.Restaurant = await _context.Restaurantes.FindAsync(menuItem.RestaurantId);
+            menuItem.Restaurant = restaurant;
             return View(menuItem);
         }
 
         // GET: Asociado/CrearProducto
         public async Task<IActionResult> CrearProducto()
         {
-            // Por ahora, simulamos que el asociado maneja el restaurante con ID = 1
             int restaurantId = 1;
 
             var restaurant = await _context.Restaurantes.FindAsync(restaurantId);
@@ -228,20 +276,27 @@ namespace TechFood_Solutions.Controllers
         // POST: Asociado/CrearProducto
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CrearProducto([Bind("Nombre,Descripcion,Precio,ImagenUrl,RestaurantId")] MenuItem menuItem)
+        public async Task<IActionResult> CrearProducto(
+            [Bind("Nombre,Descripcion,Precio,ImagenUrl,RestaurantId")] MenuItem menuItem,
+            IFormFile imagenFile)
         {
-            _logger.LogInformation($"POST CrearProducto: Creando producto {menuItem.Nombre} para restaurante {menuItem.RestaurantId}");
-            
+            if (imagenFile != null && imagenFile.Length > 0)
+            {
+                var fileName = await _imageService.SaveImageAsync(imagenFile, "items");
+                if (!string.IsNullOrEmpty(fileName))
+                {
+                    menuItem.ImagenUrl = fileName;
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(menuItem);
-                var changes = await _context.SaveChangesAsync();
-                _logger.LogInformation($"POST CrearProducto: Producto creado exitosamente. {changes} registros afectados");
+                await _context.SaveChangesAsync();
                 TempData["Success"] = "Producto creado correctamente.";
                 return RedirectToAction(nameof(GestionarMenu));
             }
 
-            // Si hay errores, recargar el restaurante para la vista
             menuItem.Restaurant = await _context.Restaurantes.FindAsync(menuItem.RestaurantId);
             return View(menuItem);
         }
@@ -254,20 +309,25 @@ namespace TechFood_Solutions.Controllers
             var menuItem = await _context.MenuItems.FindAsync(id);
             if (menuItem != null)
             {
+                // Eliminar imagen si existe
+                if (!string.IsNullOrEmpty(menuItem.ImagenUrl))
+                {
+                    _imageService.DeleteImage(menuItem.ImagenUrl, "items");
+                }
+
                 _context.MenuItems.Remove(menuItem);
-                var changes = await _context.SaveChangesAsync();
-                _logger.LogInformation($"POST EliminarProducto: Producto eliminado. {changes} registros afectados");
+                await _context.SaveChangesAsync();
                 TempData["Success"] = "Producto eliminado correctamente.";
             }
 
             return RedirectToAction(nameof(GestionarMenu));
         }
 
-        // API: Obtener estadÌsticas del restaurante
+        // API: Obtener estad√≠sticas
         [HttpGet]
         public async Task<IActionResult> ObtenerEstadisticas()
         {
-            int restaurantId = 1; // Simulado
+            int restaurantId = 1;
 
             var restaurant = await _context.Restaurantes
                 .Include(r => r.MenuItems)
@@ -289,7 +349,6 @@ namespace TechFood_Solutions.Controllers
             return Json(estadisticas);
         }
 
-        // MÈtodos helper
         private bool RestaurantExists(int id)
         {
             return _context.Restaurantes.Any(e => e.Id == id);

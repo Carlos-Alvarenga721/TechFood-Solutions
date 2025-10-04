@@ -1,4 +1,4 @@
-@model TechFood_Solutions.Models.Restaurant
+ï»¿@model TechFood_Solutions.Models.Restaurant
 
 @{
     ViewData["Title"] = "Editar Restaurante";
@@ -22,16 +22,16 @@
         margin-bottom: 40px;
     }
 
-    .page-header h1 {
-        font-size: 2.5rem;
-        color: #2c3e50;
-        margin-bottom: 10px;
-    }
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
 
-    .page-header p {
-        color: #7f8c8d;
-        font-size: 1.1rem;
-    }
+        .page-header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
 
     .breadcrumb-nav {
         background: white;
@@ -56,9 +56,7 @@
         font-weight: 600;
         color: #2c3e50;
         margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
+        display: block;
     }
 
     .form-control {
@@ -67,45 +65,138 @@
         padding: 15px 20px;
         font-size: 1rem;
         transition: all 0.3s;
+        width: 100%;
     }
 
-    .form-control:focus {
-        border-color: #e74c3c;
-        box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
-    }
-
-    .form-control.is-invalid {
-        border-color: #dc3545;
-    }
-
-    .invalid-feedback {
-        color: #dc3545;
-        font-size: 0.875rem;
-        margin-top: 5px;
-    }
+        .form-control:focus {
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+            outline: none;
+        }
 
     .form-text {
         color: #6c757d;
         font-size: 0.875rem;
         margin-top: 5px;
+        display: block;
     }
 
-    /* Preview del logo */
-    .logo-preview {
-        margin-top: 15px;
+    /* File Upload Styling */
+    .file-upload-wrapper {
+        position: relative;
+        margin-top: 10px;
+    }
+
+    .custom-file-upload {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+        border: 3px dashed #e0e0e0;
+        border-radius: 15px;
+        background: #f8f9fa;
+        cursor: pointer;
+        transition: all 0.3s;
         text-align: center;
     }
 
-    .current-logo {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 4px solid #e0e0e0;
+        .custom-file-upload:hover {
+            border-color: #e74c3c;
+            background: #fff5f5;
+        }
+
+        .custom-file-upload.has-file {
+            border-color: #28a745;
+            border-style: solid;
+            background: #f0fff4;
+        }
+
+    .upload-icon {
+        font-size: 3rem;
+        margin-bottom: 10px;
+        opacity: 0.6;
+    }
+
+    .upload-text {
+        font-size: 1rem;
+        color: #6c757d;
+        margin-bottom: 5px;
+    }
+
+        .upload-text strong {
+            color: #2c3e50;
+        }
+
+    .upload-hint {
+        font-size: 0.875rem;
+        color: #95a5a6;
+    }
+
+    input[type="file"] {
+        display: none;
+    }
+
+    .file-info {
+        margin-top: 15px;
+        padding: 12px 20px;
+        background: #e8f5e9;
+        border-radius: 8px;
+        display: none;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .file-info.show {
+            display: flex;
+        }
+
+    .file-info-icon {
+        font-size: 1.5rem;
+    }
+
+    .file-info-text {
+        flex: 1;
+        color: #2e7d32;
+        font-weight: 500;
+    }
+
+    .file-info-remove {
+        background: none;
+        border: none;
+        color: #c62828;
+        cursor: pointer;
+        font-size: 1.2rem;
+        padding: 5px;
+    }
+
+    /* Logo Preview */
+    .logo-preview-section {
+        margin-top: 25px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .preview-title {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 15px;
+    }
+
+    .logo-preview-image {
+        max-width: 200px;
+        max-height: 200px;
+        border-radius: 12px;
+        object-fit: contain;
+        border: 3px solid #e0e0e0;
+        background: white;
+        padding: 10px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
 
-    /* Botones de acción */
+    /* Action Buttons */
     .form-actions {
         display: flex;
         gap: 15px;
@@ -115,39 +206,41 @@
         border-top: 2px solid #f0f0f0;
     }
 
-    .btn-primary {
-        background: #e74c3c;
-        border: none;
+    .btn {
         padding: 15px 40px;
         border-radius: 10px;
         font-size: 1.1rem;
         font-weight: 600;
-        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        border: none;
+        cursor: pointer;
         transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
     }
 
-    .btn-primary:hover {
-        background: #c0392b;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+    .btn-primary {
+        background: #e74c3c;
+        color: white;
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
     }
+
+        .btn-primary:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
 
     .btn-secondary {
         background: #6c757d;
-        border: none;
-        padding: 15px 40px;
-        border-radius: 10px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        transition: all 0.3s;
+        color: white;
     }
 
-    .btn-secondary:hover {
-        background: #5a6268;
-        transform: translateY(-2px);
-    }
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
 
-    /* Alertas */
+    /* Alerts */
     .alert {
         border-radius: 10px;
         padding: 15px 20px;
@@ -167,18 +260,24 @@
 
     /* Responsive */
     @@media (max-width: 768px) {
-        .form-card {
-            padding: 25px;
-            margin: 0 10px;
-        }
+        .form-card
 
-        .form-actions {
-            flex-direction: column;
-        }
+    {
+        padding: 25px;
+    }
 
-        .page-header h1 {
-            font-size: 2rem;
-        }
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    .page-header h1 {
+        font-size: 2rem;
+    }
+
     }
 </style>
 
@@ -194,15 +293,15 @@
 
         <!-- Header -->
         <div class="page-header">
-            <h1>?? Editar Restaurante</h1>
-            <p>Actualiza la información de tu restaurante</p>
+            <h1>Editar Restaurante</h1>
+            <p>Actualiza la informaciÃ³n de tu restaurante</p>
         </div>
 
-        <!-- Alertas -->
+        <!-- Alerts -->
         @if (TempData["Success"] != null)
         {
             <div class="alert alert-success alert-dismissible fade show">
-                <strong>¡Éxito!</strong> @TempData["Success"]
+                <strong>Ã‰xito</strong> @TempData["Success"]
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         }
@@ -215,53 +314,71 @@
             </div>
         }
 
-        <!-- Formulario -->
+        <!-- Form -->
         <div class="form-card">
-            <form asp-action="EditarRestaurante" method="post">
+            <form asp-action="EditarRestaurante" method="post" enctype="multipart/form-data" id="editForm">
+                @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="Id" />
-                
+                <input type="hidden" asp-for="LogoUrl" />
+
+                <!-- Nombre -->
                 <div class="form-group">
-                    <label asp-for="Nombre" class="form-label">
-                        ??? Nombre del Restaurante
-                    </label>
-                    <input asp-for="Nombre" class="form-control" placeholder="Ej: Pizzería Don Mario" />
-                    <span asp-validation-for="Nombre" class="invalid-feedback"></span>
-                    <div class="form-text">El nombre que verán tus clientes</div>
+                    <label asp-for="Nombre" class="form-label">Nombre del Restaurante</label>
+                    <input asp-for="Nombre" class="form-control" placeholder="Ej: PizzerÃ­a Don Mario" />
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                    <small class="form-text">El nombre que verÃ¡n tus clientes</small>
                 </div>
 
+                <!-- DescripciÃ³n -->
                 <div class="form-group">
-                    <label asp-for="Descripcion" class="form-label">
-                        ?? Descripción
-                    </label>
-                    <textarea asp-for="Descripcion" class="form-control" rows="4" 
+                    <label asp-for="Descripcion" class="form-label">DescripciÃ³n</label>
+                    <textarea asp-for="Descripcion" class="form-control" rows="4"
                               placeholder="Describe tu restaurante, especialidades, ambiente..."></textarea>
-                    <span asp-validation-for="Descripcion" class="invalid-feedback"></span>
-                    <div class="form-text">Una descripción atractiva ayuda a atraer más clientes</div>
+                    <span asp-validation-for="Descripcion" class="text-danger"></span>
+                    <small class="form-text">Una descripciÃ³n atractiva ayuda a atraer mÃ¡s clientes</small>
                 </div>
 
+                <!-- Logo Upload -->
                 <div class="form-group">
-                    <label asp-for="LogoUrl" class="form-label">
-                        ??? Logo del Restaurante
-                    </label>
-                    <input asp-for="LogoUrl" id="LogoUrl" class="form-control" placeholder="nombre-logo.png" />
-                    <span asp-validation-for="LogoUrl" class="invalid-feedback"></span>
-                    <div class="form-text">Nombre del archivo de imagen (debe estar en /images/restaurantes/)</div>
-                    
-                    <!-- Preview del logo actual -->
-                    <div class="logo-preview">
-                        <p><strong>Logo actual:</strong></p>
-                        <img src="~/images/restaurantes/@Model.LogoUrl" alt="Logo actual" class="current-logo" 
-                             onerror="this.src='/images/default-restaurant.png';" id="logoPreviewImg" />
+                    <label class="form-label">Logo del Restaurante</label>
+
+                    <div class="file-upload-wrapper">
+                        <label for="logoFile" class="custom-file-upload" id="uploadArea">
+                            <div class="upload-icon">ðŸ“¤</div>
+                            <div class="upload-text">
+                                <strong>Haz clic para subir una imagen</strong>
+                            </div>
+                            <div class="upload-hint">JPG, PNG, GIF o WEBP (Max. 5MB)</div>
+                        </label>
+                        <input type="file"
+                               name="logoFile"
+                               id="logoFile"
+                               accept="image/*" />
+
+                        <div class="file-info" id="fileInfo">
+                            <span class="file-info-icon">âœ…</span>
+                            <span class="file-info-text" id="fileName"></span>
+                            <button type="button" class="file-info-remove" id="removeFile">âœ–</button>
+                        </div>
                     </div>
+
+                    <!-- Preview de logo actual -->
+                    @if (!string.IsNullOrEmpty(Model.LogoUrl))
+                    {
+                        <div class="logo-preview-section">
+                            <div class="preview-title">Logo actual:</div>
+                            <img src="~/images/restaurantes/@Model.LogoUrl"
+                                 alt="Logo actual"
+                                 class="logo-preview-image"
+                                 onerror="this.style.display='none';" />
+                        </div>
+                    }
                 </div>
 
+                <!-- Action Buttons -->
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
-                        ?? Guardar Cambios
-                    </button>
-                    <a href="@Url.Action("Index")" class="btn btn-secondary">
-                        ? Cancelar
-                    </a>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">Cancelar</a>
                 </div>
             </form>
         </div>
@@ -269,57 +386,123 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
     <script>
-        // Preview en tiempo real del logo
-        const logoInput = document.getElementById('LogoUrl');
-        const logoPreview = document.getElementById('logoPreviewImg');
-        
-        if (logoInput && logoPreview) {
-            logoInput.addEventListener('input', function(e) {
-                const newLogoUrl = '/images/restaurantes/' + e.target.value;
-                
-                if (e.target.value.trim() !== '') {
-                    logoPreview.src = newLogoUrl;
+        // Referencias a elementos
+        const fileInput = document.getElementById('logoFile');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileNameDisplay = document.getElementById('fileName');
+        const removeBtn = document.getElementById('removeFile');
+
+        // Evento al seleccionar archivo
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+
+            if (file) {
+                // Validar tamaÃ±o (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('La imagen es muy grande. El tamaÃ±o mÃ¡ximo es 5MB.');
+                    fileInput.value = '';
+                    return;
                 }
-            });
+
+                // Validar tipo
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Formato no vÃ¡lido. Solo se permiten: JPG, PNG, GIF, WEBP');
+                    fileInput.value = '';
+                    return;
+                }
+
+                // Mostrar informaciÃ³n del archivo
+                uploadArea.classList.add('has-file');
+                fileInfo.classList.add('show');
+                fileNameDisplay.textContent = file.name;
+
+                console.log('Archivo seleccionado:', file.name, 'TamaÃ±o:', (file.size / 1024).toFixed(2) + ' KB');
+            }
+        });
+
+        // Evento para remover archivo
+        removeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            fileInput.value = '';
+            uploadArea.classList.remove('has-file');
+            fileInfo.classList.remove('show');
+            fileNameDisplay.textContent = '';
+
+            console.log('Archivo removido');
+        });
+
+        // Drag and drop (opcional)
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
         }
 
-        // Validación en tiempo real
-        document.querySelectorAll('.form-control').forEach(input => {
-            input.addEventListener('blur', function() {
-                if (this.value.trim() === '' && this.hasAttribute('data-val-required')) {
-                    this.classList.add('is-invalid');
-                } else {
-                    this.classList.remove('is-invalid');
-                    this.classList.add('is-valid');
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadArea.style.borderColor = '#e74c3c';
+                uploadArea.style.background = '#fff5f5';
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                if (!uploadArea.classList.contains('has-file')) {
+                    uploadArea.style.borderColor = '#e0e0e0';
+                    uploadArea.style.background = '#f8f9fa';
                 }
             });
         });
 
-        // Auto-dismiss alerts
+        uploadArea.addEventListener('drop', function(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            if (files.length > 0) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event('change'));
+            }
+        });
+
+        // ValidaciÃ³n antes de enviar
+        document.getElementById('editForm').addEventListener('submit', function(e) {
+            const nombre = document.querySelector('[name="Nombre"]').value.trim();
+            const descripcion = document.querySelector('[name="Descripcion"]').value.trim();
+
+            if (!nombre) {
+                alert('Por favor ingresa el nombre del restaurante');
+                e.preventDefault();
+                return false;
+            }
+
+            if (!descripcion) {
+                alert('Por favor ingresa una descripciÃ³n');
+                e.preventDefault();
+                return false;
+            }
+
+            console.log('Formulario vÃ¡lido, enviando...');
+        });
+
+        // Auto-dismiss de alertas
         setTimeout(function() {
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(alert => {
-                if (alert.classList.contains('show')) {
-                    alert.classList.remove('show');
-                    setTimeout(() => alert.remove(), 150);
-                }
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
             });
         }, 5000);
-
-        // Debug: Mostrar datos del formulario antes del envío
-        document.querySelector('form').addEventListener('submit', function(e) {
-            const formData = new FormData(this);
-            console.log('=== DATOS DEL FORMULARIO ===');
-            for (let [key, value] of formData.entries()) {
-                console.log(`${key}: ${value}`);
-            }
-            console.log('============================');
-        });
-
-        // Debug: Verificar si la acción del formulario es correcta
-        console.log('Acción del formulario:', document.querySelector('form').action);
     </script>
 }
