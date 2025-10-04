@@ -348,12 +348,12 @@
         <!-- Header -->
         <div class="page-header">
             <div class="header-info">
-                <h1>??? Gestionar Menú</h1>
+                <h1>Gestionar Menú</h1>
                 <p>Administra los productos de <strong>@Model.Nombre</strong></p>
             </div>
             <div class="header-actions">
                 <a href="@Url.Action("Index")" class="btn-back">
-                    ? Volver al Dashboard
+                    Volver al Dashboard
                 </a>
                 <a href="@Url.Action("CrearProducto")" class="btn-create">
                     + Agregar Producto
@@ -385,7 +385,6 @@
         <div class="filters-section">
             <div class="search-box">
                 <input type="text" placeholder="Buscar productos..." id="searchInput">
-                <span class="search-icon">??</span>
             </div>
         </div>
 
@@ -408,14 +407,7 @@
                         <div class="product-image-container">
                             <img src="~/images/items/@Model.Nombre/@item.ImagenUrl" alt="@item.Nombre" class="product-image"
                                  onerror="this.src='/images/default-food.png';">
-                            <div class="product-actions">
-                                <a href="@Url.Action("EditarProducto", new { id = item.Id })" class="action-btn btn-edit" title="Editar">
-                                    ??
-                                </a>
-                                <button onclick="confirmarEliminacion(@item.Id, '@item.Nombre')" class="action-btn btn-delete" title="Eliminar">
-                                    ???
-                                </button>
-                            </div>
+                            
                         </div>
                         
                         <div class="product-info">
@@ -425,10 +417,10 @@
                             
                             <div class="product-actions-bottom">
                                 <a href="@Url.Action("EditarProducto", new { id = item.Id })" class="btn-action btn-edit-bottom">
-                                    ?? Editar
+                                    Editar
                                 </a>
                                 <button onclick="confirmarEliminacion(@item.Id, '@item.Nombre')" class="btn-action btn-delete-bottom">
-                                    ??? Eliminar
+                                    Eliminar
                                 </button>
                             </div>
                         </div>

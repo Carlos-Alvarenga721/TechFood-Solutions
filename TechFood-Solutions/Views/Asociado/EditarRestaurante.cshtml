@@ -375,6 +375,14 @@
                     }
                 </div>
 
+                <!-- DEBUG CONSOLE-->
+                <div style="background: yellow; padding: 10px; margin: 20px 0;">
+                    <strong>DEBUG INFO:</strong><br>
+                    Model.Id: @Model.Id<br>
+                    Model.LogoUrl: @Model.LogoUrl<br>
+                    Model.Nombre: @Model.Nombre
+                </div>
+
                 <!-- Action Buttons -->
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
@@ -423,7 +431,7 @@
                 fileInfo.classList.add('show');
                 fileNameDisplay.textContent = file.name;
 
-                console.log('Archivo seleccionado:', file.name, 'Tamaño:', (file.size / 1024).toFixed(2) + ' KB');
+                console.log('Archivo seleccionado:', file.name);
             }
         });
 
@@ -436,19 +444,15 @@
             uploadArea.classList.remove('has-file');
             fileInfo.classList.remove('show');
             fileNameDisplay.textContent = '';
-
-            console.log('Archivo removido');
         });
 
-        // Drag and drop (opcional)
+        // Drag and drop
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            uploadArea.addEventListener(eventName, preventDefaults, false);
+            uploadArea.addEventListener(eventName, function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            });
         });
-
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
 
         ['dragenter', 'dragover'].forEach(eventName => {
             uploadArea.addEventListener(eventName, () => {
@@ -475,34 +479,5 @@
                 fileInput.dispatchEvent(new Event('change'));
             }
         });
-
-        // Validación antes de enviar
-        document.getElementById('editForm').addEventListener('submit', function(e) {
-            const nombre = document.querySelector('[name="Nombre"]').value.trim();
-            const descripcion = document.querySelector('[name="Descripcion"]').value.trim();
-
-            if (!nombre) {
-                alert('Por favor ingresa el nombre del restaurante');
-                e.preventDefault();
-                return false;
-            }
-
-            if (!descripcion) {
-                alert('Por favor ingresa una descripción');
-                e.preventDefault();
-                return false;
-            }
-
-            console.log('Formulario válido, enviando...');
-        });
-
-        // Auto-dismiss de alertas
-        setTimeout(function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                const bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
-            });
-        }, 5000);
     </script>
 }

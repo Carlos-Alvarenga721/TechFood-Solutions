@@ -293,13 +293,13 @@
                     <p>@Model.Descripcion</p>
                     <div class="quick-actions">
                         <a href="@Url.Action("EditarRestaurante", new { id = Model.Id })" class="quick-btn">
-                            ?? Editar Restaurante
+                            Editar Restaurante
                         </a>
                         <a href="@Url.Action("GestionarMenu")" class="quick-btn">
-                            ??? Gestionar Menú
+                            Gestionar Menú
                         </a>
                         <a href="@Url.Action("CrearProducto")" class="quick-btn">
-                            ? Nuevo Producto
+                            Nuevo Producto
                         </a>
                     </div>
                 </div>
@@ -368,28 +368,24 @@
                 <h2 class="section-title">Acciones Rápidas</h2>
                 <div class="quick-links">
                     <a href="@Url.Action("EditarRestaurante", new { id = Model.Id })" class="quick-link">
-                        <span class="quick-link-icon">??</span>
                         <div>
                             <div class="quick-link-text">Editar Restaurante</div>
                             <small>Actualizar información general</small>
                         </div>
                     </a>
                     <a href="@Url.Action("GestionarMenu")" class="quick-link">
-                        <span class="quick-link-icon">??</span>
                         <div>
                             <div class="quick-link-text">Gestionar Menú</div>
                             <small>Ver todos los productos</small>
                         </div>
                     </a>
                     <a href="@Url.Action("CrearProducto")" class="quick-link">
-                        <span class="quick-link-icon">?</span>
                         <div>
                             <div class="quick-link-text">Agregar Producto</div>
                             <small>Crear nuevo producto</small>
                         </div>
                     </a>
                     <a href="#" class="quick-link">
-                        <span class="quick-link-icon">??</span>
                         <div>
                             <div class="quick-link-text">Ver Reportes</div>
                             <small>Estadísticas y ventas</small>

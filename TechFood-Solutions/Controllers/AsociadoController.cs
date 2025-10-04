@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TechFood_Solutions.Models;
-using TechFood_Solutions.Services; // ← AGREGAR
+using TechFood_Solutions.Services;
 
 namespace TechFood_Solutions.Controllers
 {
@@ -9,12 +9,12 @@ namespace TechFood_Solutions.Controllers
     {
         private readonly TechFoodDbContext _context;
         private readonly ILogger<AsociadoController> _logger;
-        private readonly IImageService _imageService; // ← AGREGAR
+        private readonly IImageService _imageService;
 
         public AsociadoController(
             TechFoodDbContext context,
             ILogger<AsociadoController> logger,
-            IImageService imageService) // ← AGREGAR
+            IImageService imageService)
         {
             _context = context;
             _logger = logger;
@@ -61,81 +61,60 @@ namespace TechFood_Solutions.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditarRestaurante(
-            int id,
-            [Bind("Id,Nombre,LogoUrl,Descripcion")] Restaurant restaurant,
-            IFormFile logoFile) // ← PARÁMETRO PARA EL ARCHIVO
+     int id,
+     [Bind("Id,Nombre,Descripcion,LogoUrl")] Restaurant restaurant,
+     IFormFile logoFile)
         {
-            _logger.LogInformation($"POST EditarRestaurante: ID = {id}");
+            _logger.LogInformation($"POST EditarRestaurante iniciado - ID: {id}");
 
             if (id != restaurant.Id)
             {
                 return NotFound();
             }
 
-            // Si se subió una imagen nueva
+            // ⭐ AGREGA ESTE LOG AQUÍ
+            _logger.LogInformation($"LogoUrl recibido del formulario: '{restaurant.LogoUrl}'");
+            _logger.LogInformation($"Archivo recibido: {(logoFile != null ? logoFile.FileName : "NINGUNO")}");
+
+            ModelState.Remove("MenuItems");
+
+            // Si se subió archivo nuevo
             if (logoFile != null && logoFile.Length > 0)
             {
-                _logger.LogInformation($"Procesando imagen: {logoFile.FileName} ({logoFile.Length} bytes)");
-
-                // Guardar la imagen en wwwroot/images/restaurantes
                 var fileName = await _imageService.SaveImageAsync(logoFile, "restaurantes");
 
                 if (!string.IsNullOrEmpty(fileName))
                 {
-                    // Si había una imagen anterior, eliminarla
-                    if (!string.IsNullOrEmpty(restaurant.LogoUrl))
+                    if (!string.IsNullOrEmpty(restaurant.LogoUrl) && restaurant.LogoUrl != fileName)
                     {
                         _imageService.DeleteImage(restaurant.LogoUrl, "restaurantes");
                     }
-
-                    // Actualizar con el nuevo nombre de archivo
                     restaurant.LogoUrl = fileName;
-                    _logger.LogInformation($"Imagen guardada: {fileName}");
+                    _logger.LogInformation($"LogoUrl actualizado a: {fileName}");
                 }
                 else
                 {
-                    ModelState.AddModelError("logoFile", "Error al guardar la imagen. Verifica el formato y tamaño.");
+                    ModelState.AddModelError("", "Error al guardar la imagen.");
                     return View(restaurant);
                 }
             }
-            else
-            {
-                // Si no se subió imagen, mantener la existente
-                var existingRestaurant = await _context.Restaurantes
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(r => r.Id == id);
 
-                if (existingRestaurant != null)
-                {
-                    restaurant.LogoUrl = existingRestaurant.LogoUrl;
-                }
-            }
+            _logger.LogInformation($"LogoUrl FINAL antes de guardar: '{restaurant.LogoUrl}'");
 
             if (ModelState.IsValid)
             {
                 try
                 {
                     _context.Update(restaurant);
-                    await _context.SaveChangesAsync();
-
-                    TempData["Success"] = "Información del restaurante actualizada correctamente.";
+                    var changes = await _context.SaveChangesAsync();
+                    _logger.LogInformation($"✅ Guardado exitoso - {changes} filas");
+                    TempData["Success"] = "Restaurante actualizado correctamente.";
                     return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateConcurrencyException ex)
-                {
-                    _logger.LogError(ex, $"Error de concurrencia para ID {id}");
-
-                    if (!RestaurantExists(restaurant.Id))
-                    {
-                        return NotFound();
-                    }
-                    throw;
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Error al actualizar restaurante {id}");
-                    TempData["Error"] = "Error al actualizar: " + ex.Message;
-                    return View(restaurant);
+                    _logger.LogError(ex, "Error al guardar");
+                    TempData["Error"] = "Error: " + ex.Message;
                 }
             }
 
@@ -185,23 +164,19 @@ namespace TechFood_Solutions.Controllers
         public async Task<IActionResult> EditarProducto(
             int id,
             [Bind("Id,Nombre,Descripcion,Precio,ImagenUrl,RestaurantId")] MenuItem menuItem,
-            IFormFile imagenFile) // ← Para productos también
+            IFormFile imagenFile)
         {
-            _logger.LogInformation($"POST EditarProducto: ID = {id}");
-
             if (id != menuItem.Id)
             {
                 return NotFound();
             }
 
-            // Obtener el nombre del restaurante para la subcarpeta
             var restaurant = await _context.Restaurantes.FindAsync(menuItem.RestaurantId);
             if (restaurant == null)
             {
                 return NotFound("Restaurante no encontrado");
             }
 
-            // Si se subió imagen nueva
             if (imagenFile != null && imagenFile.Length > 0)
             {
                 var fileName = await _imageService.SaveImageAsync(imagenFile, "items", restaurant.Nombre);
@@ -280,9 +255,15 @@ namespace TechFood_Solutions.Controllers
             [Bind("Nombre,Descripcion,Precio,ImagenUrl,RestaurantId")] MenuItem menuItem,
             IFormFile imagenFile)
         {
+            var restaurant = await _context.Restaurantes.FindAsync(menuItem.RestaurantId);
+            if (restaurant == null)
+            {
+                return NotFound("Restaurante no encontrado");
+            }
+
             if (imagenFile != null && imagenFile.Length > 0)
             {
-                var fileName = await _imageService.SaveImageAsync(imagenFile, "items");
+                var fileName = await _imageService.SaveImageAsync(imagenFile, "items", restaurant.Nombre);
                 if (!string.IsNullOrEmpty(fileName))
                 {
                     menuItem.ImagenUrl = fileName;
@@ -297,7 +278,7 @@ namespace TechFood_Solutions.Controllers
                 return RedirectToAction(nameof(GestionarMenu));
             }
 
-            menuItem.Restaurant = await _context.Restaurantes.FindAsync(menuItem.RestaurantId);
+            menuItem.Restaurant = restaurant;
             return View(menuItem);
         }
 
@@ -306,13 +287,15 @@ namespace TechFood_Solutions.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EliminarProductoConfirmed(int id)
         {
-            var menuItem = await _context.MenuItems.FindAsync(id);
+            var menuItem = await _context.MenuItems
+                .Include(m => m.Restaurant)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (menuItem != null)
             {
-                // Eliminar imagen si existe
-                if (!string.IsNullOrEmpty(menuItem.ImagenUrl))
+                if (!string.IsNullOrEmpty(menuItem.ImagenUrl) && menuItem.Restaurant != null)
                 {
-                    _imageService.DeleteImage(menuItem.ImagenUrl, "items");
+                    _imageService.DeleteImage(menuItem.ImagenUrl, "items", menuItem.Restaurant.Nombre);
                 }
 
                 _context.MenuItems.Remove(menuItem);
