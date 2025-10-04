@@ -25,8 +25,12 @@
                         <li class="nav-item"><a class="nav-link text-white" href="/Home/Menu">Menu</a></li>
                         <li class="nav-item"><a class="nav-link text-white" href="/Home/Contacto">Contacto</a></li>
                         <li class="nav-item"><a class="nav-link text-white" href="/Home/SobreNosotros">Sobre Nosotros</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="/Home/SobreNosotros">Sobre Nosotros</a></li>
                         <li class="nav-item"><a class="nav-link text-white fw-bold" href="/Account/Login">Iniciar Sesión</a></li>
                     </ul>
+                    <div class="navbar-nav ms-auto">
+                        @await Html.PartialAsync("_CartBadge")
+                    </div>
                 </div>
             </div>
         </nav>

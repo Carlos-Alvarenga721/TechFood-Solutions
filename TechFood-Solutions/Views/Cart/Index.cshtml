@@ -1,0 +1,547 @@
+﻿@model TechFood_Solutions.Models.Cart
+
+@{
+    ViewData["Title"] = "Carrito";
+}
+
+<style>
+    .cart-page {
+        padding: 40px 0;
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 200px);
+    }
+
+    .cart-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb-nav {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 30px;
+        font-size: 0.95rem;
+        color: #7f8c8d;
+    }
+
+        .breadcrumb-nav a {
+            color: #7f8c8d;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+            .breadcrumb-nav a:hover {
+                color: #2c3e50;
+            }
+
+        .breadcrumb-nav .current {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+    /* Layout principal */
+    .cart-layout {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 30px;
+        align-items: start;
+    }
+
+    /* Lista de productos */
+    .cart-items-section {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .cart-header {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+        margin-bottom: 20px;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .cart-item {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        align-items: center;
+        padding: 20px 0;
+        border-bottom: 1px solid #f0f0f0;
+        position: relative;
+    }
+
+    .product-info {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+
+    .product-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 10px;
+        object-fit: cover;
+        position: relative;
+    }
+
+    .remove-btn {
+        position: absolute;
+        top: -8px;
+        left: -8px;
+        width: 24px;
+        height: 24px;
+        background: #e74c3c;
+        border: 2px solid white;
+        border-radius: 50%;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all 0.3s;
+        z-index: 1;
+    }
+
+        .remove-btn:hover {
+            background: #c0392b;
+            transform: scale(1.1);
+        }
+
+    .product-details h3 {
+        font-size: 1.1rem;
+        color: #2c3e50;
+        margin: 0 0 5px 0;
+    }
+
+    .product-details p {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+        margin: 0;
+    }
+
+    .price-cell {
+        font-size: 1.1rem;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        width: fit-content;
+        overflow: hidden;
+    }
+
+    .quantity-btn {
+        width: 32px;
+        height: 32px;
+        background: white;
+        border: none;
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: #7f8c8d;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .quantity-btn:hover {
+            background: #f8f9fa;
+            color: #2c3e50;
+        }
+
+    .quantity-input {
+        width: 45px;
+        height: 32px;
+        border: none;
+        text-align: center;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+        .quantity-input::-webkit-inner-spin-button,
+        .quantity-input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+    .subtotal-cell {
+        font-size: 1.2rem;
+        color: #2c3e50;
+        font-weight: bold;
+    }
+
+    /* Botones de acción */
+    .cart-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 2px solid #f0f0f0;
+    }
+
+    .back-btn {
+        padding: 12px 30px;
+        background: white;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        color: #2c3e50;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .back-btn:hover {
+            border-color: #2c3e50;
+            background: #f8f9fa;
+        }
+
+    .add-more-btn {
+        padding: 12px 30px;
+        background: white;
+        border: 2px solid #e74c3c;
+        border-radius: 10px;
+        color: #e74c3c;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .add-more-btn:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+    /* Panel de resumen y cupón */
+    .cart-summary-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        position: sticky;
+        top: 20px;
+    }
+
+    /* Cupón */
+    .coupon-section {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .coupon-form {
+        display: flex;
+        gap: 10px;
+    }
+
+    .coupon-input {
+        flex: 1;
+        padding: 12px 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+    }
+
+        .coupon-input:focus {
+            outline: none;
+            border-color: #e74c3c;
+        }
+
+    .apply-coupon-btn {
+        padding: 12px 25px;
+        background: #e74c3c;
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+
+        .apply-coupon-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+    /* Resumen */
+    .summary-section {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .summary-title {
+        font-size: 1.5rem;
+        color: #2c3e50;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .summary-label {
+        color: #7f8c8d;
+        font-size: 1rem;
+    }
+
+    .summary-value {
+        color: #2c3e50;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px 0;
+        margin-top: 10px;
+        border-top: 2px solid #2c3e50;
+    }
+
+    .total-label {
+        color: #2c3e50;
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .total-value {
+        color: #e74c3c;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .checkout-btn {
+        width: 100%;
+        padding: 15px;
+        background: #e74c3c;
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 20px;
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+
+        .checkout-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+
+    /* Carrito vacío */
+    .empty-cart {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .empty-cart-icon {
+        font-size: 5rem;
+        margin-bottom: 20px;
+    }
+
+    .empty-cart h2 {
+        color: #2c3e50;
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+    }
+
+    .empty-cart p {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+    }
+
+    /* Responsive */
+    @@media (max-width: 1024px) {
+        .cart-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .cart-summary-container {
+            position: static;
+        }
+
+        .cart-header {
+            display: none;
+        }
+
+        .cart-item {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .product-info {
+            grid-column: 1;
+        }
+
+        .price-cell, .quantity-control, .subtotal-cell {
+            justify-self: start;
+        }
+    }
+</style>
+
+<div class="cart-page">
+    <div class="cart-container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb-nav">
+            <a asp-controller="Home" asp-action="Index">Home</a>
+            <span>/</span>
+            <span class="current">Carrito</span>
+        </nav>
+
+        @if (Model.Items.Any())
+        {
+            <div class="cart-layout">
+                <!-- Lista de items -->
+                <div class="cart-items-section">
+                    <div class="cart-header">
+                        <div>Product</div>
+                        <div>Price</div>
+                        <div>Quantity</div>
+                        <div>Subtotal</div>
+                    </div>
+
+                    @foreach (var item in Model.Items)
+                    {
+                        <div class="cart-item">
+                            <div class="product-info">
+                                <div style="position: relative;">
+                                    <img src="~/images/items/@item.RestaurantName/@item.ImagenUrl" alt="@item.Nombre" class="product-image">
+                                    <form asp-action="RemoveItem" method="post" style="display: inline;">
+                                        <input type="hidden" name="menuItemId" value="@item.MenuItemId" />
+                                        <button type="submit" class="remove-btn" title="Eliminar">✕</button>
+                                    </form>
+                                </div>
+                                <div class="product-details">
+                                    <h3>@item.Nombre</h3>
+                                    <p>@item.RestaurantName</p>
+                                </div>
+                            </div>
+
+                            <div class="price-cell">
+                                $@item.Precio.ToString("F2")
+                            </div>
+
+                            <div class="quantity-control">
+                                <form asp-action="UpdateQuantity" method="post" style="display: contents;">
+                                    <input type="hidden" name="menuItemId" value="@item.MenuItemId" />
+                                    <button type="submit" name="cantidad" value="@(item.Cantidad - 1)" class="quantity-btn">▼</button>
+                                    <input type="number" class="quantity-input" value="@item.Cantidad" readonly />
+                                    <button type="submit" name="cantidad" value="@(item.Cantidad + 1)" class="quantity-btn">▲</button>
+                                </form>
+                            </div>
+
+                            <div class="subtotal-cell">
+                                $@item.Subtotal.ToString("F2")
+                            </div>
+                        </div>
+                    }
+
+                    <div class="cart-actions">
+                        <a asp-controller="Cliente" asp-action="Restaurantes" class="back-btn">Regresar al menú</a>
+                        <a asp-controller="Cliente" asp-action="Menu" asp-route-id="@Model.RestaurantId" class="add-more-btn">Agregar al Carrito</a>
+                    </div>
+                </div>
+
+                <!-- Sidebar: Cupón y Resumen -->
+                <div class="cart-summary-container">
+                    <!-- Cupón -->
+                    <div class="coupon-section">
+                        <form class="coupon-form" asp-action="ApplyCoupon" method="post">
+                            <input type="text" name="couponCode" class="coupon-input" placeholder="Código">
+                            <button type="submit" class="apply-coupon-btn">Aplicar Cupón</button>
+                        </form>
+                    </div>
+
+                    <!-- Resumen -->
+                    <div class="summary-section">
+                        <h3 class="summary-title">Suma</h3>
+
+                        <div class="summary-row">
+                            <span class="summary-label">Subtotal:</span>
+                            <span class="summary-value">$@Model.Total.ToString("F2")</span>
+                        </div>
+
+                        <div class="summary-row">
+                            <span class="summary-label">Envío:</span>
+                            <span class="summary-value">$2.50</span>
+                        </div>
+
+                        <div class="summary-total">
+                            <span class="total-label">Total:</span>
+                            <span class="total-value">$@((Model.Total + 2.50m).ToString("F2"))</span>
+                        </div>
+
+                        <a asp-action="Checkout" class="checkout-btn">Ir a Pagar</a>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="empty-cart">
+                <div class="empty-cart-icon">🛒</div>
+                <h2>Tu carrito está vacío</h2>
+                <p>Agrega algunos productos deliciosos a tu carrito</p>
+                <a asp-controller="Cliente" asp-action="Restaurantes" class="checkout-btn" style="max-width: 300px; margin: 0 auto; display: block;">
+                    Explorar Restaurantes
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Confirmación antes de eliminar
+        document.querySelectorAll('.remove-btn').forEach(btn => {
+            btn.closest('form').addEventListener('submit', function(e) {
+                if (!confirm('¿Estás seguro de eliminar este producto?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // Animación al actualizar cantidad
+        document.querySelectorAll('.quantity-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 100);
+            });
+        });
+    </script>
+}
