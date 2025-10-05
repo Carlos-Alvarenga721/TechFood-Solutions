@@ -1,4 +1,4 @@
-﻿@model TechFood_Solutions.Models.Restaurant
+﻿@model TechFood_Solutions.ViewModels.EditarRestauranteViewModel
 
 @{
     ViewData["Title"] = "Editar Restaurante";
@@ -73,6 +73,17 @@
             box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
             outline: none;
         }
+
+        .form-control.is-invalid {
+            border-color: #dc3545;
+        }
+
+    .invalid-feedback {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 5px;
+        display: block;
+    }
 
     .form-text {
         color: #6c757d;
@@ -258,26 +269,33 @@
         color: #721c24;
     }
 
+    /* Success Info */
+    .success-info {
+        background: #d4edda;
+        border: 2px solid #27ae60;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 30px 0;
+        text-align: center;
+    }
+
     /* Responsive */
     @@media (max-width: 768px) {
-        .form-card
+        .form-card {
+            padding: 25px;
+        }
 
-    {
-        padding: 25px;
-    }
+        .form-actions {
+            flex-direction: column;
+        }
 
-    .form-actions {
-        flex-direction: column;
-    }
+        .btn {
+            width: 100%;
+        }
 
-    .btn {
-        width: 100%;
-    }
-
-    .page-header h1 {
-        font-size: 2rem;
-    }
-
+        .page-header h1 {
+            font-size: 2rem;
+        }
     }
 </style>
 
@@ -293,15 +311,22 @@
 
         <!-- Header -->
         <div class="page-header">
-            <h1>Editar Restaurante</h1>
+            <h1>🏪 Editar Restaurante</h1>
             <p>Actualiza la información de tu restaurante</p>
+        </div>
+
+        <!-- Success Info -->
+        <div class="success-info">
+            <h4>✅ ¡Sistema Simplificado y Funcional!</h4>
+            <p>Ahora puedes editar el nombre y descripción con o sin cambiar la imagen.</p>
+            <p><strong>La imagen es completamente opcional.</strong></p>
         </div>
 
         <!-- Alerts -->
         @if (TempData["Success"] != null)
         {
             <div class="alert alert-success alert-dismissible fade show">
-                <strong>Éxito</strong> @TempData["Success"]
+                <strong>¡Éxito!</strong> @TempData["Success"]
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         }
@@ -314,41 +339,41 @@
             </div>
         }
 
-        <!-- Form -->
+        <!-- Form Principal -->
         <div class="form-card">
             <form asp-action="EditarRestaurante" method="post" enctype="multipart/form-data" id="editForm">
                 @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="Id" />
-                <input type="hidden" asp-for="LogoUrl" />
 
                 <!-- Nombre -->
                 <div class="form-group">
-                    <label asp-for="Nombre" class="form-label">Nombre del Restaurante</label>
+                    <label asp-for="Nombre" class="form-label">🏷️ Nombre del Restaurante *</label>
                     <input asp-for="Nombre" class="form-control" placeholder="Ej: Pizzería Don Mario" />
-                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                    <span asp-validation-for="Nombre" class="invalid-feedback"></span>
                     <small class="form-text">El nombre que verán tus clientes</small>
                 </div>
 
                 <!-- Descripción -->
                 <div class="form-group">
-                    <label asp-for="Descripcion" class="form-label">Descripción</label>
+                    <label asp-for="Descripcion" class="form-label">📝 Descripción *</label>
                     <textarea asp-for="Descripcion" class="form-control" rows="4"
                               placeholder="Describe tu restaurante, especialidades, ambiente..."></textarea>
-                    <span asp-validation-for="Descripcion" class="text-danger"></span>
+                    <span asp-validation-for="Descripcion" class="invalid-feedback"></span>
                     <small class="form-text">Una descripción atractiva ayuda a atraer más clientes</small>
                 </div>
 
                 <!-- Logo Upload -->
                 <div class="form-group">
-                    <label class="form-label">Logo del Restaurante</label>
+                    <label class="form-label">🖼️ Logo del Restaurante (Opcional)</label>
+                    <small class="form-text" style="margin-bottom: 10px; color: #28a745;">✅ Puedes cambiar solo texto sin tocar la imagen</small>
 
                     <div class="file-upload-wrapper">
                         <label for="logoFile" class="custom-file-upload" id="uploadArea">
                             <div class="upload-icon">📤</div>
                             <div class="upload-text">
-                                <strong>Haz clic para subir una imagen</strong>
+                                <strong>Haz clic para subir una nueva imagen (OPCIONAL)</strong>
                             </div>
-                            <div class="upload-hint">JPG, PNG, GIF o WEBP (Max. 5MB)</div>
+                            <div class="upload-hint">JPG, PNG, GIF o WEBP - Solo si quieres cambiar el logo</div>
                         </label>
                         <input type="file"
                                name="logoFile"
@@ -363,30 +388,23 @@
                     </div>
 
                     <!-- Preview de logo actual -->
-                    @if (!string.IsNullOrEmpty(Model.LogoUrl))
+                    @if (!string.IsNullOrEmpty(Model.LogoUrlActual))
                     {
                         <div class="logo-preview-section">
                             <div class="preview-title">Logo actual:</div>
-                            <img src="~/images/restaurantes/@Model.LogoUrl"
+                            <img src="~/images/restaurantes/@Model.LogoUrlActual"
                                  alt="Logo actual"
                                  class="logo-preview-image"
                                  onerror="this.style.display='none';" />
+                            <small class="form-text" style="color: #28a745;">✅ Este logo se mantendrá si no subes uno nuevo</small>
                         </div>
                     }
                 </div>
 
-                <!-- DEBUG CONSOLE-->
-                <div style="background: yellow; padding: 10px; margin: 20px 0;">
-                    <strong>DEBUG INFO:</strong><br>
-                    Model.Id: @Model.Id<br>
-                    Model.LogoUrl: @Model.LogoUrl<br>
-                    Model.Nombre: @Model.Nombre
-                </div>
-
                 <!-- Action Buttons -->
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                    <a href="@Url.Action("Index")" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">💾 Guardar Cambios</button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">❌ Cancelar</a>
                 </div>
             </form>
         </div>
@@ -431,7 +449,7 @@
                 fileInfo.classList.add('show');
                 fileNameDisplay.textContent = file.name;
 
-                console.log('Archivo seleccionado:', file.name);
+                console.log('📤 Archivo seleccionado:', file.name);
             }
         });
 
@@ -444,6 +462,7 @@
             uploadArea.classList.remove('has-file');
             fileInfo.classList.remove('show');
             fileNameDisplay.textContent = '';
+            console.log('🗑️ Archivo removido');
         });
 
         // Drag and drop
@@ -479,5 +498,16 @@
                 fileInput.dispatchEvent(new Event('change'));
             }
         });
+
+        // Auto-dismiss alerts después de 5 segundos
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert.show');
+            alerts.forEach(alert => {
+                if (typeof bootstrap !== 'undefined' && bootstrap.Alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }
+            });
+        }, 5000);
     </script>
 }

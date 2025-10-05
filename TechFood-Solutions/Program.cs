@@ -1,5 +1,4 @@
 using TechFood_Solutions.Models;
-using TechFood_Solutions.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,8 +9,6 @@ builder.Services.AddControllersWithViews();
 // Add DbContext
 builder.Services.AddDbContext<TechFoodDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TechFoodCN")));
-
-builder.Services.AddScoped<IImageService, ImageService>();
 
 var app = builder.Build();
 
