@@ -186,6 +186,20 @@
         border: 2px solid #e0e0e0;
     }
 
+    /* Placeholder para imágenes que no cargan */
+    .image-placeholder {
+        width: 60px;
+        height: 60px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+        font-size: 1.5rem;
+        border: 2px solid #e0e0e0;
+    }
+
     .product-info {
         flex: 1;
     }
@@ -287,19 +301,22 @@
         <!-- Header del Dashboard -->
         <div class="dashboard-header">
             <div class="header-content">
-                <img src="~/images/restaurantes/@Model.LogoUrl" alt="@Model.Nombre" class="restaurant-logo">
+                <img src="~/images/restaurantes/@Model.LogoUrl" 
+                     alt="@Model.Nombre" 
+                     class="restaurant-logo"
+                     onerror="this.src='/images/default-restaurant.png';">
                 <div class="header-info">
                     <h1>¡Bienvenido, @Model.Nombre!</h1>
                     <p>@Model.Descripcion</p>
                     <div class="quick-actions">
                         <a href="@Url.Action("EditarRestaurante", new { id = Model.Id })" class="quick-btn">
-                            Editar Restaurante
+                            ?? Editar Restaurante
                         </a>
                         <a href="@Url.Action("GestionarMenu")" class="quick-btn">
-                            Gestionar Menú
+                            ??? Gestionar Menú
                         </a>
                         <a href="@Url.Action("CrearProducto")" class="quick-btn">
-                            Nuevo Producto
+                            ? Nuevo Producto
                         </a>
                     </div>
                 </div>
@@ -341,7 +358,19 @@
                         @foreach (var item in Model.MenuItems.Take(5))
                         {
                             <div class="product-item">
-                                <img src="~/images/items/@Model.Nombre/@item.ImagenUrl" alt="@item.Nombre" class="product-image">
+                                @if (!string.IsNullOrEmpty(item.ImagenUrl))
+                                {
+                                    <!-- ?? RUTA CORREGIDA: Usar ID del restaurante -->
+                                    <img src="~/images/items/restaurant_@(Model.Id)/@item.ImagenUrl" 
+                                         alt="@item.Nombre" 
+                                         class="product-image"
+                                         onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=&quot;image-placeholder&quot;>???</div>' + this.parentElement.innerHTML;"
+                                         onload="console.log('? Imagen cargada en dashboard:', this.src);">
+                                }
+                                else
+                                {
+                                    <div class="image-placeholder">???</div>
+                                }
                                 <div class="product-info">
                                     <div class="product-name">@item.Nombre</div>
                                     <div class="product-price">$@item.Precio.ToString("F2")</div>
@@ -352,13 +381,19 @@
                     }
                     else
                     {
-                        <p class="text-muted">No tienes productos en tu menú aún.</p>
+                        <div style="text-align: center; padding: 40px; color: #6c757d;">
+                            <div style="font-size: 3rem; margin-bottom: 15px; opacity: 0.3;">???</div>
+                            <p style="font-size: 1.1rem; margin-bottom: 20px;">No tienes productos en tu menú aún.</p>
+                            <a href="@Url.Action("CrearProducto")" class="edit-btn" style="display: inline-block; padding: 12px 25px;">
+                                ? Crear tu primer producto
+                            </a>
+                        </div>
                     }
                 </div>
                 @if (Model.MenuItems != null && Model.MenuItems.Count() > 5)
                 {
                     <div class="text-center mt-3">
-                        <a href="@Url.Action("GestionarMenu")" class="btn btn-outline-primary">Ver todos los productos</a>
+                        <a href="@Url.Action("GestionarMenu")" class="btn btn-outline-primary">Ver todos los productos (@Model.MenuItems.Count())</a>
                     </div>
                 }
             </div>
@@ -369,25 +404,25 @@
                 <div class="quick-links">
                     <a href="@Url.Action("EditarRestaurante", new { id = Model.Id })" class="quick-link">
                         <div>
-                            <div class="quick-link-text">Editar Restaurante</div>
+                            <div class="quick-link-text">?? Editar Restaurante</div>
                             <small>Actualizar información general</small>
                         </div>
                     </a>
                     <a href="@Url.Action("GestionarMenu")" class="quick-link">
                         <div>
-                            <div class="quick-link-text">Gestionar Menú</div>
+                            <div class="quick-link-text">??? Gestionar Menú</div>
                             <small>Ver todos los productos</small>
                         </div>
                     </a>
                     <a href="@Url.Action("CrearProducto")" class="quick-link">
                         <div>
-                            <div class="quick-link-text">Agregar Producto</div>
+                            <div class="quick-link-text">? Agregar Producto</div>
                             <small>Crear nuevo producto</small>
                         </div>
                     </a>
                     <a href="#" class="quick-link">
                         <div>
-                            <div class="quick-link-text">Ver Reportes</div>
+                            <div class="quick-link-text">?? Ver Reportes</div>
                             <small>Estadísticas y ventas</small>
                         </div>
                     </a>
@@ -397,10 +432,33 @@
     </div>
 </div>
 
+<!-- ?? Debug panel temporal para verificar rutas -->
+<div style="position: fixed; bottom: 10px; left: 10px; background: rgba(0,0,0,0.8); color: white; padding: 8px; border-radius: 6px; font-family: monospace; font-size: 0.7rem; max-width: 300px;">
+    <div><strong>?? DEBUG - INDEX:</strong></div>
+    <div>Restaurant ID: @Model.Id</div>
+    <div>Productos: @(Model.MenuItems?.Count() ?? 0)</div>
+    @if (Model.MenuItems?.Any() == true)
+    {
+        <div>Ruta imagen: /images/items/restaurant_@(Model.Id)/</div>
+        <div>Ejemplo: @Model.MenuItems.First().ImagenUrl</div>
+    }
+</div>
+
 @section Scripts {
     <script>
-        // Actualizar estadísticas en tiempo real (opcional)
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('?? Dashboard Index cargado');
+            console.log('?? Restaurant ID:', @Model.Id);
+            console.log('?? Total productos:', @(Model.MenuItems?.Count() ?? 0));
+            
+            @if (Model.MenuItems?.Any() == true)
+            {
+                @foreach (var item in Model.MenuItems.Take(5))
+                {
+                    <text>console.log('??? Producto en dashboard: @item.Nombre - Ruta: /images/items/restaurant_@(Model.Id)/@item.ImagenUrl');</text>
+                }
+            }
+
             // Agregar animaciones de entrada
             const cards = document.querySelectorAll('.stat-card, .section-card');
             cards.forEach((card, index) => {
@@ -412,6 +470,8 @@
                     card.style.transform = 'translateY(0)';
                 }, index * 100);
             });
+
+            console.log('? Dashboard inicializado - Usando estructura basada en ID');
         });
     </script>
 }

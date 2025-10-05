@@ -26,6 +26,8 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
     }
 
     .header-info h1 {
@@ -42,16 +44,25 @@
     .header-actions {
         display: flex;
         gap: 15px;
+        flex-wrap: wrap;
     }
 
-    .btn-create {
-        background: #27ae60;
-        color: white;
+    .btn {
         padding: 12px 25px;
         border-radius: 10px;
         text-decoration: none;
         font-weight: 600;
         transition: all 0.3s;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-create {
+        background: #27ae60;
+        color: white;
         box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
     }
 
@@ -65,11 +76,6 @@
     .btn-back {
         background: #6c757d;
         color: white;
-        padding: 12px 25px;
-        border-radius: 10px;
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.3s;
     }
 
     .btn-back:hover {
@@ -79,7 +85,6 @@
         transform: translateY(-2px);
     }
 
-    /* Stats rápidas */
     .quick-stats {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -90,47 +95,48 @@
     .stat-card {
         background: white;
         border-radius: 15px;
-        padding: 20px;
+        padding: 25px;
         text-align: center;
         box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
     }
 
     .stat-number {
-        font-size: 2rem;
+        font-size: 2.5rem;
         font-weight: bold;
         color: #e74c3c;
-        margin-bottom: 5px;
+        margin-bottom: 8px;
+        display: block;
     }
 
     .stat-label {
         color: #7f8c8d;
-        font-size: 0.9rem;
+        font-size: 1rem;
+        font-weight: 500;
     }
 
-    /* Filtros */
     .filters-section {
         background: white;
         border-radius: 15px;
-        padding: 20px 30px;
+        padding: 25px;
         margin-bottom: 30px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        display: flex;
-        gap: 15px;
-        align-items: center;
-        flex-wrap: wrap;
     }
 
     .search-box {
-        flex: 1;
-        min-width: 250px;
         position: relative;
+        max-width: 400px;
     }
 
     .search-box input {
         width: 100%;
-        padding: 12px 45px 12px 20px;
+        padding: 15px 50px 15px 20px;
         border: 2px solid #e0e0e0;
-        border-radius: 10px;
+        border-radius: 12px;
         font-size: 1rem;
         transition: border-color 0.3s;
     }
@@ -138,44 +144,46 @@
     .search-box input:focus {
         outline: none;
         border-color: #e74c3c;
+        box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
     }
 
     .search-icon {
         position: absolute;
-        right: 15px;
+        right: 18px;
         top: 50%;
         transform: translateY(-50%);
         color: #7f8c8d;
+        font-size: 1.2rem;
     }
 
-    /* Grid de productos */
     .products-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         gap: 25px;
     }
 
     .product-card {
         background: white;
         border-radius: 20px;
-        padding: 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        transition: transform 0.3s, box-shadow 0.3s;
+        padding: 25px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        transition: all 0.3s;
         position: relative;
+        overflow: hidden;
     }
 
     .product-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        transform: translateY(-8px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.15);
     }
 
     .product-image-container {
         position: relative;
-        height: 200px;
+        height: 220px;
         border-radius: 15px;
         overflow: hidden;
-        margin-bottom: 15px;
-        background: #f8f9fa;
+        margin-bottom: 20px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -185,49 +193,17 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: transform 0.3s;
     }
 
-    .product-actions {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
+    .product-card:hover .product-image {
+        transform: scale(1.05);
     }
 
-    .action-btn {
-        width: 35px;
-        height: 35px;
-        border-radius: 50%;
-        border: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: all 0.3s;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
-
-    .btn-edit {
-        background: #3498db;
-        color: white;
-    }
-
-    .btn-edit:hover {
-        background: #2980b9;
-        transform: scale(1.1);
-    }
-
-    .btn-delete {
-        background: #e74c3c;
-        color: white;
-    }
-
-    .btn-delete:hover {
-        background: #c0392b;
-        transform: scale(1.1);
+    .image-placeholder {
+        color: #6c757d;
+        font-size: 3rem;
+        opacity: 0.3;
     }
 
     .product-info {
@@ -235,34 +211,39 @@
     }
 
     .product-name {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         font-weight: bold;
         color: #2c3e50;
-        margin-bottom: 8px;
-    }
-
-    .product-description {
-        color: #7f8c8d;
-        font-size: 0.9rem;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
         line-height: 1.4;
     }
 
-    .product-price {
-        font-size: 1.4rem;
-        font-weight: bold;
-        color: #e74c3c;
+    .product-description {
+        color: #6c757d;
+        font-size: 0.95rem;
         margin-bottom: 15px;
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
-    .product-actions-bottom {
+    .product-price {
+        font-size: 1.6rem;
+        font-weight: bold;
+        color: #e74c3c;
+        margin-bottom: 20px;
+    }
+
+    .product-actions {
         display: flex;
-        gap: 10px;
+        gap: 12px;
         justify-content: center;
     }
 
     .btn-action {
-        padding: 8px 20px;
+        padding: 10px 20px;
         border-radius: 8px;
         border: none;
         font-size: 0.9rem;
@@ -272,65 +253,97 @@
         text-decoration: none;
         display: inline-flex;
         align-items: center;
-        gap: 5px;
+        gap: 6px;
     }
 
-    .btn-edit-bottom {
+    .btn-edit {
         background: #3498db;
         color: white;
     }
 
-    .btn-edit-bottom:hover {
+    .btn-edit:hover {
         background: #2980b9;
         color: white;
         text-decoration: none;
+        transform: translateY(-2px);
     }
 
-    .btn-delete-bottom {
+    .btn-delete {
         background: #e74c3c;
         color: white;
     }
 
-    .btn-delete-bottom:hover {
+    .btn-delete:hover {
         background: #c0392b;
         color: white;
+        transform: translateY(-2px);
     }
 
-    /* Estado vacío */
     .empty-state {
         text-align: center;
-        padding: 60px 20px;
+        padding: 80px 20px;
         background: white;
         border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
     }
 
     .empty-icon {
-        font-size: 4rem;
-        margin-bottom: 20px;
+        font-size: 5rem;
+        margin-bottom: 25px;
         opacity: 0.3;
     }
 
     .empty-state h2 {
-        color: #7f8c8d;
+        color: #2c3e50;
         margin-bottom: 15px;
+        font-size: 1.8rem;
     }
 
     .empty-state p {
-        color: #95a5a6;
+        color: #6c757d;
         margin-bottom: 30px;
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    .alert {
+        border-radius: 12px;
+        padding: 15px 20px;
+        margin-bottom: 25px;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .alert-success {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        color: #155724;
+    }
+
+    .alert-danger {
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        color: #721c24;
+    }
+
+    /* Debug info para imágenes */
+    .debug-image-info {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        background: rgba(0,0,0,0.7);
+        color: white;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-family: monospace;
     }
 
     /* Responsive */
     @@media (max-width: 768px) {
         .page-header {
             flex-direction: column;
-            gap: 20px;
             text-align: center;
-        }
-
-        .header-actions {
-            justify-content: center;
         }
 
         .products-grid {
@@ -340,6 +353,10 @@
         .quick-stats {
             grid-template-columns: repeat(2, 1fr);
         }
+
+        .search-box {
+            max-width: 100%;
+        }
     }
 </style>
 
@@ -348,14 +365,14 @@
         <!-- Header -->
         <div class="page-header">
             <div class="header-info">
-                <h1>Gestionar Menú</h1>
+                <h1>??? Gestionar Menú</h1>
                 <p>Administra los productos de <strong>@Model.Nombre</strong></p>
             </div>
             <div class="header-actions">
-                <a href="@Url.Action("Index")" class="btn-back">
-                    Volver al Dashboard
+                <a href="@Url.Action("Index")" class="btn btn-back">
+                    ? Volver al Dashboard
                 </a>
-                <a href="@Url.Action("CrearProducto")" class="btn-create">
+                <a href="@Url.Action("CrearProducto")" class="btn btn-create">
                     + Agregar Producto
                 </a>
             </div>
@@ -364,50 +381,74 @@
         <!-- Estadísticas rápidas -->
         <div class="quick-stats">
             <div class="stat-card">
-                <div class="stat-number">@(Model.MenuItems?.Count() ?? 0)</div>
+                <span class="stat-number">@(Model.MenuItems?.Count() ?? 0)</span>
                 <div class="stat-label">Total Productos</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">$@((Model.MenuItems?.Any() == true ? Model.MenuItems.Average(m => m.Precio) : 0).ToString("F2"))</div>
+                <span class="stat-number">$@((Model.MenuItems?.Any() == true ? Model.MenuItems.Average(m => m.Precio) : 0).ToString("F2"))</span>
                 <div class="stat-label">Precio Promedio</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">$@((Model.MenuItems?.Any() == true ? Model.MenuItems.Min(m => m.Precio) : 0).ToString("F2"))</div>
+                <span class="stat-number">$@((Model.MenuItems?.Any() == true ? Model.MenuItems.Min(m => m.Precio) : 0).ToString("F2"))</span>
                 <div class="stat-label">Más Barato</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">$@((Model.MenuItems?.Any() == true ? Model.MenuItems.Max(m => m.Precio) : 0).ToString("F2"))</div>
+                <span class="stat-number">$@((Model.MenuItems?.Any() == true ? Model.MenuItems.Max(m => m.Precio) : 0).ToString("F2"))</span>
                 <div class="stat-label">Más Caro</div>
-            </div>
-        </div>
-
-        <!-- Filtros -->
-        <div class="filters-section">
-            <div class="search-box">
-                <input type="text" placeholder="Buscar productos..." id="searchInput">
             </div>
         </div>
 
         <!-- Alertas -->
         @if (TempData["Success"] != null)
         {
-            <div class="alert alert-success alert-dismissible fade show">
-                <strong>¡Éxito!</strong> @TempData["Success"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div class="alert alert-success" id="successAlert">
+                <span>?</span>
+                <span><strong>¡Éxito!</strong> @TempData["Success"]</span>
             </div>
         }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger" id="errorAlert">
+                <span>?</span>
+                <span><strong>Error:</strong> @TempData["Error"]</span>
+            </div>
+        }
+
+        <!-- Filtros -->
+        <div class="filters-section">
+            <div class="search-box">
+                <input type="text" placeholder="Buscar productos por nombre o descripción..." id="searchInput">
+                <span class="search-icon">??</span>
+            </div>
+        </div>
 
         <!-- Grid de productos -->
         @if (Model.MenuItems != null && Model.MenuItems.Any())
         {
-            <div class="products-grid">
+            <div class="products-grid" id="productsGrid">
                 @foreach (var item in Model.MenuItems)
                 {
-                    <div class="product-card" data-product-name="@item.Nombre.ToLower()" data-product-description="@item.Descripcion.ToLower()">
+                    <div class="product-card" data-name="@item.Nombre.ToLower()" data-description="@item.Descripcion.ToLower()">
                         <div class="product-image-container">
-                            <img src="~/images/items/@Model.Nombre/@item.ImagenUrl" alt="@item.Nombre" class="product-image"
-                                 onerror="this.src='/images/default-food.png';">
-                            
+                            @if (!string.IsNullOrEmpty(item.ImagenUrl))
+                            {
+                                <!-- ?? SOLUCIÓN: Usar ID en lugar de nombre -->
+                                <img src="~/images/items/restaurant_@(Model.Id)/@item.ImagenUrl" 
+                                     alt="@item.Nombre" 
+                                     class="product-image"
+                                     onerror="console.error('? Error cargando imagen:', this.src); this.style.display='none'; this.parentElement.innerHTML='<div class=&quot;image-placeholder&quot;>???</div><div class=&quot;debug-image-info&quot;>Error: @item.ImagenUrl</div>';"
+                                     style="opacity: 0; transition: opacity 0.3s;"
+                                     onload="console.log('? Imagen cargada:', this.src); this.style.opacity='1';">
+                                
+                                <!-- ?? Debug info -->
+                                <div class="debug-image-info">@item.ImagenUrl</div>
+                            }
+                            else
+                            {
+                                <div class="image-placeholder">???</div>
+                                <div class="debug-image-info">Sin imagen</div>
+                            }
                         </div>
                         
                         <div class="product-info">
@@ -415,12 +456,12 @@
                             <p class="product-description">@item.Descripcion</p>
                             <div class="product-price">$@item.Precio.ToString("F2")</div>
                             
-                            <div class="product-actions-bottom">
-                                <a href="@Url.Action("EditarProducto", new { id = item.Id })" class="btn-action btn-edit-bottom">
-                                    Editar
+                            <div class="product-actions">
+                                <a href="@Url.Action("EditarProducto", new { id = item.Id })" class="btn-action btn-edit">
+                                    ?? Editar
                                 </a>
-                                <button onclick="confirmarEliminacion(@item.Id, '@item.Nombre')" class="btn-action btn-delete-bottom">
-                                    Eliminar
+                                <button type="button" onclick="confirmarEliminacion(@item.Id, '@item.Nombre')" class="btn-action btn-delete">
+                                    ??? Eliminar
                                 </button>
                             </div>
                         </div>
@@ -434,7 +475,7 @@
                 <div class="empty-icon">???</div>
                 <h2>No tienes productos en tu menú</h2>
                 <p>¡Comienza agregando tu primer producto para que los clientes puedan hacer pedidos!</p>
-                <a href="@Url.Action("CrearProducto")" class="btn-create">
+                <a href="@Url.Action("CrearProducto")" class="btn btn-create">
                     + Crear mi primer producto
                 </a>
             </div>
@@ -442,23 +483,40 @@
     </div>
 </div>
 
-<!-- Modal de confirmación -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar eliminación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<!-- ?? Debug panel MEJORADO -->
+<div style="position: fixed; bottom: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 0.8rem; max-width: 400px;">
+    <div><strong>?? DEBUG INFO - NUEVA ESTRUCTURA:</strong></div>
+    <div>Restaurant ID: @Model.Id</div>
+    <div>Nombre actual: "@Model.Nombre"</div>
+    <div>Total productos: @(Model.MenuItems?.Count() ?? 0)</div>
+    @if (Model.MenuItems?.Any() == true)
+    {
+        <div>Primer producto: @Model.MenuItems.First().ImagenUrl</div>
+        <div style="color: #4caf50;"><strong>Ruta MEJORADA:</strong></div>
+        <div>/images/items/restaurant_@(Model.Id)/</div>
+    }
+    <div style="color: #4caf50; font-size: 0.7rem; margin-top: 5px;">
+        ? Resistente a cambios de nombre
+    </div>
+</div>
+
+<!-- Modal de confirmación para eliminar -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none;">
+            <div class="modal-header" style="border-bottom: 1px solid #e9ecef;">
+                <h5 class="modal-title">??? Confirmar eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="padding: 25px;">
                 <p>¿Estás seguro de que deseas eliminar el producto <strong id="productNameToDelete"></strong>?</p>
-                <p class="text-muted">Esta acción no se puede deshacer.</p>
+                <p class="text-muted mb-0">?? Esta acción no se puede deshacer.</p>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="border-top: 1px solid #e9ecef; padding: 20px;">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <form id="deleteForm" method="post" style="display: inline;">
                     @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                    <button type="submit" class="btn btn-danger">??? Eliminar</button>
                 </form>
             </div>
         </div>
@@ -467,57 +525,86 @@
 
 @section Scripts {
     <script>
-        // Búsqueda en tiempo real
-        const searchInput = document.getElementById('searchInput');
-        const productCards = document.querySelectorAll('.product-card');
-
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-
-            productCards.forEach(card => {
-                const name = card.getAttribute('data-product-name');
-                const description = card.getAttribute('data-product-description');
-
-                if (name.includes(searchTerm) || description.includes(searchTerm)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
-
-        // Confirmar eliminación
-        function confirmarEliminacion(productId, productName) {
-            document.getElementById('productNameToDelete').textContent = productName;
-            document.getElementById('deleteForm').action = '@Url.Action("EliminarProducto")/' + productId;
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('?? GestionarMenu cargado - ESTRUCTURA MEJORADA');
+            console.log('?? Restaurant ID:', @Model.Id);
+            console.log('?? Nombre actual:', '@Model.Nombre');
+            console.log('?? Carpeta sugerida: restaurant_@(Model.Id)');
+            console.log('?? Total productos:', @(Model.MenuItems?.Count() ?? 0));
             
-            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-            modal.show();
-        }
+            @if (Model.MenuItems?.Any() == true)
+            {
+                @foreach (var item in Model.MenuItems)
+                {
+                    <text>console.log('??? Producto: @item.Nombre - Imagen: @item.ImagenUrl - Ruta MEJORADA: /images/items/restaurant_@(Model.Id)/@item.ImagenUrl');</text>
+                }
+            }
 
-        // Auto-dismiss alerts
-        setTimeout(function() {
+            // Referencias
+            const searchInput = document.getElementById('searchInput');
+            const productCards = document.querySelectorAll('.product-card');
+
+            // Búsqueda
+            if (searchInput && productCards.length > 0) {
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase().trim();
+                    
+                    productCards.forEach(card => {
+                        const name = card.getAttribute('data-name') || '';
+                        const description = card.getAttribute('data-description') || '';
+
+                        if (searchTerm === '' || name.includes(searchTerm) || description.includes(searchTerm)) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            }
+
+            // Auto-dismiss alertas
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(alert => {
-                if (alert.classList.contains('show')) {
-                    alert.classList.remove('show');
-                    setTimeout(() => alert.remove(), 150);
-                }
-            });
-        }, 5000);
-
-        // Animaciones de entrada
-        document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.product-card');
-            cards.forEach((card, index) => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
                 setTimeout(() => {
-                    card.style.transition = 'all 0.5s ease';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 100);
+                    if (alert.parentNode) {
+                        alert.style.transition = 'all 0.5s ease';
+                        alert.style.opacity = '0';
+                        alert.style.transform = 'translateY(-20px)';
+                        
+                        setTimeout(() => {
+                            if (alert.parentNode) {
+                                alert.remove();
+                            }
+                        }, 500);
+                    }
+                }, 5000);
             });
+
+            console.log('? Scripts inicializados - Usando estructura basada en ID');
+            console.warn('?? ACCIÓN REQUERIDA: Reorganizar carpetas físicas para usar restaurant_ID');
         });
+
+        // Función para confirmar eliminación
+        function confirmarEliminacion(productId, productName) {
+            const nameElement = document.getElementById('productNameToDelete');
+            const formElement = document.getElementById('deleteForm');
+            
+            if (nameElement && formElement) {
+                nameElement.textContent = productName;
+                formElement.action = '@Url.Action("EliminarProducto")/' + productId;
+                
+                // Usar Bootstrap Modal o fallback
+                const modalElement = document.getElementById('deleteModal');
+                if (modalElement && typeof bootstrap !== 'undefined') {
+                    const modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                } else {
+                    const confirmDelete = confirm('¿Estás seguro de que deseas eliminar "' + productName + '"?');
+                    if (confirmDelete) {
+                        formElement.submit();
+                    }
+                }
+            }
+        }
     </script>
 }

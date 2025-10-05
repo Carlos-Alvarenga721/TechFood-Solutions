@@ -222,7 +222,7 @@ namespace TechFood_Solutions.Controllers
             return View(menuItem);
         }
 
-        // POST: Asociado/EditarProducto/5 - SIMPLIFICADO SIN IMAGESERVICE
+        // POST: Asociado/EditarProducto/5 - 🚀 MEJORADO CON ESTRUCTURA BASADA EN ID
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditarProducto(
@@ -241,17 +241,19 @@ namespace TechFood_Solutions.Controllers
                 return NotFound("Restaurante no encontrado");
             }
 
-            // 🔥 PROCESAMIENTO SIMPLE DE IMAGEN PARA PRODUCTOS
+            // 🚀 NUEVO: Usar ID del restaurante en lugar del nombre
             if (imagenFile != null && imagenFile.Length > 0)
             {
                 try
                 {
                     var fileName = imagenFile.FileName;
-                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "items", restaurant.Nombre);
+                    // 🔥 CAMBIO CLAVE: Usar restaurant.Id en lugar de restaurant.Nombre
+                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "items", $"restaurant_{restaurant.Id}");
                     
                     if (!Directory.Exists(uploadsFolder))
                     {
                         Directory.CreateDirectory(uploadsFolder);
+                        _logger.LogInformation($"📁 Directorio creado: {uploadsFolder}");
                     }
 
                     var filePath = Path.Combine(uploadsFolder, fileName);
@@ -262,6 +264,7 @@ namespace TechFood_Solutions.Controllers
                     }
 
                     menuItem.ImagenUrl = fileName;
+                    _logger.LogInformation($"✅ Imagen guardada en: restaurant_{restaurant.Id}/{fileName}");
                 }
                 catch (Exception ex)
                 {
@@ -324,7 +327,7 @@ namespace TechFood_Solutions.Controllers
             return View(menuItem);
         }
 
-        // POST: Asociado/CrearProducto - SIMPLIFICADO SIN IMAGESERVICE
+        // POST: Asociado/CrearProducto - 🚀 MEJORADO CON ESTRUCTURA BASADA EN ID
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CrearProducto(
@@ -337,17 +340,19 @@ namespace TechFood_Solutions.Controllers
                 return NotFound("Restaurante no encontrado");
             }
 
-            // 🔥 PROCESAMIENTO SIMPLE DE IMAGEN PARA NUEVOS PRODUCTOS
+            // 🚀 NUEVO: Usar ID del restaurante en lugar del nombre
             if (imagenFile != null && imagenFile.Length > 0)
             {
                 try
                 {
                     var fileName = imagenFile.FileName;
-                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "items", restaurant.Nombre);
+                    // 🔥 CAMBIO CLAVE: Usar restaurant.Id en lugar de restaurant.Nombre
+                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "items", $"restaurant_{restaurant.Id}");
                     
                     if (!Directory.Exists(uploadsFolder))
                     {
                         Directory.CreateDirectory(uploadsFolder);
+                        _logger.LogInformation($"📁 Directorio creado: {uploadsFolder}");
                     }
 
                     var filePath = Path.Combine(uploadsFolder, fileName);
@@ -358,6 +363,7 @@ namespace TechFood_Solutions.Controllers
                     }
 
                     menuItem.ImagenUrl = fileName;
+                    _logger.LogInformation($"✅ Imagen de nuevo producto guardada en: restaurant_{restaurant.Id}/{fileName}");
                 }
                 catch (Exception ex)
                 {
@@ -380,7 +386,7 @@ namespace TechFood_Solutions.Controllers
             return View(menuItem);
         }
 
-        // POST: Asociado/EliminarProducto/5 - SIMPLIFICADO SIN IMAGESERVICE
+        // POST: Asociado/EliminarProducto/5 - 🚀 MEJORADO CON ESTRUCTURA BASADA EN ID
         [HttpPost, ActionName("EliminarProducto")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EliminarProductoConfirmed(int id)
@@ -391,15 +397,17 @@ namespace TechFood_Solutions.Controllers
 
             if (menuItem != null)
             {
-                // Eliminar imagen física si existe (opcional)
+                // 🚀 ELIMINAR imagen física usando la nueva estructura
                 if (!string.IsNullOrEmpty(menuItem.ImagenUrl) && menuItem.Restaurant != null)
                 {
                     try
                     {
-                        var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "items", menuItem.Restaurant.Nombre, menuItem.ImagenUrl);
+                        // 🔥 CAMBIO CLAVE: Usar restaurant.Id en lugar de restaurant.Nombre
+                        var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "items", $"restaurant_{menuItem.Restaurant.Id}", menuItem.ImagenUrl);
                         if (System.IO.File.Exists(imagePath))
                         {
                             System.IO.File.Delete(imagePath);
+                            _logger.LogInformation($"🗑️ Imagen eliminada: restaurant_{menuItem.Restaurant.Id}/{menuItem.ImagenUrl}");
                         }
                     }
                     catch (Exception ex)
