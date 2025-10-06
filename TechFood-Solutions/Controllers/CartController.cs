@@ -303,5 +303,79 @@ namespace TechFood_Solutions.Controllers
             }
         }
 
+        // POST: Cart/UpdateQuantityAjax - Actualizar cantidad sin recargar
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateQuantityAjax(int menuItemId, int cantidad)
+        {
+            try
+            {
+                if (cantidad <= 0)
+                {
+                    _cartService.RemoveFromCart(menuItemId);
+                    return Json(new
+                    {
+                        success = true,
+                        removed = true,
+                        message = "Producto eliminado del carrito",
+                        totalItems = _cartService.GetCartItemCount(),
+                        cartTotal = _cartService.GetCart().Total
+                    });
+                }
+
+                _cartService.UpdateQuantity(menuItemId, cantidad);
+                var cart = _cartService.GetCart();
+                var item = cart.Items.FirstOrDefault(i => i.MenuItemId == menuItemId);
+
+                return Json(new
+                {
+                    success = true,
+                    removed = false,
+                    message = "Cantidad actualizada",
+                    itemQuantity = item?.Cantidad ?? 0,
+                    itemSubtotal = item?.Subtotal ?? 0,
+                    totalItems = cart.TotalItems,
+                    cartTotal = cart.Total
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Error al actualizar: " + ex.Message
+                });
+            }
+        }
+
+        // POST: Cart/RemoveItemAjax - Eliminar item sin recargar
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RemoveItemAjax(int menuItemId)
+        {
+            try
+            {
+                _cartService.RemoveFromCart(menuItemId);
+                var cart = _cartService.GetCart();
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Producto eliminado del carrito",
+                    totalItems = cart.TotalItems,
+                    cartTotal = cart.Total,
+                    isEmpty = !cart.Items.Any()
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Error al eliminar: " + ex.Message
+                });
+            }
+        }
+
     }
 }
