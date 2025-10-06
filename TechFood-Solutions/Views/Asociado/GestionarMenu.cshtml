@@ -475,7 +475,6 @@
                 <!-- Filter Bar -->
                 <div class="filter-bar">
                     <div class="search-box">
-                        <span class="search-icon">??</span>
                         <input type="text" class="search-input" placeholder="Buscar productos..." id="searchInput">
                     </div>
                 </div>
@@ -499,15 +498,15 @@
                                 }
                             </div>
                             
-                            <!-- BOTONES REUBICADOS DEBAJO DE LA IMAGEN -->
+                            <!-- BOTONES PARA EDITAR O ELIMINAR PRODUCTO -->
                             <div class="product-actions">
                                 <a href="@Url.Action("EditarProducto", new { id = item.Id })" class="action-btn edit-action" title="Editar producto">
-                                    ?? Editar
+                                    Editar
                                 </a>
                                 <button class="action-btn delete-action" 
                                         onclick="confirmarEliminacion('@item.Id', '@item.Nombre')" 
                                         title="Eliminar producto">
-                                    ??? Eliminar
+                                    Eliminar
                                 </button>
                             </div>
 

@@ -1,4 +1,4 @@
-@model TechFood_Solutions.Models.MenuItem
+Ôªø@model TechFood_Solutions.Models.MenuItem
 
 @{
     ViewData["Title"] = "Crear Producto - " + Model.Restaurant?.Nombre;
@@ -444,10 +444,10 @@
     <div class="create-container">
         <!-- Header -->
         <div class="page-header">
-            <div class="header-icon">???</div>
+            <div class="header-icon">‚ñ∂Ô∏è</div>
             <div class="header-content">
                 <h1>Crear Nuevo Producto</h1>
-                <p>Agrega un nuevo producto delicioso a tu men˙</p>
+                <p>Agrega un nuevo producto delicioso a tu men√∫</p>
             </div>
         </div>
 
@@ -461,7 +461,7 @@
                      onerror="this.src='/images/default-restaurant.png';">
                 <div class="restaurant-details">
                     <h3>@Model.Restaurant.Nombre</h3>
-                    <p>Agregando nuevo producto al men˙</p>
+                    <p>Agregando nuevo producto al men√∫</p>
                 </div>
             </div>
         }
@@ -469,14 +469,14 @@
         <!-- Tips Section -->
         <div class="tips-section">
             <div class="tips-title">
-                ?? Consejos para crear un producto exitoso
+                üí° Consejos para crear un producto exitoso
             </div>
             <ul class="tips-list">
                 <li>Usa un nombre descriptivo y atractivo que destaque</li>
-                <li>Incluye los ingredientes principales en la descripciÛn</li>
+                <li>Incluye los ingredientes principales en la descripci√≥n</li>
                 <li>Establece un precio competitivo y justo</li>
                 <li>Sube una imagen de alta calidad que se vea apetitosa</li>
-                <li>Menciona caracterÌsticas especiales (vegano, sin gluten, picante, etc.)</li>
+                <li>Menciona caracter√≠sticas especiales (vegano, sin gluten, picante, etc.)</li>
             </ul>
         </div>
 
@@ -484,15 +484,13 @@
         @if (TempData["Success"] != null)
         {
             <div class="alert alert-success" id="successAlert">
-                <span>?</span>
-                <span><strong>°…xito!</strong> @TempData["Success"]</span>
+                <span><strong>¬°√âxito!</strong> @TempData["Success"]</span>
             </div>
         }
 
         @if (TempData["Error"] != null)
         {
             <div class="alert alert-danger" id="errorAlert">
-                <span>?</span>
                 <span><strong>Error:</strong> @TempData["Error"]</span>
             </div>
         }
@@ -501,7 +499,6 @@
         @if (ViewData.ModelState.Any(x => x.Value.Errors.Count > 0))
         {
             <div class="alert alert-danger">
-                <span>?</span>
                 <div>
                     <strong>Por favor corrige los siguientes errores:</strong>
                     <ul style="margin: 10px 0 0 20px;">
@@ -519,7 +516,7 @@
 
         <!-- Form Card -->
         <div class="form-card">
-            <h2 class="form-title">InformaciÛn del Producto</h2>
+            <h2 class="form-title">Informaci√≥n del Producto</h2>
 
             <form asp-action="CrearProducto" method="post" enctype="multipart/form-data" id="productForm">
                 <input type="hidden" asp-for="RestaurantId" />
@@ -527,8 +524,10 @@
                 <!-- Image Upload Section -->
                 <div class="image-upload-section">
                     <div class="image-preview-container">
-                        <div class="image-preview" id="imagePreview">
-                            <div class="image-placeholder" id="placeholder">??</div>
+                        <div class="image-preview" id="imagePreview">                           
+                            <div class="image-placeholder">
+                                <img src="~/images/App_Icon/camara.png" alt="ImagenCamara" style="width: 90px; height: 90px; object-fit: contain;">
+                            </div>
                             <img class="preview-image" id="previewImg" style="display: none;" />
                             <div class="image-overlay">
                                 Click para seleccionar imagen
@@ -548,7 +547,7 @@
                     </div>
                     
                     <div class="image-info">
-                        Formatos soportados: JPG, PNG, GIF (m·x. 5MB)<br>
+                        Formatos soportados: JPG, PNG, GIF (m√°x. 5MB)<br>
                         <span id="imageFileName">No hay archivo seleccionado</span>
                     </div>
 
@@ -565,19 +564,19 @@
                            placeholder="Ej: Pizza Margherita Especial, Hamburguesa BBQ Premium..."
                            maxlength="250">
                     <span asp-validation-for="Nombre" class="invalid-feedback"></span>
-                    <div class="form-text">Un nombre atractivo y descriptivo que capture la atenciÛn</div>
+                    <div class="form-text">Un nombre atractivo y descriptivo que capture la atenci√≥n</div>
                 </div>
 
                 <!-- Description -->
                 <div class="form-group">
-                    <label asp-for="Descripcion" class="form-label required">DescripciÛn</label>
+                    <label asp-for="Descripcion" class="form-label required">Descripci√≥n</label>
                     <textarea asp-for="Descripcion" 
                               class="form-control" 
                               rows="4" 
-                              placeholder="Describe los ingredientes, preparaciÛn, sabor y caracterÌsticas especiales del producto..."
+                              placeholder="Describe los ingredientes, preparaci√≥n, sabor y caracter√≠sticas especiales del producto..."
                               maxlength="500"></textarea>
                     <span asp-validation-for="Descripcion" class="invalid-feedback"></span>
-                    <div class="form-text">Detalla quÈ hace especial a este producto y sus ingredientes principales</div>
+                    <div class="form-text">Detalla qu√© hace especial a este producto y sus ingredientes principales</div>
                 </div>
 
                 <!-- Price -->
@@ -592,7 +591,7 @@
                                placeholder="0.00">
                     </div>
                     <span asp-validation-for="Precio" class="invalid-feedback"></span>
-                    <div class="form-text">Precio en dÛlares (ejemplo: 12.50)</div>
+                    <div class="form-text">Precio en d√≥lares (ejemplo: 12.50)</div>
                 </div>
 
                 <!-- Hidden field for ImagenUrl -->
@@ -641,13 +640,13 @@
 
                     // Validar tipo de archivo
                     if (!file.type.startsWith('image/')) {
-                        showImageError('? Por favor selecciona un archivo de imagen v·lido (JPG, PNG, GIF)');
+                        showImageError('? Por favor selecciona un archivo de imagen v√°lido (JPG, PNG, GIF)');
                         return;
                     }
 
-                    // Validar tamaÒo (5MB max)
+                    // Validar tama√±o (5MB max)
                     if (file.size > 5 * 1024 * 1024) {
-                        showImageError('? La imagen es demasiado grande. M·ximo 5MB permitido');
+                        showImageError('? La imagen es demasiado grande. M√°ximo 5MB permitido');
                         return;
                     }
 
@@ -678,7 +677,7 @@
                 imageInput.click();
             });
 
-            // ValidaciÛn del formulario
+            // Validaci√≥n del formulario
             const form = document.getElementById('productForm');
             form.addEventListener('submit', function(e) {
                 console.log('?? Enviando formulario...');
@@ -722,7 +721,7 @@
 
                 if (!isValid) {
                     e.preventDefault();
-                    console.log('? Formulario inv·lido, envÌo cancelado');
+                    console.log('? Formulario inv√°lido, env√≠o cancelado');
                     
                     // Scroll to first error
                     const firstError = document.querySelector('.is-invalid, .error');
@@ -733,11 +732,11 @@
                     return false;
                 }
 
-                // Deshabilitar botÛn para evitar envÌo doble
+                // Deshabilitar bot√≥n para evitar env√≠o doble
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '? Creando Producto...';
 
-                console.log('? Formulario v·lido, enviando...');
+                console.log('? Formulario v√°lido, enviando...');
             });
 
             // Funciones helper
