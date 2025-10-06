@@ -183,28 +183,27 @@
         opacity: 0.3;
     }
 
+    /* BOTONES REUBICADOS DEBAJO DE LA IMAGEN */
     .product-actions {
-        position: absolute;
-        top: 10px;
-        right: 10px;
         display: flex;
-        flex-direction: column;
-        gap: 8px;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 15px;
     }
 
     .action-btn {
-        width: 35px;
-        height: 35px;
-        border-radius: 50%;
+        padding: 8px 15px;
+        border-radius: 8px;
         border: none;
         display: flex;
         align-items: center;
-        justify-content: center;
+        gap: 8px;
         cursor: pointer;
         transition: all 0.3s;
         text-decoration: none;
         font-size: 0.9rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
     .edit-action {
@@ -214,8 +213,9 @@
 
     .edit-action:hover {
         background: #2980b9;
-        transform: scale(1.1);
+        transform: translateY(-2px);
         color: white;
+        text-decoration: none;
     }
 
     .delete-action {
@@ -225,11 +225,11 @@
 
     .delete-action:hover {
         background: #c0392b;
-        transform: scale(1.1);
+        transform: translateY(-2px);
     }
 
     .product-info {
-        text-align: left;
+        text-align: center;
     }
 
     .product-name {
@@ -255,15 +255,6 @@
         font-size: 1.3rem;
         font-weight: bold;
         color: #8e44ad;
-    }
-
-    .product-meta {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid #e0e0e0;
     }
 
     /* ESTADO VACÍO ELEGANTE */
@@ -426,6 +417,11 @@
             flex-direction: column;
             align-items: center;
         }
+
+        .product-actions {
+            flex-direction: column;
+            gap: 8px;
+        }
     }
 </style>
 
@@ -495,32 +491,30 @@
                                     <img src="~/images/items/restaurant_@(Model.Id)/@item.ImagenUrl" 
                                          alt="@item.Nombre" 
                                          class="product-image"
-                                         onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=&quot;image-placeholder&quot;>???</div>';"
-
-                                         onload="console.log('? Imagen cargada:', this.src);">
+                                         onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=&quot;image-placeholder&quot;>???</div>';">
                                 }
                                 else
                                 {
                                     <div class="image-placeholder">???</div>
                                 }
-                                <div class="product-actions">
-                                    <a href="@Url.Action("EditarProducto", new { id = item.Id })" class="action-btn edit-action" title="Editar">
-                                        ??
-                                    </a>
-                                    <button class="action-btn delete-action" 
-                                            onclick="confirmarEliminacion('@item.Id', '@item.Nombre')" 
-                                            title="Eliminar">
-                                        ???
-                                    </button>
-                                </div>
                             </div>
+                            
+                            <!-- BOTONES REUBICADOS DEBAJO DE LA IMAGEN -->
+                            <div class="product-actions">
+                                <a href="@Url.Action("EditarProducto", new { id = item.Id })" class="action-btn edit-action" title="Editar producto">
+                                    ?? Editar
+                                </a>
+                                <button class="action-btn delete-action" 
+                                        onclick="confirmarEliminacion('@item.Id', '@item.Nombre')" 
+                                        title="Eliminar producto">
+                                    ??? Eliminar
+                                </button>
+                            </div>
+
                             <div class="product-info">
                                 <h3 class="product-name">@item.Nombre</h3>
                                 <p class="product-description">@item.Descripcion</p>
-                                <div class="product-meta">
-                                    <span class="product-price">$@item.Precio.ToString("F2")</span>
-                                    <small style="color: #95a5a6;">ID: @item.Id</small>
-                                </div>
+                                <div class="product-price">$@item.Precio.ToString("F2")</div>
                             </div>
                         </div>
                     }
@@ -576,22 +570,6 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('??? GestionarMenu cargado');
-            console.log('?? Restaurant ID:', @Model.Id);
-            console.log('?? Total productos:', @(Model.MenuItems?.Count() ?? 0));
-
-            @if (Model.MenuItems?.Any() == true)
-            {
-                @foreach (var item in Model.MenuItems)
-                {
-                    <text>console.log('??? Producto: @item.Nombre - Imagen: /images/items/restaurant_@(Model.Id)/@item.ImagenUrl');</text>
-                }
-            }
-            else
-            {
-                <text>console.log('?? Menú vacío - Mostrando estado sin productos');</text>
-            }
-
             // Funcionalidad de búsqueda
             const searchInput = document.getElementById('searchInput');
             const productsGrid = document.getElementById('productsGrid');
@@ -613,8 +591,6 @@
                     });
                 });
             }
-
-            console.log('? GestionarMenu inicializado correctamente');
         });
 
         // Función para confirmar eliminación
@@ -626,4 +602,4 @@
             deleteModal.show();
         }
     </script>
-}}
+}

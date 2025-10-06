@@ -1,4 +1,4 @@
-@model TechFood_Solutions.Models.MenuItem
+Ôªø@model TechFood_Solutions.Models.MenuItem
 
 @{
     ViewData["Title"] = "Editar Producto - " + Model.Restaurant?.Nombre;
@@ -452,10 +452,10 @@
     <div class="edit-container">
         <!-- Header -->
         <div class="page-header">
-            <div class="header-icon">??</div>
+            <div class="header-icon">‚ñ∂Ô∏è</div>
             <div class="header-content">
                 <h1>Editar Producto</h1>
-                <p>Actualiza la informaciÛn de tu producto</p>
+                <p>Actualiza la informaci√≥n de tu producto</p>
             </div>
         </div>
 
@@ -469,7 +469,7 @@
                      onerror="this.src='/images/default-restaurant.png';">
                 <div class="restaurant-details">
                     <h3>@Model.Restaurant.Nombre</h3>
-                    <p>Editando producto: "@Model.Nombre" ï ID: @Model.Id</p>
+                    <p>Editando producto: "@Model.Nombre"</p>
                 </div>
             </div>
         }
@@ -477,14 +477,14 @@
         <!-- Tips Section -->
         <div class="tips-section">
             <div class="tips-title">
-                ?? Consejos para mantener un producto exitoso
+                üí° Consejos para mantener un producto exitoso
             </div>
             <ul class="tips-list">
-                <li>Actualiza la descripciÛn si has mejorado la receta</li>
+                <li>Actualiza la descripci√≥n si has mejorado la receta</li>
                 <li>Ajusta el precio si han cambiado los costos de ingredientes</li>
-                <li>Cambia la imagen si tienes una foto m·s atractiva</li>
-                <li>MantÈn el nombre consistente para que los clientes lo reconozcan</li>
-                <li>Agrega informaciÛn sobre nuevas caracterÌsticas o ingredientes</li>
+                <li>Cambia la imagen si tienes una foto m√°s atractiva</li>
+                <li>Mant√©n el nombre consistente para que los clientes lo reconozcan</li>
+                <li>Agrega informaci√≥n sobre nuevas caracter√≠sticas o ingredientes</li>
             </ul>
         </div>
 
@@ -493,7 +493,7 @@
         {
             <div class="alert alert-success" id="successAlert">
                 <span>?</span>
-                <span><strong>°…xito!</strong> @TempData["Success"]</span>
+                <span><strong>¬°√âxito!</strong> @TempData["Success"]</span>
             </div>
         }
 
@@ -527,7 +527,7 @@
 
         <!-- Form Card -->
         <div class="form-card">
-            <h2 class="form-title">InformaciÛn del Producto</h2>
+            <h2 class="form-title">Informaci√≥n del Producto</h2>
 
             <form asp-action="EditarProducto" method="post" enctype="multipart/form-data" id="productForm">
                 <input type="hidden" asp-for="Id" />
@@ -575,11 +575,11 @@
                     </div>
                     
                     <div class="image-info">
-                        Formatos soportados: JPG, PNG, GIF (m·x. 5MB)<br>
+                        Formatos soportados: JPG, PNG, GIF (m√°x. 5MB)<br>
                         <span id="imageFileName">
                             @if (!string.IsNullOrEmpty(Model.ImagenUrl))
                             {
-                                <text>Archivo actual: @Model.ImagenUrl</text>
+                                <text>Imagen del producto actual cargada</text>
                             }
                             else
                             {
@@ -600,19 +600,19 @@
                            placeholder="Ej: Pizza Margherita Especial, Hamburguesa BBQ Premium..."
                            maxlength="250">
                     <span asp-validation-for="Nombre" class="invalid-feedback"></span>
-                    <div class="form-text">Un nombre atractivo y descriptivo que capture la atenciÛn</div>
+                    <div class="form-text">Un nombre atractivo y descriptivo que capture la atenci√≥n</div>
                 </div>
 
                 <!-- Description -->
                 <div class="form-group">
-                    <label asp-for="Descripcion" class="form-label required">DescripciÛn</label>
+                    <label asp-for="Descripcion" class="form-label required">Descripci√≥n</label>
                     <textarea asp-for="Descripcion" 
                               class="form-control" 
                               rows="4" 
-                              placeholder="Describe los ingredientes, preparaciÛn, sabor y caracterÌsticas especiales del producto..."
+                              placeholder="Describe los ingredientes, preparaci√≥n, sabor y caracter√≠sticas especiales del producto..."
                               maxlength="500"></textarea>
                     <span asp-validation-for="Descripcion" class="invalid-feedback"></span>
-                    <div class="form-text">Detalla quÈ hace especial a este producto y sus ingredientes principales</div>
+                    <div class="form-text">Detalla qu√© hace especial a este producto y sus ingredientes principales</div>
                 </div>
 
                 <!-- Price -->
@@ -627,7 +627,7 @@
                                placeholder="0.00">
                     </div>
                     <span asp-validation-for="Precio" class="invalid-feedback"></span>
-                    <div class="form-text">Precio en dÛlares (ejemplo: 12.50)</div>
+                    <div class="form-text">Precio en d√≥lares (ejemplo: 12.50)</div>
                 </div>
 
                 <!-- Hidden field for current ImagenUrl -->
@@ -679,13 +679,13 @@
 
                     // Validar tipo de archivo
                     if (!file.type.startsWith('image/')) {
-                        showImageError('? Por favor selecciona un archivo de imagen v·lido (JPG, PNG, GIF)');
+                        showImageError('? Por favor selecciona un archivo de imagen v√°lido (JPG, PNG, GIF)');
                         return;
                     }
 
-                    // Validar tamaÒo (5MB max)
+                    // Validar tama√±o (5MB max)
                     if (file.size > 5 * 1024 * 1024) {
-                        showImageError('? La imagen es demasiado grande. M·ximo 5MB permitido');
+                        showImageError('? La imagen es demasiado grande. M√°ximo 5MB permitido');
                         return;
                     }
 
@@ -716,10 +716,10 @@
                 imageInput.click();
             });
 
-            // ValidaciÛn del formulario
+            // Validaci√≥n del formulario
             const form = document.getElementById('productForm');
             form.addEventListener('submit', function(e) {
-                console.log('?? Enviando formulario de ediciÛn...');
+                console.log('?? Enviando formulario de edici√≥n...');
                 
                 let isValid = true;
 
@@ -754,7 +754,7 @@
 
                 if (!isValid) {
                     e.preventDefault();
-                    console.log('? Formulario inv·lido, envÌo cancelado');
+                    console.log('? Formulario inv√°lido, env√≠o cancelado');
                     
                     // Scroll to first error
                     const firstError = document.querySelector('.is-invalid, .error');
@@ -765,15 +765,15 @@
                     return false;
                 }
 
-                // Deshabilitar botÛn para evitar envÌo doble
+                // Deshabilitar bot√≥n para evitar env√≠o doble
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '? Guardando Cambios...';
 
-                console.log('? Formulario v·lido, enviando ediciÛn...');
+                console.log('? Formulario v√°lido, enviando edici√≥n...');
                 console.log('?? Datos a enviar:');
                 console.log('- ID:', @Model.Id);
                 console.log('- Nombre:', nombre.value);
-                console.log('- DescripciÛn:', descripcion.value);
+                console.log('- Descripci√≥n:', descripcion.value);
                 console.log('- Precio:', precio.value);
                 console.log('- ImagenUrl (nueva):', hiddenImagenUrl.value);
                 console.log('- RestaurantId:', @Model.RestaurantId);
@@ -841,7 +841,7 @@
                 }, 5000);
             });
 
-            console.log('? Todos los scripts de ediciÛn inicializados');
+            console.log('? Todos los scripts de edici√≥n inicializados');
         });
     </script>
 }

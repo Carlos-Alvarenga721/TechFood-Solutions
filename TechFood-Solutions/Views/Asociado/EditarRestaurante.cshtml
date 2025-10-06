@@ -24,7 +24,7 @@
         border-radius: 20px;
         padding: 30px;
         margin-bottom: 30px;
-        box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+        box-shadow: 0 4px 15px rgba(243,156,18,0.3);
         display: flex;
         align-items: center;
         gap: 20px;
@@ -211,7 +211,7 @@
         cursor: pointer;
         font-weight: 600;
         transition: all 0.3s;
-        box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+        box-shadow: 0 4px 15px rgba(243,156,18,0.3);
     }
 
     .file-input-label:hover {
@@ -319,7 +319,7 @@
     .btn-primary {
         background: #f39c12;
         color: white;
-        box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+        box-shadow: 0 4px 15px rgba(243,156,18,0.3);
     }
 
     .btn-primary:hover:not(:disabled) {
@@ -327,7 +327,7 @@
         color: white;
         text-decoration: none;
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+        box-shadow: 0 6px 20px rgba(243,156,18,0.4);
     }
 
     .btn-primary:disabled {
@@ -452,7 +452,7 @@
             <div class="current-details">
                 <h3>@Model.Nombre</h3>
                 <p>@Model.Descripcion</p>
-                <small>Restaurante ID: @Model.Id • Logo actual: @Model.LogoUrlActual</small>
+                <small>Información del restaurante</small>
             </div>
         </div>
 
@@ -561,7 +561,7 @@
                         <span id="logoFileName">
                             @if (!string.IsNullOrEmpty(Model.LogoUrlActual))
                             {
-                                <text>Archivo actual: @Model.LogoUrlActual</text>
+                                <text>Logo actual cargado</text>
                             }
                             else
                             {
@@ -650,7 +650,7 @@
                     }
 
                     // Actualizar UI
-                    logoFileName.innerHTML = `Archivo nuevo: <strong>${file.name}</strong>`;
+                    logoFileName.innerHTML = `Nuevo logo seleccionado`;
                     logoPreview.classList.add('has-logo');
 
                     // Mostrar preview
@@ -728,7 +728,7 @@
             }
 
             function restoreOriginalLogo() {
-                logoFileName.innerHTML = '@(!string.IsNullOrEmpty(Model.LogoUrlActual) ? $"Archivo actual: {Model.LogoUrlActual}" : "No hay logo actual")';
+                logoFileName.innerHTML = '@(!string.IsNullOrEmpty(Model.LogoUrlActual) ? "Logo actual cargado" : "No hay logo actual")';
                 
                 // Restaurar logo original
                 @if (!string.IsNullOrEmpty(Model.LogoUrlActual))
