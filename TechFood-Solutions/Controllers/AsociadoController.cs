@@ -11,7 +11,7 @@ namespace TechFood_Solutions.Controllers
         private readonly ILogger<AsociadoController> _logger;
 
         // 🔥 CONSTANTE GLOBAL PARA EVITAR INCONSISTENCIAS
-        private const int CURRENT_RESTAURANT_ID = 2; // ← CAMBIAR AQUÍ PARA TODOS LOS MÉTODOS
+        private const int CURRENT_RESTAURANT_ID = 1; // ← CAMBIAR AQUÍ PARA TODOS LOS MÉTODOS
 
         public AsociadoController(
             TechFoodDbContext context,

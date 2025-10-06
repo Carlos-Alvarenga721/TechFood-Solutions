@@ -233,6 +233,65 @@
         text-decoration: none;
     }
 
+    /* ESTADO VACÍO ELEGANTE */
+    .empty-menu-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 20px;
+        border: 2px dashed #d0d0d0;
+        transition: all 0.3s;
+    }
+
+    .empty-menu-state:hover {
+        border-color: #e74c3c;
+        background: linear-gradient(135deg, #fff5f5 0%, #ffe6e6 100%);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        opacity: 0.3;
+        display: block;
+    }
+
+    .empty-title {
+        font-size: 1.5rem;
+        color: #2c3e50;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    .empty-description {
+        font-size: 1.1rem;
+        margin-bottom: 25px;
+        opacity: 0.8;
+    }
+
+    .empty-action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px 30px;
+        background: #e74c3c;
+        color: white;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+
+    .empty-action-btn:hover {
+        background: #c0392b;
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+    }
+
     /* Acciones rápidas laterales */
     .quick-links {
         display: flex;
@@ -293,6 +352,14 @@
             width: 50px;
             height: 50px;
         }
+
+        .empty-icon {
+            font-size: 3rem;
+        }
+
+        .empty-title {
+            font-size: 1.3rem;
+        }
     }
 </style>
 
@@ -310,13 +377,13 @@
                     <p>@Model.Descripcion</p>
                     <div class="quick-actions">
                         <a href="@Url.Action("EditarRestaurante", new { id = Model.Id })" class="quick-btn">
-                            ?? Editar Restaurante
+                            Editar Restaurante
                         </a>
                         <a href="@Url.Action("GestionarMenu")" class="quick-btn">
-                            ??? Gestionar Menú
+                            Gestionar Menú
                         </a>
                         <a href="@Url.Action("CrearProducto")" class="quick-btn">
-                            ? Nuevo Producto
+                            Nuevo Producto
                         </a>
                     </div>
                 </div>
@@ -360,7 +427,6 @@
                             <div class="product-item">
                                 @if (!string.IsNullOrEmpty(item.ImagenUrl))
                                 {
-                                    <!-- ?? RUTA CORREGIDA: Usar ID del restaurante -->
                                     <img src="~/images/items/restaurant_@(Model.Id)/@item.ImagenUrl" 
                                          alt="@item.Nombre" 
                                          class="product-image"
@@ -381,11 +447,13 @@
                     }
                     else
                     {
-                        <div style="text-align: center; padding: 40px; color: #6c757d;">
-                            <div style="font-size: 3rem; margin-bottom: 15px; opacity: 0.3;">???</div>
-                            <p style="font-size: 1.1rem; margin-bottom: 20px;">No tienes productos en tu menú aún.</p>
-                            <a href="@Url.Action("CrearProducto")" class="edit-btn" style="display: inline-block; padding: 12px 25px;">
-                                ? Crear tu primer producto
+                        <!-- ESTADO VACÍO ELEGANTE -->
+                        <div class="empty-menu-state">
+                            <div class="empty-icon">???</div>
+                            <div class="empty-title">Sin Productos en el Menú</div>
+                            <div class="empty-description">Tu restaurante aún no tiene productos. ¡Agrega tu primer delicioso platillo!</div>
+                            <a href="@Url.Action("CrearProducto")" class="empty-action-btn">
+                                Crear tu primer producto
                             </a>
                         </div>
                     }
@@ -404,25 +472,25 @@
                 <div class="quick-links">
                     <a href="@Url.Action("EditarRestaurante", new { id = Model.Id })" class="quick-link">
                         <div>
-                            <div class="quick-link-text">?? Editar Restaurante</div>
+                            <div class="quick-link-text">Editar Restaurante</div>
                             <small>Actualizar información general</small>
                         </div>
                     </a>
                     <a href="@Url.Action("GestionarMenu")" class="quick-link">
                         <div>
-                            <div class="quick-link-text">??? Gestionar Menú</div>
+                            <div class="quick-link-text">Gestionar Menú</div>
                             <small>Ver todos los productos</small>
                         </div>
                     </a>
                     <a href="@Url.Action("CrearProducto")" class="quick-link">
                         <div>
-                            <div class="quick-link-text">? Agregar Producto</div>
+                            <div class="quick-link-text">Agregar Producto</div>
                             <small>Crear nuevo producto</small>
                         </div>
                     </a>
                     <a href="#" class="quick-link">
                         <div>
-                            <div class="quick-link-text">?? Ver Reportes</div>
+                            <div class="quick-link-text">Ver Reportes</div>
                             <small>Estadísticas y ventas</small>
                         </div>
                     </a>
@@ -432,9 +500,9 @@
     </div>
 </div>
 
-<!-- ?? Debug panel temporal para verificar rutas -->
+<!-- Debug panel temporal para verificar rutas -->
 <div style="position: fixed; bottom: 10px; left: 10px; background: rgba(0,0,0,0.8); color: white; padding: 8px; border-radius: 6px; font-family: monospace; font-size: 0.7rem; max-width: 300px;">
-    <div><strong>?? DEBUG - INDEX:</strong></div>
+    <div><strong>?? DEBUG - INDEX ASOCIADO:</strong></div>
     <div>Restaurant ID: @Model.Id</div>
     <div>Productos: @(Model.MenuItems?.Count() ?? 0)</div>
     @if (Model.MenuItems?.Any() == true)
@@ -442,12 +510,16 @@
         <div>Ruta imagen: /images/items/restaurant_@(Model.Id)/</div>
         <div>Ejemplo: @Model.MenuItems.First().ImagenUrl</div>
     }
+    else
+    {
+        <div style="color: #ffc107;">?? MENÚ VACÍO - Mostrando estado sin productos</div>
+    }
 </div>
 
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('?? Dashboard Index cargado');
+            console.log('?? Dashboard Asociado Index cargado');
             console.log('?? Restaurant ID:', @Model.Id);
             console.log('?? Total productos:', @(Model.MenuItems?.Count() ?? 0));
             
@@ -457,6 +529,10 @@
                 {
                     <text>console.log('??? Producto en dashboard: @item.Nombre - Ruta: /images/items/restaurant_@(Model.Id)/@item.ImagenUrl');</text>
                 }
+            }
+            else
+            {
+                <text>console.log('?? Menú vacío - Mostrando estado sin productos');</text>
             }
 
             // Agregar animaciones de entrada
@@ -471,7 +547,34 @@
                 }, index * 100);
             });
 
-            console.log('? Dashboard inicializado - Usando estructura basada en ID');
+            // Funcionalidad para botones de favoritos (si hay productos)
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    console.log('?? Editando producto:', this.href);
+                });
+            });
+
+            // Funcionalidad para acciones rápidas
+            document.querySelectorAll('.quick-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (this.href === '#') {
+                        e.preventDefault();
+                        console.log('?? Funcionalidad en desarrollo');
+                        alert('Esta funcionalidad estará disponible próximamente');
+                    } else {
+                        console.log('?? Navegando a:', this.href);
+                    }
+                });
+            });
+
+            // Efecto hover en cards de estadísticas
+            document.querySelectorAll('.stat-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    console.log('?? Viendo estadística:', this.querySelector('.stat-label').textContent);
+                });
+            });
+
+            console.log('? Dashboard Asociado inicializado - Estado de menú detectado correctamente');
         });
     </script>
 }

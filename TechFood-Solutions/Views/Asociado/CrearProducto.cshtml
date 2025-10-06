@@ -519,7 +519,7 @@
 
         <!-- Form Card -->
         <div class="form-card">
-            <h2 class="form-title">?? Información del Producto</h2>
+            <h2 class="form-title">Información del Producto</h2>
 
             <form asp-action="CrearProducto" method="post" enctype="multipart/form-data" id="productForm">
                 <input type="hidden" asp-for="RestaurantId" />
@@ -543,7 +543,7 @@
                                class="file-input" 
                                accept="image/*">
                         <label for="imagenFile" class="file-input-label">
-                            ?? Seleccionar Imagen
+                            Seleccionar Imagen
                         </label>
                     </div>
                     
@@ -559,7 +559,7 @@
 
                 <!-- Product Name -->
                 <div class="form-group">
-                    <label asp-for="Nombre" class="form-label required">??? Nombre del Producto</label>
+                    <label asp-for="Nombre" class="form-label required">Nombre del Producto</label>
                     <input asp-for="Nombre" 
                            class="form-control" 
                            placeholder="Ej: Pizza Margherita Especial, Hamburguesa BBQ Premium..."
@@ -570,7 +570,7 @@
 
                 <!-- Description -->
                 <div class="form-group">
-                    <label asp-for="Descripcion" class="form-label required">?? Descripción</label>
+                    <label asp-for="Descripcion" class="form-label required">Descripción</label>
                     <textarea asp-for="Descripcion" 
                               class="form-control" 
                               rows="4" 
@@ -582,7 +582,7 @@
 
                 <!-- Price -->
                 <div class="form-group">
-                    <label asp-for="Precio" class="form-label required">?? Precio</label>
+                    <label asp-for="Precio" class="form-label required">Precio</label>
                     <div class="price-input-group">
                         <input asp-for="Precio" 
                                class="form-control price-input" 
@@ -601,10 +601,10 @@
                 <!-- Action Buttons -->
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary" id="submitBtn">
-                        ? Crear Producto
+                        Crear Producto
                     </button>
                     <a href="@Url.Action("GestionarMenu")" class="btn btn-secondary">
-                        ? Cancelar
+                        Cancelar
                     </a>
                 </div>
             </form>
@@ -628,7 +628,7 @@
             const imageError = document.getElementById('imageError');
             const submitBtn = document.getElementById('submitBtn');
 
-            // ??? Manejo de upload de imagen
+            // Manejo de upload de imagen
             imageInput.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 
@@ -651,7 +651,6 @@
                         return;
                     }
 
-                    // ?? IMPORTANTE: Guardar el nombre del archivo en el campo oculto
                     hiddenImagenUrl.value = file.name;
                     console.log('?? ImagenUrl guardado:', file.name);
 
@@ -674,12 +673,12 @@
                 }
             });
 
-            // ?? Click en el preview para abrir selector
+            // Click en el preview para abrir selector
             imagePreview.addEventListener('click', function() {
                 imageInput.click();
             });
 
-            // ? Validación del formulario
+            // Validación del formulario
             const form = document.getElementById('productForm');
             form.addEventListener('submit', function(e) {
                 console.log('?? Enviando formulario...');
@@ -739,12 +738,6 @@
                 submitBtn.innerHTML = '? Creando Producto...';
 
                 console.log('? Formulario válido, enviando...');
-                console.log('?? Datos a enviar:');
-                console.log('- Nombre:', nombre.value);
-                console.log('- Descripción:', descripcion.value);
-                console.log('- Precio:', precio.value);
-                console.log('- ImagenUrl:', hiddenImagenUrl.value);
-                console.log('- RestaurantId:', document.querySelector('[name="RestaurantId"]').value);
             });
 
             // Funciones helper
@@ -763,7 +756,7 @@
                 placeholder.style.display = 'block';
             }
 
-            // ?? Animaciones de entrada
+            // Animaciones de entrada
             const elements = document.querySelectorAll('.form-card, .tips-section, .restaurant-info');
             elements.forEach((element, index) => {
                 element.style.opacity = '0';
@@ -775,7 +768,7 @@
                 }, index * 150);
             });
 
-            // ? Auto-dismiss alertas
+            // Auto-dismiss alertas
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(alert => {
                 setTimeout(() => {
