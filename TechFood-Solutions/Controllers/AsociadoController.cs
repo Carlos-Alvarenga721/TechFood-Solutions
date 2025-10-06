@@ -10,6 +10,9 @@ namespace TechFood_Solutions.Controllers
         private readonly TechFoodDbContext _context;
         private readonly ILogger<AsociadoController> _logger;
 
+        // 🔥 CONSTANTE GLOBAL PARA EVITAR INCONSISTENCIAS
+        private const int CURRENT_RESTAURANT_ID = 2; // ← CAMBIAR AQUÍ PARA TODOS LOS MÉTODOS
+
         public AsociadoController(
             TechFoodDbContext context,
             ILogger<AsociadoController> logger)
@@ -21,17 +24,19 @@ namespace TechFood_Solutions.Controllers
         // GET: Asociado
         public async Task<IActionResult> Index()
         {
-            int restaurantId = 2;
+            _logger.LogInformation($"🏠 Accediendo al Index con Restaurant ID: {CURRENT_RESTAURANT_ID}");
 
             var restaurant = await _context.Restaurantes
                 .Include(r => r.MenuItems)
-                .FirstOrDefaultAsync(r => r.Id == restaurantId);
+                .FirstOrDefaultAsync(r => r.Id == CURRENT_RESTAURANT_ID);
 
             if (restaurant == null)
             {
+                _logger.LogWarning($"❌ No se encontró el restaurante con ID: {CURRENT_RESTAURANT_ID}");
                 return NotFound("No se encontró el restaurante asociado a este usuario.");
             }
 
+            _logger.LogInformation($"✅ Restaurante encontrado: '{restaurant.Nombre}' con {restaurant.MenuItems?.Count() ?? 0} productos");
             return View(restaurant);
         }
 
@@ -188,17 +193,19 @@ namespace TechFood_Solutions.Controllers
         // GET: Asociado/GestionarMenu
         public async Task<IActionResult> GestionarMenu()
         {
-            int restaurantId = 1;
+            _logger.LogInformation($"🍽️ Accediendo a GestionarMenu con Restaurant ID: {CURRENT_RESTAURANT_ID}");
 
             var restaurant = await _context.Restaurantes
                 .Include(r => r.MenuItems)
-                .FirstOrDefaultAsync(r => r.Id == restaurantId);
+                .FirstOrDefaultAsync(r => r.Id == CURRENT_RESTAURANT_ID);
 
             if (restaurant == null)
             {
+                _logger.LogWarning($"❌ No se encontró el restaurante con ID: {CURRENT_RESTAURANT_ID}");
                 return NotFound();
             }
 
+            _logger.LogInformation($"✅ Restaurante encontrado: '{restaurant.Nombre}' con {restaurant.MenuItems?.Count() ?? 0} productos");
             return View(restaurant);
         }
 
@@ -368,20 +375,22 @@ namespace TechFood_Solutions.Controllers
         // GET: Asociado/CrearProducto
         public async Task<IActionResult> CrearProducto()
         {
-            int restaurantId = 1;
+            _logger.LogInformation($"➕ Accediendo a CrearProducto con Restaurant ID: {CURRENT_RESTAURANT_ID}");
 
-            var restaurant = await _context.Restaurantes.FindAsync(restaurantId);
+            var restaurant = await _context.Restaurantes.FindAsync(CURRENT_RESTAURANT_ID);
             if (restaurant == null)
             {
+                _logger.LogWarning($"❌ No se encontró el restaurante con ID: {CURRENT_RESTAURANT_ID}");
                 return NotFound();
             }
 
             var menuItem = new MenuItem
             {
-                RestaurantId = restaurantId,
+                RestaurantId = CURRENT_RESTAURANT_ID,
                 Restaurant = restaurant
             };
 
+            _logger.LogInformation($"✅ Preparando creación de producto para: '{restaurant.Nombre}'");
             return View(menuItem);
         }
 
@@ -567,11 +576,11 @@ namespace TechFood_Solutions.Controllers
         [HttpGet]
         public async Task<IActionResult> ObtenerEstadisticas()
         {
-            int restaurantId = 1;
+            _logger.LogInformation($"📊 Obteniendo estadísticas para Restaurant ID: {CURRENT_RESTAURANT_ID}");
 
             var restaurant = await _context.Restaurantes
                 .Include(r => r.MenuItems)
-                .FirstOrDefaultAsync(r => r.Id == restaurantId);
+                .FirstOrDefaultAsync(r => r.Id == CURRENT_RESTAURANT_ID);
 
             if (restaurant == null)
             {
