@@ -18,8 +18,8 @@ namespace TechFood_Solutions.Models
         [Required]
         public decimal Precio { get; set; }
 
-        [Required]
-        public string ImagenUrl { get; set; }
+        // 🔥 CAMBIO: Hacer ImagenUrl nullable para que se pueda asignar automáticamente
+        public string? ImagenUrl { get; set; }
 
         [Required]
         [ForeignKey("Restaurant")]

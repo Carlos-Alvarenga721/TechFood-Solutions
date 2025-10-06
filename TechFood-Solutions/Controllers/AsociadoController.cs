@@ -21,7 +21,7 @@ namespace TechFood_Solutions.Controllers
         // GET: Asociado
         public async Task<IActionResult> Index()
         {
-            int restaurantId = 1;
+            int restaurantId = 2;
 
             var restaurant = await _context.Restaurantes
                 .Include(r => r.MenuItems)
@@ -222,7 +222,7 @@ namespace TechFood_Solutions.Controllers
             return View(menuItem);
         }
 
-        // POST: Asociado/EditarProducto/5 - 🚀 MEJORADO CON ESTRUCTURA BASADA EN ID
+        // POST: Asociado/EditarProducto/5 - 🔥 COMPLETAMENTE ARREGLADO CON DEBUGGING
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditarProducto(
@@ -230,20 +230,41 @@ namespace TechFood_Solutions.Controllers
             [Bind("Id,Nombre,Descripcion,Precio,ImagenUrl,RestaurantId")] MenuItem menuItem,
             IFormFile? imagenFile)
         {
+            _logger.LogCritical("🚀 INICIANDO EDICIÓN DE PRODUCTO");
+            _logger.LogCritical($"📊 DATOS RECIBIDOS:");
+            _logger.LogCritical($"- ID: {id}");
+            _logger.LogCritical($"- menuItem.Id: {menuItem.Id}");
+            _logger.LogCritical($"- Nombre: '{menuItem.Nombre}'");
+            _logger.LogCritical($"- Descripción: '{menuItem.Descripcion}'");
+            _logger.LogCritical($"- Precio: {menuItem.Precio}");
+            _logger.LogCritical($"- ImagenUrl: '{menuItem.ImagenUrl}'");
+            _logger.LogCritical($"- RestaurantId: {menuItem.RestaurantId}");
+            _logger.LogCritical($"- imagenFile: {(imagenFile != null && imagenFile.Length > 0 ? $"'{imagenFile.FileName}' ({imagenFile.Length} bytes)" : "NULL/VACÍO")}");
+
             if (id != menuItem.Id)
             {
+                _logger.LogCritical("❌ ID MISMATCH");
                 return NotFound();
             }
 
             var restaurant = await _context.Restaurantes.FindAsync(menuItem.RestaurantId);
             if (restaurant == null)
             {
+                _logger.LogCritical($"❌ RESTAURANTE NO ENCONTRADO CON ID: {menuItem.RestaurantId}");
                 return NotFound("Restaurante no encontrado");
             }
 
-            // 🚀 NUEVO: Usar ID del restaurante en lugar del nombre
+            _logger.LogCritical($"🏪 Restaurante encontrado: '{restaurant.Nombre}' (ID: {restaurant.Id})");
+
+            // 🔥 LIMPIAR VALIDACIONES PROBLEMÁTICAS
+            ModelState.Remove("imagenFile");
+            ModelState.Remove("Restaurant");
+
+            // 🚀 PROCESAR IMAGEN SI SE PROPORCIONÓ
             if (imagenFile != null && imagenFile.Length > 0)
             {
+                _logger.LogCritical($"📸 PROCESANDO NUEVA IMAGEN: {imagenFile.FileName}");
+
                 try
                 {
                     var fileName = imagenFile.FileName;
@@ -253,7 +274,7 @@ namespace TechFood_Solutions.Controllers
                     if (!Directory.Exists(uploadsFolder))
                     {
                         Directory.CreateDirectory(uploadsFolder);
-                        _logger.LogInformation($"📁 Directorio creado: {uploadsFolder}");
+                        _logger.LogCritical($"📁 Directorio creado: {uploadsFolder}");
                     }
 
                     var filePath = Path.Combine(uploadsFolder, fileName);
@@ -264,13 +285,14 @@ namespace TechFood_Solutions.Controllers
                     }
 
                     menuItem.ImagenUrl = fileName;
-                    _logger.LogInformation($"✅ Imagen guardada en: restaurant_{restaurant.Id}/{fileName}");
+                    _logger.LogCritical($"✅ NUEVA IMAGEN GUARDADA: restaurant_{restaurant.Id}/{fileName}");
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error al guardar imagen del producto");
+                    _logger.LogCritical(ex, "💥 ERROR AL GUARDAR NUEVA IMAGEN");
                     ModelState.AddModelError("imagenFile", "Error al guardar la imagen.");
                     menuItem.Restaurant = restaurant;
+                    TempData["Error"] = $"Error al guardar la imagen: {ex.Message}";
                     return View(menuItem);
                 }
             }
@@ -281,30 +303,66 @@ namespace TechFood_Solutions.Controllers
                 if (existing != null)
                 {
                     menuItem.ImagenUrl = existing.ImagenUrl;
+                    _logger.LogCritical($"📷 MANTENIENDO IMAGEN ACTUAL: {existing.ImagenUrl}");
+                }
+                else
+                {
+                    _logger.LogCritical("⚠️ NO SE ENCONTRÓ REGISTRO EXISTENTE");
                 }
             }
 
-            if (ModelState.IsValid)
+            // 🔥 VERIFICAR MODELSTATE DESPUÉS DE LIMPIAR VALIDACIONES
+            _logger.LogCritical($"🔍 ModelState.IsValid: {ModelState.IsValid}");
+            
+            if (!ModelState.IsValid)
             {
-                try
+                _logger.LogCritical("❌ ERRORES DE VALIDACIÓN:");
+                foreach (var error in ModelState)
                 {
-                    _context.Update(menuItem);
-                    await _context.SaveChangesAsync();
-                    TempData["Success"] = "Producto actualizado correctamente.";
-                    return RedirectToAction(nameof(GestionarMenu));
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!MenuItemExists(menuItem.Id))
+                    foreach (var errorMsg in error.Value.Errors)
                     {
-                        return NotFound();
+                        _logger.LogCritical($"- Campo '{error.Key}': {errorMsg.ErrorMessage}");
                     }
-                    throw;
                 }
+
+                // Devolver vista con errores
+                menuItem.Restaurant = restaurant;
+                TempData["Error"] = "Por favor, corrige los errores del formulario.";
+                return View(menuItem);
             }
 
-            menuItem.Restaurant = restaurant;
-            return View(menuItem);
+            // 🔥 GUARDAR CAMBIOS EN BASE DE DATOS
+            try
+            {
+                _logger.LogCritical("💾 ACTUALIZANDO PRODUCTO EN BASE DE DATOS...");
+                
+                _context.Update(menuItem);
+                var changes = await _context.SaveChangesAsync();
+                
+                _logger.LogCritical($"✅ PRODUCTO ACTUALIZADO EXITOSAMENTE - ID: {menuItem.Id}");
+                _logger.LogCritical($"📊 Filas afectadas: {changes}");
+                
+                TempData["Success"] = "¡Producto actualizado correctamente!";
+                return RedirectToAction(nameof(GestionarMenu));
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                _logger.LogCritical("💥 ERROR DE CONCURRENCIA");
+                if (!MenuItemExists(menuItem.Id))
+                {
+                    _logger.LogCritical("❌ PRODUCTO YA NO EXISTE");
+                    return NotFound();
+                }
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex, "💥 ERROR AL ACTUALIZAR EN BASE DE DATOS");
+                
+                menuItem.Restaurant = restaurant;
+                TempData["Error"] = $"Error al actualizar el producto: {ex.Message}";
+                return View(menuItem);
+            }
         }
 
         // GET: Asociado/CrearProducto
@@ -327,32 +385,51 @@ namespace TechFood_Solutions.Controllers
             return View(menuItem);
         }
 
-        // POST: Asociado/CrearProducto - 🚀 MEJORADO CON ESTRUCTURA BASADA EN ID
+        // POST: Asociado/CrearProducto - 🔥 COMPLETAMENTE ARREGLADO CON DEBUGGING
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CrearProducto(
             [Bind("Nombre,Descripcion,Precio,ImagenUrl,RestaurantId")] MenuItem menuItem,
             IFormFile? imagenFile)
         {
+            _logger.LogCritical("🚀 INICIANDO CREACIÓN DE PRODUCTO");
+            _logger.LogCritical($"📊 DATOS RECIBIDOS:");
+            _logger.LogCritical($"- Nombre: '{menuItem.Nombre}'");
+            _logger.LogCritical($"- Descripción: '{menuItem.Descripcion}'");
+            _logger.LogCritical($"- Precio: {menuItem.Precio}");
+            _logger.LogCritical($"- ImagenUrl: '{menuItem.ImagenUrl}'");
+            _logger.LogCritical($"- RestaurantId: {menuItem.RestaurantId}");
+            _logger.LogCritical($"- imagenFile: {(imagenFile != null && imagenFile.Length > 0 ? $"'{imagenFile.FileName}' ({imagenFile.Length} bytes)" : "NULL/VACÍO")}");
+
             var restaurant = await _context.Restaurantes.FindAsync(menuItem.RestaurantId);
             if (restaurant == null)
             {
+                _logger.LogCritical($"❌ RESTAURANTE NO ENCONTRADO CON ID: {menuItem.RestaurantId}");
                 return NotFound("Restaurante no encontrado");
             }
 
-            // 🚀 NUEVO: Usar ID del restaurante en lugar del nombre
+            _logger.LogCritical($"🏪 Restaurante encontrado: '{restaurant.Nombre}' (ID: {restaurant.Id})");
+
+            // 🔥 LIMPIAR VALIDACIONES PROBLEMÁTICAS
+            ModelState.Remove("imagenFile");
+            ModelState.Remove("Restaurant");
+            ModelState.Remove("Id"); // El ID se genera automáticamente
+
+            // 🚀 PROCESAR IMAGEN SI SE PROPORCIONÓ
             if (imagenFile != null && imagenFile.Length > 0)
             {
+                _logger.LogCritical($"📸 PROCESANDO IMAGEN: {imagenFile.FileName}");
+
                 try
                 {
                     var fileName = imagenFile.FileName;
-                    // 🔥 CAMBIO CLAVE: Usar restaurant.Id en lugar de restaurant.Nombre
+                    // 🔥 USAR ESTRUCTURA BASADA EN ID
                     var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "items", $"restaurant_{restaurant.Id}");
                     
                     if (!Directory.Exists(uploadsFolder))
                     {
                         Directory.CreateDirectory(uploadsFolder);
-                        _logger.LogInformation($"📁 Directorio creado: {uploadsFolder}");
+                        _logger.LogCritical($"📁 Directorio creado: {uploadsFolder}");
                     }
 
                     var filePath = Path.Combine(uploadsFolder, fileName);
@@ -362,28 +439,89 @@ namespace TechFood_Solutions.Controllers
                         await imagenFile.CopyToAsync(fileStream);
                     }
 
+                    // 🔥 ASIGNAR NOMBRE DEL ARCHIVO AL MODELO
                     menuItem.ImagenUrl = fileName;
-                    _logger.LogInformation($"✅ Imagen de nuevo producto guardada en: restaurant_{restaurant.Id}/{fileName}");
+                    _logger.LogCritical($"✅ IMAGEN GUARDADA: restaurant_{restaurant.Id}/{fileName}");
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error al guardar imagen del nuevo producto");
+                    _logger.LogCritical(ex, "💥 ERROR AL GUARDAR IMAGEN");
                     ModelState.AddModelError("imagenFile", "Error al guardar la imagen.");
                     menuItem.Restaurant = restaurant;
+                    TempData["Error"] = $"Error al guardar la imagen: {ex.Message}";
                     return View(menuItem);
                 }
             }
-
-            if (ModelState.IsValid)
+            else if (string.IsNullOrEmpty(menuItem.ImagenUrl))
             {
-                _context.Add(menuItem);
-                await _context.SaveChangesAsync();
-                TempData["Success"] = "Producto creado correctamente.";
-                return RedirectToAction(nameof(GestionarMenu));
+                // Si no hay archivo ni ImagenUrl, agregar error
+                _logger.LogCritical("❌ NO HAY IMAGEN NI ARCHIVO");
+                ModelState.AddModelError("imagenFile", "Se requiere una imagen para el producto.");
+                menuItem.Restaurant = restaurant;
+                TempData["Error"] = "Se requiere una imagen para el producto.";
+                return View(menuItem);
             }
 
-            menuItem.Restaurant = restaurant;
-            return View(menuItem);
+            // 🔥 VERIFICAR MODELSTATE DESPUÉS DE LIMPIAR VALIDACIONES
+            _logger.LogCritical($"🔍 ModelState.IsValid: {ModelState.IsValid}");
+            
+            if (!ModelState.IsValid)
+            {
+                _logger.LogCritical("❌ ERRORES DE VALIDACIÓN:");
+                foreach (var error in ModelState)
+                {
+                    foreach (var errorMsg in error.Value.Errors)
+                    {
+                        _logger.LogCritical($"- Campo '{error.Key}': {errorMsg.ErrorMessage}");
+                    }
+                }
+
+                // Devolver vista con errores
+                menuItem.Restaurant = restaurant;
+                TempData["Error"] = "Por favor, corrige los errores del formulario.";
+                return View(menuItem);
+            }
+
+            // 🔥 GUARDAR EN BASE DE DATOS
+            try
+            {
+                _logger.LogCritical("💾 AGREGANDO PRODUCTO A LA BASE DE DATOS...");
+                
+                _context.Add(menuItem);
+                var changes = await _context.SaveChangesAsync();
+                
+                _logger.LogCritical($"✅ PRODUCTO CREADO EXITOSAMENTE - ID: {menuItem.Id}");
+                _logger.LogCritical($"📊 Filas afectadas: {changes}");
+                
+                TempData["Success"] = "¡Producto creado correctamente!";
+                return RedirectToAction(nameof(GestionarMenu));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex, "💥 ERROR AL GUARDAR EN BASE DE DATOS");
+                
+                // Si hay error, eliminar la imagen guardada
+                if (!string.IsNullOrEmpty(menuItem.ImagenUrl))
+                {
+                    try
+                    {
+                        var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "items", $"restaurant_{restaurant.Id}", menuItem.ImagenUrl);
+                        if (System.IO.File.Exists(imagePath))
+                        {
+                            System.IO.File.Delete(imagePath);
+                            _logger.LogCritical($"🗑️ Imagen eliminada por error: {menuItem.ImagenUrl}");
+                        }
+                    }
+                    catch (Exception deleteEx)
+                    {
+                        _logger.LogWarning(deleteEx, "No se pudo eliminar la imagen tras el error");
+                    }
+                }
+
+                menuItem.Restaurant = restaurant;
+                TempData["Error"] = $"Error al guardar el producto: {ex.Message}";
+                return View(menuItem);
+            }
         }
 
         // POST: Asociado/EliminarProducto/5 - 🚀 MEJORADO CON ESTRUCTURA BASADA EN ID

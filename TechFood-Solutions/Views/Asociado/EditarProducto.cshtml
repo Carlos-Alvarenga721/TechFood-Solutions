@@ -1,159 +1,291 @@
 @model TechFood_Solutions.Models.MenuItem
 
 @{
-    ViewData["Title"] = "Editar Producto";
+    ViewData["Title"] = "Editar Producto - " + Model.Restaurant?.Nombre;
 }
 
 <style>
     .edit-product-page {
-        padding: 40px 0;
+        padding: 20px 0;
         background-color: #f8f9fa;
         min-height: calc(100vh - 120px);
     }
 
     .edit-container {
-        max-width: 800px;
+        max-width: 900px;
         margin: 0 auto;
         padding: 0 15px;
     }
 
+    /* Header */
     .page-header {
-        text-align: center;
-        margin-bottom: 40px;
-    }
-
-    .page-header h1 {
-        font-size: 2.5rem;
-        color: #2c3e50;
-        margin-bottom: 10px;
-    }
-
-    .page-header p {
-        color: #7f8c8d;
-        font-size: 1.1rem;
-    }
-
-    .breadcrumb-nav {
-        background: white;
-        padding: 15px 30px;
-        border-radius: 10px;
-        margin-bottom: 30px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-    }
-
-    .form-card {
-        background: white;
-        border-radius: 20px;
-        padding: 40px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    }
-
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 25px;
-        margin-bottom: 25px;
-    }
-
-    .form-group {
-        margin-bottom: 25px;
-    }
-
-    .form-label {
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .form-control {
-        border: 2px solid #e0e0e0;
-        border-radius: 10px;
-        padding: 15px 20px;
-        font-size: 1rem;
-        transition: all 0.3s;
-    }
-
-    .form-control:focus {
-        border-color: #e74c3c;
-        box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
-    }
-
-    .form-control.is-invalid {
-        border-color: #dc3545;
-    }
-
-    .invalid-feedback {
-        color: #dc3545;
-        font-size: 0.875rem;
-        margin-top: 5px;
-    }
-
-    .form-text {
-        color: #6c757d;
-        font-size: 0.875rem;
-        margin-top: 5px;
-    }
-
-    /* Preview de imagen */
-    .image-preview-section {
-        text-align: center;
-        margin-bottom: 30px;
-        padding: 30px;
-        background: #f8f9fa;
-        border-radius: 15px;
-        border: 2px dashed #e0e0e0;
-    }
-
-    .current-image {
-        width: 200px;
-        height: 200px;
-        border-radius: 15px;
-        object-fit: cover;
-        border: 3px solid #e0e0e0;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        margin-bottom: 15px;
-    }
-
-    .image-info {
-        color: #7f8c8d;
-        font-size: 0.9rem;
-    }
-
-    /* Información del restaurante */
-    .restaurant-info {
-        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        background: linear-gradient(135deg, #3498db, #2980b9);
         color: white;
-        padding: 20px;
-        border-radius: 15px;
+        border-radius: 20px;
+        padding: 30px;
         margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
         display: flex;
         align-items: center;
         gap: 20px;
+    }
+
+    .header-icon {
+        width: 70px;
+        height: 70px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+    }
+
+    .header-content h1 {
+        font-size: 2.2rem;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+
+    .header-content p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    /* Restaurant Info */
+    .restaurant-info {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        border-left: 4px solid #3498db;
     }
 
     .restaurant-logo {
         width: 60px;
         height: 60px;
         border-radius: 50%;
-        border: 3px solid rgba(255,255,255,0.3);
         object-fit: cover;
+        border: 3px solid #e0e0e0;
     }
 
     .restaurant-details h3 {
         margin: 0 0 5px 0;
         font-size: 1.3rem;
+        color: #2c3e50;
     }
 
     .restaurant-details p {
         margin: 0;
-        opacity: 0.9;
-        font-size: 0.9rem;
+        color: #7f8c8d;
+        font-size: 0.95rem;
     }
 
-    /* Input de precio con estilo especial */
+    /* Form Card */
+    .form-card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+    }
+
+    .form-title {
+        font-size: 1.8rem;
+        color: #2c3e50;
+        margin-bottom: 30px;
+        text-align: center;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    /* Image Upload Section */
+    .image-upload-section {
+        margin-bottom: 40px;
+        text-align: center;
+    }
+
+    .image-preview-container {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 20px;
+    }
+
+    .image-preview {
+        width: 300px;
+        height: 300px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border: 3px dashed #d0d0d0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+
+    .image-preview:hover {
+        border-color: #3498db;
+        background: linear-gradient(135deg, #ebf3fd 0%, #d6eaf8 100%);
+    }
+
+    .image-preview.has-image {
+        border: 3px solid #3498db;
+        background: none;
+    }
+
+    .image-preview.error {
+        border: 3px solid #dc3545;
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    }
+
+    .preview-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 17px;
+    }
+
+    .image-placeholder {
+        color: #6c757d;
+        font-size: 4rem;
+        opacity: 0.3;
+    }
+
+    .image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(52, 152, 219, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+        border-radius: 17px;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .image-preview:hover .image-overlay {
+        opacity: 1;
+    }
+
+    .file-input-wrapper {
+        position: relative;
+        display: inline-block;
+        margin-right: 15px;
+    }
+
+    .file-input {
+        opacity: 0;
+        position: absolute;
+        z-index: -1;
+    }
+
+    .file-input-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 25px;
+        background: #3498db;
+        color: white;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+    }
+
+    .file-input-label:hover {
+        background: #2980b9;
+        transform: translateY(-2px);
+    }
+
+    .current-image-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 25px;
+        background: #95a5a6;
+        color: white;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: default;
+    }
+
+    .image-info {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        margin-top: 10px;
+    }
+
+    /* Form Groups */
+    .form-group {
+        margin-bottom: 30px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 10px;
+        display: block;
+        font-size: 1.1rem;
+    }
+
+    .required::after {
+        content: " *";
+        color: #e74c3c;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 15px 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s;
+        background: white;
+    }
+
+    .form-control:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        outline: none;
+    }
+
+    .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+
+    .form-control.is-valid {
+        border-color: #28a745;
+    }
+
+    .invalid-feedback {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 8px;
+        display: block;
+    }
+
+    .form-text {
+        color: #6c757d;
+        font-size: 0.875rem;
+        margin-top: 8px;
+    }
+
+    /* Price Input Special Style */
     .price-input-group {
         position: relative;
     }
@@ -164,19 +296,19 @@
         left: 20px;
         top: 50%;
         transform: translateY(-50%);
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         font-weight: bold;
-        color: #e74c3c;
+        color: #3498db;
         z-index: 2;
     }
 
     .price-input {
-        padding-left: 40px !important;
+        padding-left: 45px !important;
         font-size: 1.1rem;
         font-weight: 600;
     }
 
-    /* Botones de acción */
+    /* Action Buttons */
     .form-actions {
         display: flex;
         gap: 15px;
@@ -186,69 +318,122 @@
         border-top: 2px solid #f0f0f0;
     }
 
-    .btn-primary {
-        background: #e74c3c;
-        border: none;
+    .btn {
         padding: 15px 40px;
-        border-radius: 10px;
+        border: none;
+        border-radius: 12px;
         font-size: 1.1rem;
         font-weight: 600;
-        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        cursor: pointer;
         transition: all 0.3s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
     }
 
-    .btn-primary:hover {
-        background: #c0392b;
+    .btn-primary {
+        background: #3498db;
+        color: white;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        background: #2980b9;
+        color: white;
+        text-decoration: none;
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+    }
+
+    .btn-primary:disabled {
+        background: #95a5a6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
     }
 
     .btn-secondary {
         background: #6c757d;
-        border: none;
-        padding: 15px 40px;
-        border-radius: 10px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        transition: all 0.3s;
+        color: white;
     }
 
     .btn-secondary:hover {
         background: #5a6268;
+        color: white;
+        text-decoration: none;
         transform: translateY(-2px);
     }
 
-    /* Alertas */
+    /* Alert Styles */
     .alert {
-        border-radius: 10px;
+        border-radius: 12px;
         padding: 15px 20px;
         margin-bottom: 25px;
         border: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
     }
 
     .alert-success {
-        background: #d4edda;
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
         color: #155724;
     }
 
     .alert-danger {
-        background: #f8d7da;
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
         color: #721c24;
+    }
+
+    /* Tips Section */
+    .tips-section {
+        background: linear-gradient(135deg, #e8f4fd 0%, #d1ecf1 100%);
+        border-left: 4px solid #3498db;
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+
+    .tips-title {
+        color: #2471a3;
+        font-weight: bold;
+        margin-bottom: 15px;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .tips-list {
+        color: #1b4f72;
+        font-size: 0.95rem;
+        margin: 0;
+        padding-left: 20px;
+    }
+
+    .tips-list li {
+        margin-bottom: 8px;
     }
 
     /* Responsive */
     @@media (max-width: 768px) {
-        .form-card {
-            padding: 25px;
-            margin: 0 10px;
+        .page-header {
+            flex-direction: column;
+            text-align: center;
         }
 
-        .form-row {
-             grid-template-columns: 1fr;
+        .form-card {
+            padding: 25px;
         }
 
         .form-actions {
             flex-direction: column;
+        }
+
+        .image-preview {
+            width: 250px;
+            height: 250px;
         }
 
         .restaurant-info {
@@ -256,122 +441,202 @@
             text-align: center;
         }
 
-        .page-header h1 {
-            font-size: 2rem;
-        }
-
-        .current-image {
-            width: 150px;
-            height: 150px;
+        .file-input-wrapper {
+            margin-right: 0;
+            margin-bottom: 10px;
         }
     }
 </style>
 
 <div class="edit-product-page">
     <div class="edit-container">
-        <!-- Breadcrumb -->
-        <nav class="breadcrumb-nav">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Asociado")">Dashboard</a></li>
-                <li class="breadcrumb-item"><a href="@Url.Action("GestionarMenu")">Gestionar Menú</a></li>
-                <li class="breadcrumb-item active">Editar Producto</li>
-            </ol>
-        </nav>
-
         <!-- Header -->
         <div class="page-header">
-            <h1>??? Editar Producto</h1>
-            <p>Actualiza la información del producto</p>
+            <div class="header-icon">??</div>
+            <div class="header-content">
+                <h1>Editar Producto</h1>
+                <p>Actualiza la información de tu producto</p>
+            </div>
         </div>
 
-        <!-- Info del restaurante -->
+        <!-- Restaurant Info -->
         @if (Model.Restaurant != null)
         {
             <div class="restaurant-info">
-                <img src="~/images/restaurantes/@Model.Restaurant.LogoUrl" alt="@Model.Restaurant.Nombre" class="restaurant-logo">
+                <img src="~/images/restaurantes/@Model.Restaurant.LogoUrl" 
+                     alt="@Model.Restaurant.Nombre" 
+                     class="restaurant-logo"
+                     onerror="this.src='/images/default-restaurant.png';">
                 <div class="restaurant-details">
                     <h3>@Model.Restaurant.Nombre</h3>
-                    <p>Editando producto del menú</p>
+                    <p>Editando producto: "@Model.Nombre" • ID: @Model.Id</p>
                 </div>
             </div>
         }
 
-        <!-- Alertas -->
+        <!-- Tips Section -->
+        <div class="tips-section">
+            <div class="tips-title">
+                ?? Consejos para mantener un producto exitoso
+            </div>
+            <ul class="tips-list">
+                <li>Actualiza la descripción si has mejorado la receta</li>
+                <li>Ajusta el precio si han cambiado los costos de ingredientes</li>
+                <li>Cambia la imagen si tienes una foto más atractiva</li>
+                <li>Mantén el nombre consistente para que los clientes lo reconozcan</li>
+                <li>Agrega información sobre nuevas características o ingredientes</li>
+            </ul>
+        </div>
+
+        <!-- Alerts -->
         @if (TempData["Success"] != null)
         {
-            <div class="alert alert-success alert-dismissible fade show">
-                <strong>¡Éxito!</strong> @TempData["Success"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div class="alert alert-success" id="successAlert">
+                <span>?</span>
+                <span><strong>¡Éxito!</strong> @TempData["Success"]</span>
             </div>
         }
 
         @if (TempData["Error"] != null)
         {
-            <div class="alert alert-danger alert-dismissible fade show">
-                <strong>Error:</strong> @TempData["Error"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div class="alert alert-danger" id="errorAlert">
+                <span>?</span>
+                <span><strong>Error:</strong> @TempData["Error"]</span>
             </div>
         }
 
-        <!-- Formulario -->
-        <div class="form-card">
-            <!-- Preview de imagen actual -->
-            <div class="image-preview-section">
-                <img src="~/images/items/@(Model.Restaurant?.Nombre)/@Model.ImagenUrl" alt="@Model.Nombre" class="current-image" 
-                     onerror="this.src='/images/default-food.png';" id="imagePreview" />
-                <div class="image-info">
-                    <strong>Imagen actual del producto</strong><br>
-                    <small>Se actualizará automáticamente al cambiar el nombre del archivo</small>
+        <!-- Validation Summary -->
+        @if (ViewData.ModelState.Any(x => x.Value.Errors.Count > 0))
+        {
+            <div class="alert alert-danger">
+                <span>?</span>
+                <div>
+                    <strong>Por favor corrige los siguientes errores:</strong>
+                    <ul style="margin: 10px 0 0 20px;">
+                        @foreach (var error in ViewData.ModelState.Where(x => x.Value.Errors.Count > 0))
+                        {
+                            foreach (var errorMessage in error.Value.Errors)
+                            {
+                                <li>@errorMessage.ErrorMessage</li>
+                            }
+                        }
+                    </ul>
                 </div>
             </div>
+        }
 
-            <form asp-action="EditarProducto" method="post">
+        <!-- Form Card -->
+        <div class="form-card">
+            <h2 class="form-title">?? Información del Producto</h2>
+
+            <form asp-action="EditarProducto" method="post" enctype="multipart/form-data" id="productForm">
                 <input type="hidden" asp-for="Id" />
                 <input type="hidden" asp-for="RestaurantId" />
-                
-                <div class="form-group">
-                    <label asp-for="Nombre" class="form-label">
-                        ??? Nombre del Producto
-                    </label>
-                    <input asp-for="Nombre" class="form-control" placeholder="Ej: Pizza Margherita Especial" />
-                    <span asp-validation-for="Nombre" class="invalid-feedback"></span>
-                    <div class="form-text">Un nombre atractivo y descriptivo</div>
-                </div>
 
-                <div class="form-group">
-                    <label asp-for="Descripcion" class="form-label">
-                        ?? Descripción
-                    </label>
-                    <textarea asp-for="Descripcion" class="form-control" rows="4" 
-                              placeholder="Describe los ingredientes, sabor, preparación..."></textarea>
-                    <span asp-validation-for="Descripcion" class="invalid-feedback"></span>
-                    <div class="form-text">Detalla qué hace especial a este producto</div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label asp-for="Precio" class="form-label">
-                            ?? Precio
-                        </label>
-                        <div class="price-input-group">
-                            <input asp-for="Precio" class="form-control price-input" step="0.01" placeholder="0.00" />
+                <!-- Image Upload Section -->
+                <div class="image-upload-section">
+                    <div class="image-preview-container">
+                        <div class="image-preview has-image" id="imagePreview">
+                            @if (!string.IsNullOrEmpty(Model.ImagenUrl))
+                            {
+                                <!-- ?? MOSTRAR IMAGEN ACTUAL con estructura basada en ID -->
+                                <img src="~/images/items/restaurant_@(Model.RestaurantId)/@Model.ImagenUrl" 
+                                     alt="@Model.Nombre" 
+                                     class="preview-image" 
+                                     id="previewImg"
+                                     onerror="this.style.display='none'; document.getElementById('placeholder').style.display='block'; document.getElementById('imagePreview').classList.remove('has-image');">
+                                <div class="image-placeholder" id="placeholder" style="display: none;">??</div>
+                            }
+                            else
+                            {
+                                <div class="image-placeholder" id="placeholder">??</div>
+                                <img class="preview-image" id="previewImg" style="display: none;" />
+                            }
+                            <div class="image-overlay">
+                                Click para cambiar imagen
+                            </div>
                         </div>
-                        <span asp-validation-for="Precio" class="invalid-feedback"></span>
-                        <div class="form-text">Precio en dólares (ej: 12.50)</div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                        <div class="file-input-wrapper">
+                            <input type="file" 
+                                   id="imagenFile" 
+                                   name="imagenFile" 
+                                   class="file-input" 
+                                   accept="image/*">
+                            <label for="imagenFile" class="file-input-label">
+                                ?? Cambiar Imagen
+                            </label>
+                        </div>
+                        
+                        <div class="current-image-label">
+                            ?? Imagen Actual
+                        </div>
+                    </div>
+                    
+                    <div class="image-info">
+                        Formatos soportados: JPG, PNG, GIF (máx. 5MB)<br>
+                        <span id="imageFileName">
+                            @if (!string.IsNullOrEmpty(Model.ImagenUrl))
+                            {
+                                <text>Archivo actual: @Model.ImagenUrl</text>
+                            }
+                            else
+                            {
+                                <text>No hay imagen actual</text>
+                            }
+                        </span>
                     </div>
 
-                    <div class="form-group">
-                        <label asp-for="ImagenUrl" class="form-label">
-                            ??? Imagen del Producto
-                        </label>
-                        <input asp-for="ImagenUrl" class="form-control" placeholder="nombre-imagen.jpg" id="imageUrlInput" />
-                        <span asp-validation-for="ImagenUrl" class="invalid-feedback"></span>
-                        <div class="form-text">Nombre del archivo de imagen</div>
-                    </div>
+                    <!-- Error de imagen -->
+                    <span class="invalid-feedback" id="imageError" style="display: none;"></span>
                 </div>
 
+                <!-- Product Name -->
+                <div class="form-group">
+                    <label asp-for="Nombre" class="form-label required">??? Nombre del Producto</label>
+                    <input asp-for="Nombre" 
+                           class="form-control" 
+                           placeholder="Ej: Pizza Margherita Especial, Hamburguesa BBQ Premium..."
+                           maxlength="250">
+                    <span asp-validation-for="Nombre" class="invalid-feedback"></span>
+                    <div class="form-text">Un nombre atractivo y descriptivo que capture la atención</div>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label asp-for="Descripcion" class="form-label required">?? Descripción</label>
+                    <textarea asp-for="Descripcion" 
+                              class="form-control" 
+                              rows="4" 
+                              placeholder="Describe los ingredientes, preparación, sabor y características especiales del producto..."
+                              maxlength="500"></textarea>
+                    <span asp-validation-for="Descripcion" class="invalid-feedback"></span>
+                    <div class="form-text">Detalla qué hace especial a este producto y sus ingredientes principales</div>
+                </div>
+
+                <!-- Price -->
+                <div class="form-group">
+                    <label asp-for="Precio" class="form-label required">?? Precio</label>
+                    <div class="price-input-group">
+                        <input asp-for="Precio" 
+                               class="form-control price-input" 
+                               type="number" 
+                               step="0.01" 
+                               min="0.01"
+                               placeholder="0.00">
+                    </div>
+                    <span asp-validation-for="Precio" class="invalid-feedback"></span>
+                    <div class="form-text">Precio en dólares (ejemplo: 12.50)</div>
+                </div>
+
+                <!-- Hidden field for current ImagenUrl -->
+                <input type="hidden" asp-for="ImagenUrl" id="hiddenImagenUrl" />
+
+                <!-- Action Buttons -->
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
                         ?? Guardar Cambios
                     </button>
                     <a href="@Url.Action("GestionarMenu")" class="btn btn-secondary">
@@ -387,66 +652,198 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     
     <script>
-        // Preview en tiempo real de la imagen
-        document.getElementById('imageUrlInput').addEventListener('input', function(e) {
-            const imagePreview = document.getElementById('imagePreview');
-            const restaurantName = '@(Model.Restaurant?.Nombre ?? "")';
-            const newImageUrl = `/images/items/${restaurantName}/${e.target.value}`;
-            
-            if (e.target.value.trim() !== '') {
-                imagePreview.src = newImageUrl;
-            }
-        });
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('?? EditarProducto cargado correctamente');
+            console.log('?? Producto ID:', @Model.Id);
+            console.log('?? Restaurant ID:', @Model.RestaurantId);
+            console.log('?? Imagen actual:', '@Model.ImagenUrl');
 
-        // Validación en tiempo real
-        document.querySelectorAll('.form-control').forEach(input => {
-            input.addEventListener('blur', function() {
-                if (this.value.trim() === '' && this.hasAttribute('data-val-required')) {
-                    this.classList.add('is-invalid');
+            const imageInput = document.getElementById('imagenFile');
+            const imagePreview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+            const placeholder = document.getElementById('placeholder');
+            const imageFileName = document.getElementById('imageFileName');
+            const hiddenImagenUrl = document.getElementById('hiddenImagenUrl');
+            const imageError = document.getElementById('imageError');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // ??? Manejo de upload de imagen
+            imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                
+                // Limpiar errores previos
+                imageError.style.display = 'none';
+                imagePreview.classList.remove('error');
+                
+                if (file) {
+                    console.log('?? Nueva imagen seleccionada:', file.name);
+
+                    // Validar tipo de archivo
+                    if (!file.type.startsWith('image/')) {
+                        showImageError('? Por favor selecciona un archivo de imagen válido (JPG, PNG, GIF)');
+                        return;
+                    }
+
+                    // Validar tamaño (5MB max)
+                    if (file.size > 5 * 1024 * 1024) {
+                        showImageError('? La imagen es demasiado grande. Máximo 5MB permitido');
+                        return;
+                    }
+
+                    // ?? IMPORTANTE: Guardar el nombre del archivo en el campo oculto
+                    hiddenImagenUrl.value = file.name;
+                    console.log('?? Nuevo ImagenUrl guardado:', file.name);
+
+                    // Actualizar UI
+                    imageFileName.innerHTML = `Archivo nuevo: <strong>${file.name}</strong>`;
+                    imagePreview.classList.add('has-image');
+
+                    // Mostrar preview
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImg.src = e.target.result;
+                        previewImg.style.display = 'block';
+                        placeholder.style.display = 'none';
+                        console.log('? Preview de nueva imagen mostrado');
+                    };
+                    reader.readAsDataURL(file);
                 } else {
-                    this.classList.remove('is-invalid');
-                    this.classList.add('is-valid');
+                    // Restaurar imagen original
+                    restoreOriginalImage();
                 }
             });
-        });
 
-        // Formateo automático del precio
-        const priceInput = document.querySelector('.price-input');
-        priceInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/[^0-9.]/g, '');
-            // Permitir solo un punto decimal
-            const parts = value.split('.');
-            if (parts.length > 2) {
-                value = parts[0] + '.' + parts.slice(1).join('');
-            }
-            // Limitar a 2 decimales
-            if (parts[1] && parts[1].length > 2) {
-                value = parts[0] + '.' + parts[1].substring(0, 2);
-            }
-            e.target.value = value;
-        });
+            // ?? Click en el preview para abrir selector
+            imagePreview.addEventListener('click', function() {
+                imageInput.click();
+            });
 
-        // Auto-dismiss alerts
-        setTimeout(function() {
+            // ? Validación del formulario
+            const form = document.getElementById('productForm');
+            form.addEventListener('submit', function(e) {
+                console.log('?? Enviando formulario de edición...');
+                
+                let isValid = true;
+
+                // Validar campos requeridos
+                const nombre = document.querySelector('[name="Nombre"]');
+                const descripcion = document.querySelector('[name="Descripcion"]');
+                const precio = document.querySelector('[name="Precio"]');
+
+                if (!nombre.value.trim()) {
+                    nombre.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    nombre.classList.remove('is-invalid');
+                    nombre.classList.add('is-valid');
+                }
+
+                if (!descripcion.value.trim()) {
+                    descripcion.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    descripcion.classList.remove('is-invalid');
+                    descripcion.classList.add('is-valid');
+                }
+
+                if (!precio.value || parseFloat(precio.value) <= 0) {
+                    precio.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    precio.classList.remove('is-invalid');
+                    precio.classList.add('is-valid');
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    console.log('? Formulario inválido, envío cancelado');
+                    
+                    // Scroll to first error
+                    const firstError = document.querySelector('.is-invalid, .error');
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    
+                    return false;
+                }
+
+                // Deshabilitar botón para evitar envío doble
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '? Guardando Cambios...';
+
+                console.log('? Formulario válido, enviando edición...');
+                console.log('?? Datos a enviar:');
+                console.log('- ID:', @Model.Id);
+                console.log('- Nombre:', nombre.value);
+                console.log('- Descripción:', descripcion.value);
+                console.log('- Precio:', precio.value);
+                console.log('- ImagenUrl (nueva):', hiddenImagenUrl.value);
+                console.log('- RestaurantId:', @Model.RestaurantId);
+            });
+
+            // Funciones helper
+            function showImageError(message) {
+                imageError.textContent = message;
+                imageError.style.display = 'block';
+                imagePreview.classList.add('error');
+            }
+
+            function restoreOriginalImage() {
+                // Restaurar valores originales
+                hiddenImagenUrl.value = '@Model.ImagenUrl';
+                imageFileName.innerHTML = '@(!string.IsNullOrEmpty(Model.ImagenUrl) ? $"Archivo actual: {Model.ImagenUrl}" : "No hay imagen actual")';
+                
+                // Restaurar imagen original
+                @if (!string.IsNullOrEmpty(Model.ImagenUrl))
+                {
+                    <text>
+                    previewImg.src = '/images/items/restaurant_@(Model.RestaurantId)/@Model.ImagenUrl';
+                    previewImg.style.display = 'block';
+                    placeholder.style.display = 'none';
+                    imagePreview.classList.add('has-image');
+                    </text>
+                }
+                else
+                {
+                    <text>
+                    previewImg.style.display = 'none';
+                    placeholder.style.display = 'block';
+                    imagePreview.classList.remove('has-image');
+                    </text>
+                }
+            }
+
+            // ?? Animaciones de entrada
+            const elements = document.querySelectorAll('.form-card, .tips-section, .restaurant-info');
+            elements.forEach((element, index) => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    element.style.transition = 'all 0.5s ease';
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, index * 150);
+            });
+
+            // ? Auto-dismiss alertas
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(alert => {
-                if (alert.classList.contains('show')) {
-                    alert.classList.remove('show');
-                    setTimeout(() => alert.remove(), 150);
-                }
+                setTimeout(() => {
+                    if (alert.parentNode) {
+                        alert.style.transition = 'all 0.5s ease';
+                        alert.style.opacity = '0';
+                        alert.style.transform = 'translateY(-20px)';
+                        
+                        setTimeout(() => {
+                            if (alert.parentNode) {
+                                alert.remove();
+                            }
+                        }, 500);
+                    }
+                }, 5000);
             });
-        }, 5000);
 
-        // Animación de entrada
-        document.addEventListener('DOMContentLoaded', function() {
-            const formCard = document.querySelector('.form-card');
-            formCard.style.opacity = '0';
-            formCard.style.transform = 'translateY(20px)';
-            setTimeout(() => {
-                formCard.style.transition = 'all 0.5s ease';
-                formCard.style.opacity = '1';
-                formCard.style.transform = 'translateY(0)';
-            }, 100);
+            console.log('? Todos los scripts de edición inicializados');
         });
     </script>
 }
