@@ -440,6 +440,8 @@
                                 <div style="position: relative;">
                                     <img src="~/images/items/@item.RestaurantName/@item.ImagenUrl" alt="@item.Nombre" class="product-image">
                                     <form asp-action="RemoveItem" method="post" style="display: inline;">
+                                        @Html.AntiForgeryToken()
+
                                         <input type="hidden" name="menuItemId" value="@item.MenuItemId" />
                                         <button type="submit" class="remove-btn" title="Eliminar">✕</button>
                                     </form>
@@ -456,6 +458,8 @@
 
                             <div class="quantity-control">
                                 <form asp-action="UpdateQuantity" method="post" style="display: contents;">
+                                    @Html.AntiForgeryToken()
+
                                     <input type="hidden" name="menuItemId" value="@item.MenuItemId" />
                                     <button type="submit" name="cantidad" value="@(item.Cantidad - 1)" class="quantity-btn">▼</button>
                                     <input type="number" class="quantity-input" value="@item.Cantidad" readonly />

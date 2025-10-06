@@ -24,47 +24,9 @@ namespace TechFood_Solutions.Controllers
             return View(cart);
         }
 
-        // POST: Cart/AddToCart - Agregar item al carrito
-        [HttpPost]
-        public async Task<IActionResult> AddToCart(int menuItemId, int cantidad = 1, string? notas = null)
-        {
-            var menuItem = await _context.MenuItems
-                .Include(m => m.Restaurant)
-                .FirstOrDefaultAsync(m => m.Id == menuItemId);
-
-            if (menuItem == null)
-            {
-                return NotFound();
-            }
-
-            var cartItem = new CartItem
-            {
-                MenuItemId = menuItem.Id,
-                Nombre = menuItem.Nombre,
-                Descripcion = menuItem.Descripcion,
-                Precio = menuItem.Precio,
-                ImagenUrl = menuItem.ImagenUrl,
-                Cantidad = cantidad,
-                RestaurantId = menuItem.RestaurantId,
-                RestaurantName = menuItem.Restaurant.Nombre, // AQUÍ se llena el nombre
-                NotasEspeciales = notas
-            };
-
-            try
-            {
-                _cartService.AddToCart(cartItem);
-                TempData["Success"] = $"{menuItem.Nombre} agregado al carrito";
-                return RedirectToAction("Menu", "Cliente", new { id = menuItem.RestaurantId });
-            }
-            catch (InvalidOperationException ex)
-            {
-                TempData["Error"] = ex.Message;
-                return RedirectToAction("Menu", "Cliente", new { id = menuItem.RestaurantId });
-            }
-        }
-
         // POST: Cart/UpdateQuantity - Actualizar cantidad
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult UpdateQuantity(int menuItemId, int cantidad)
         {
             _cartService.UpdateQuantity(menuItemId, cantidad);
@@ -73,20 +35,12 @@ namespace TechFood_Solutions.Controllers
 
         // POST: Cart/RemoveItem - Eliminar item del carrito
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult RemoveItem(int menuItemId)
         {
             _cartService.RemoveFromCart(menuItemId);
             TempData["Success"] = "Item eliminado del carrito";
             return RedirectToAction(nameof(Index));
-        }
-
-        // POST: Cart/Clear - Vaciar carrito
-        [HttpPost]
-        [IgnoreAntiforgeryToken]
-        public IActionResult Clear()
-        {
-            _cartService.ClearCart();
-            return Ok(new { success = true, message = "Carrito vaciado" });
         }
 
         // GET: Cart/GetCartInfo - Obtener info del carrito (para validación)
@@ -261,6 +215,7 @@ namespace TechFood_Solutions.Controllers
 
         // POST: Cart/AddToCartAjax
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddToCartAjax(int menuItemId, int cantidad = 1)
         {
             var menuItem = await _context.MenuItems
@@ -304,6 +259,7 @@ namespace TechFood_Solutions.Controllers
 
         // Utilizado por el modal para la eliminacion del carrito actual y agregar el nuevo elemento de otro restaurante
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ClearAndAdd(int menuItemId, int cantidad = 1, string? notas = null)
         {
             try

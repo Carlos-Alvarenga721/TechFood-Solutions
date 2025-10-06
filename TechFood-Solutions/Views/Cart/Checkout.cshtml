@@ -265,6 +265,8 @@
         <h1 class="page-title">Finalizar Compra</h1>
 
         <form asp-action="ProcessCheckout" method="post">
+            @Html.AntiForgeryToken()
+
             <div class="checkout-layout">
                 <!-- Formulario de información -->
                 <div class="checkout-form-section">
