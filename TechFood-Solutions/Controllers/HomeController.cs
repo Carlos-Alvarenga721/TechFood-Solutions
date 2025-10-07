@@ -1,9 +1,11 @@
-using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using TechFood_Solutions.Models;
 
 namespace TechFood_Solutions.Controllers
 {
+    [Authorize(Roles = "Cliente")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

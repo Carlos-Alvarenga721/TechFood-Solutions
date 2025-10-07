@@ -1,0 +1,28 @@
+﻿@model TechFood_Solutions.Models.User
+@{
+    ViewData["Title"] = "Eliminar Usuario";
+}
+
+<h2>Confirmar Eliminación</h2>
+
+<div class="alert alert-danger">
+    <h4>¿Está seguro que desea eliminar este usuario?</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Nombre Completo:</dt>
+        <dd class="col-sm-9"><strong>@Model.Nombre @Model.Apellido</strong></dd>
+
+        <dt class="col-sm-3">DUI:</dt>
+        <dd class="col-sm-9">@Model.Dui</dd>
+
+        <dt class="col-sm-3">Restaurante:</dt>
+        <dd class="col-sm-9">@(Model.Restaurant?.Nombre ?? "Sin restaurante")</dd>
+    </dl>
+    <p class="mb-0"><strong>Esta acción no se puede deshacer.</strong></p>
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Confirmar Eliminación</button>
+    <a asp-controller="Users" asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

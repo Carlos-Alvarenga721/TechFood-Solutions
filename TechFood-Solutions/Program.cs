@@ -1,19 +1,34 @@
 using TechFood_Solutions.Models;
 using Microsoft.EntityFrameworkCore;
 using TechFood_Solutions.Services;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews()
-    .AddNewtonsoftJson(); // Importante: solo una vez aquí
+builder.Services.AddControllersWithViews().AddNewtonsoftJson();
 
-// Add DbContext
 builder.Services.AddDbContext<TechFoodDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TechFoodCN")));
 
-// Add Session support - IMPORTANTE
-builder.Services.AddDistributedMemoryCache(); // Requerido para Session
+builder.Services.AddIdentity<User, ApplicationRole>(options =>
+{
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireNonAlphanumeric = false;
+    options.User.RequireUniqueEmail = true;
+})
+.AddEntityFrameworkStores<TechFoodDbContext>()
+.AddDefaultTokenProviders();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+    options.Cookie.Name = "TechFoodAuth";
+    options.ExpireTimeSpan = TimeSpan.FromHours(8);
+});
+
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -21,15 +36,11 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Add HttpContextAccessor for session access
 builder.Services.AddHttpContextAccessor();
-
-// Add CartService
 builder.Services.AddScoped<ICartService, CartService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -40,14 +51,63 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-// CRÍTICO: UseSession debe estar ANTES de UseAuthorization
 app.UseSession();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
-// OPCIÓN 1: Eliminar la ruta personalizada y usar solo la ruta default
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+await SeedRolesAndAdminAsync(app);
+
 app.Run();
+
+// ---------------- MÉTODO DE SEED ----------------
+async Task SeedRolesAndAdminAsync(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
+    var services = scope.ServiceProvider;
+
+    var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
+    var userManager = services.GetRequiredService<UserManager<User>>();
+
+    string[] roles = new[] { "Admin", "Associated", "Client" };
+
+    foreach (var roleName in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(roleName))
+        {
+            await roleManager.CreateAsync(new ApplicationRole { Name = roleName });
+        }
+    }
+
+    var adminEmail = app.Configuration["AdminUser:Email"] ?? "admin@techfood.com";
+    var adminPassword = app.Configuration["AdminUser:Password"] ?? "Admin123!";
+
+    var admin = await userManager.FindByEmailAsync(adminEmail);
+    if (admin == null)
+    {
+        var adminUser = new User
+        {
+            UserName = adminEmail,
+            Email = adminEmail,
+            Nombre = "Administrador",
+            Apellido = "General",
+            Dui = "00000000-0",
+            Rol = UserRole.Admin
+        };
+
+        var createResult = await userManager.CreateAsync(adminUser, adminPassword);
+        if (createResult.Succeeded)
+        {
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+        }
+        else
+        {
+            var logger = services.GetRequiredService<ILogger<Program>>();
+            foreach (var error in createResult.Errors)
+                logger.LogError("Error al crear el admin: {Error}", error.Description);
+        }
+    }
+}

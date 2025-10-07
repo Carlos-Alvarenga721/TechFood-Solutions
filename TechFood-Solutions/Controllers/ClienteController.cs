@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TechFood_Solutions.Models;
 
 namespace TechFood_Solutions.Controllers
 {
+    [Authorize(Roles = "Cliente")]
     public class ClienteController : Controller
     {
         private readonly TechFoodDbContext _context;

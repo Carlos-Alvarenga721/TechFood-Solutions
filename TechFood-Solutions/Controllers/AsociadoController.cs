@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TechFood_Solutions.Models;
 using TechFood_Solutions.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TechFood_Solutions.Controllers
 {
+    [Authorize(Roles = "Asociado")]
     public class AsociadoController : Controller
     {
         private readonly TechFoodDbContext _context;
