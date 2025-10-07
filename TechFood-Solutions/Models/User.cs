@@ -14,6 +14,9 @@ namespace TechFood_Solutions.Models
 
     public class User : IdentityUser<int>, IValidatableObject
     {
+        [Key]
+        public int Id { get; set; }
+
         [Required, MaxLength(50)]
         public string Nombre { get; set; }
 
@@ -23,6 +26,7 @@ namespace TechFood_Solutions.Models
         [Required, MaxLength(10)]
         public string Dui { get; set; }
 
+        // 🔑 FK -> un usuario pertenece a un restaurante
         public int? RestaurantId { get; set; }
 
         [Required]
@@ -31,6 +35,7 @@ namespace TechFood_Solutions.Models
         [ForeignKey(nameof(RestaurantId))]
         public virtual Restaurant? Restaurant { get; set; }
 
+        // ✅ Validación: si es Associated debe tener RestaurantId
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (Rol == UserRole.Associated && RestaurantId == null)
