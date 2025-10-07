@@ -26,47 +26,9 @@ namespace TechFood_Solutions.Controllers
             return View(cart);
         }
 
-        // POST: Cart/AddToCart - Agregar item al carrito
-        [HttpPost]
-        public async Task<IActionResult> AddToCart(int menuItemId, int cantidad = 1, string? notas = null)
-        {
-            var menuItem = await _context.MenuItems
-                .Include(m => m.Restaurant)
-                .FirstOrDefaultAsync(m => m.Id == menuItemId);
-
-            if (menuItem == null)
-            {
-                return NotFound();
-            }
-
-            var cartItem = new CartItem
-            {
-                MenuItemId = menuItem.Id,
-                Nombre = menuItem.Nombre,
-                Descripcion = menuItem.Descripcion,
-                Precio = menuItem.Precio,
-                ImagenUrl = menuItem.ImagenUrl,
-                Cantidad = cantidad,
-                RestaurantId = menuItem.RestaurantId,
-                RestaurantName = menuItem.Restaurant.Nombre, // AQUÍ se llena el nombre
-                NotasEspeciales = notas
-            };
-
-            try
-            {
-                _cartService.AddToCart(cartItem);
-                TempData["Success"] = $"{menuItem.Nombre} agregado al carrito";
-                return RedirectToAction("Menu", "Cliente", new { id = menuItem.RestaurantId });
-            }
-            catch (InvalidOperationException ex)
-            {
-                TempData["Error"] = ex.Message;
-                return RedirectToAction("Menu", "Cliente", new { id = menuItem.RestaurantId });
-            }
-        }
-
         // POST: Cart/UpdateQuantity - Actualizar cantidad
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult UpdateQuantity(int menuItemId, int cantidad)
         {
             _cartService.UpdateQuantity(menuItemId, cantidad);
@@ -75,20 +37,12 @@ namespace TechFood_Solutions.Controllers
 
         // POST: Cart/RemoveItem - Eliminar item del carrito
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult RemoveItem(int menuItemId)
         {
             _cartService.RemoveFromCart(menuItemId);
             TempData["Success"] = "Item eliminado del carrito";
             return RedirectToAction(nameof(Index));
-        }
-
-        // POST: Cart/Clear - Vaciar carrito
-        [HttpPost]
-        [IgnoreAntiforgeryToken]
-        public IActionResult Clear()
-        {
-            _cartService.ClearCart();
-            return Ok(new { success = true, message = "Carrito vaciado" });
         }
 
         // GET: Cart/GetCartInfo - Obtener info del carrito (para validación)
@@ -263,6 +217,7 @@ namespace TechFood_Solutions.Controllers
 
         // POST: Cart/AddToCartAjax
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddToCartAjax(int menuItemId, int cantidad = 1)
         {
             var menuItem = await _context.MenuItems
@@ -306,6 +261,7 @@ namespace TechFood_Solutions.Controllers
 
         // Utilizado por el modal para la eliminacion del carrito actual y agregar el nuevo elemento de otro restaurante
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ClearAndAdd(int menuItemId, int cantidad = 1, string? notas = null)
         {
             try
@@ -346,6 +302,80 @@ namespace TechFood_Solutions.Controllers
             catch (Exception ex)
             {
                 return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        // POST: Cart/UpdateQuantityAjax - Actualizar cantidad sin recargar
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateQuantityAjax(int menuItemId, int cantidad)
+        {
+            try
+            {
+                if (cantidad <= 0)
+                {
+                    _cartService.RemoveFromCart(menuItemId);
+                    return Json(new
+                    {
+                        success = true,
+                        removed = true,
+                        message = "Producto eliminado del carrito",
+                        totalItems = _cartService.GetCartItemCount(),
+                        cartTotal = _cartService.GetCart().Total
+                    });
+                }
+
+                _cartService.UpdateQuantity(menuItemId, cantidad);
+                var cart = _cartService.GetCart();
+                var item = cart.Items.FirstOrDefault(i => i.MenuItemId == menuItemId);
+
+                return Json(new
+                {
+                    success = true,
+                    removed = false,
+                    message = "Cantidad actualizada",
+                    itemQuantity = item?.Cantidad ?? 0,
+                    itemSubtotal = item?.Subtotal ?? 0,
+                    totalItems = cart.TotalItems,
+                    cartTotal = cart.Total
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Error al actualizar: " + ex.Message
+                });
+            }
+        }
+
+        // POST: Cart/RemoveItemAjax - Eliminar item sin recargar
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RemoveItemAjax(int menuItemId)
+        {
+            try
+            {
+                _cartService.RemoveFromCart(menuItemId);
+                var cart = _cartService.GetCart();
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Producto eliminado del carrito",
+                    totalItems = cart.TotalItems,
+                    cartTotal = cart.Total,
+                    isEmpty = !cart.Items.Any()
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Error al eliminar: " + ex.Message
+                });
             }
         }
 

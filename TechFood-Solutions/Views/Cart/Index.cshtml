@@ -383,6 +383,90 @@
         margin-bottom: 30px;
     }
 
+    /* Modal */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 30px 40px;
+        border-radius: 12px;
+        text-align: center;
+        max-width: 450px;
+        box-shadow: 0 0 30px rgba(0,0,0,0.3);
+        animation: modalFadeIn 0.3s ease-out;
+    }
+
+    @@keyframes modalFadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .modal-content p {
+        font-size: 1.1rem;
+        color: #2c3e50;
+        margin-bottom: 0;
+        line-height: 1.6;
+    }
+
+    .modal-buttons {
+        margin-top: 25px;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+
+        .modal-buttons button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+    .btn-danger {
+        background-color: #e74c3c;
+        color: white;
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+
+    .btn-secondary {
+        background-color: #95a5a6;
+        color: white;
+        box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
+    }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(149, 165, 166, 0.4);
+        }
+
     /* Responsive */
     @@media (max-width: 1024px) {
         .cart-layout {
@@ -421,6 +505,9 @@
             <span class="current">Carrito</span>
         </nav>
 
+        <!-- Token antiforgery -->
+        @Html.AntiForgeryToken()
+
         @if (Model.Items.Any())
         {
             <div class="cart-layout">
@@ -435,14 +522,11 @@
 
                     @foreach (var item in Model.Items)
                     {
-                        <div class="cart-item">
+                        <div class="cart-item" data-menu-item-id="@item.MenuItemId">
                             <div class="product-info">
                                 <div style="position: relative;">
                                     <img src="~/images/items/@item.RestaurantName/@item.ImagenUrl" alt="@item.Nombre" class="product-image">
-                                    <form asp-action="RemoveItem" method="post" style="display: inline;">
-                                        <input type="hidden" name="menuItemId" value="@item.MenuItemId" />
-                                        <button type="submit" class="remove-btn" title="Eliminar">✕</button>
-                                    </form>
+                                    <button class="remove-btn remove-item-btn" data-menu-item-id="@item.MenuItemId" title="Eliminar">✕</button>
                                 </div>
                                 <div class="product-details">
                                     <h3>@item.Nombre</h3>
@@ -454,16 +538,13 @@
                                 $@item.Precio.ToString("F2")
                             </div>
 
-                            <div class="quantity-control">
-                                <form asp-action="UpdateQuantity" method="post" style="display: contents;">
-                                    <input type="hidden" name="menuItemId" value="@item.MenuItemId" />
-                                    <button type="submit" name="cantidad" value="@(item.Cantidad - 1)" class="quantity-btn">▼</button>
-                                    <input type="number" class="quantity-input" value="@item.Cantidad" readonly />
-                                    <button type="submit" name="cantidad" value="@(item.Cantidad + 1)" class="quantity-btn">▲</button>
-                                </form>
+                            <div class="quantity-control" data-menu-item-id="@item.MenuItemId">
+                                <button class="quantity-btn decrease-btn" data-menu-item-id="@item.MenuItemId">▼</button>
+                                <input type="number" class="quantity-input" value="@item.Cantidad" data-menu-item-id="@item.MenuItemId" readonly />
+                                <button class="quantity-btn increase-btn" data-menu-item-id="@item.MenuItemId">▲</button>
                             </div>
 
-                            <div class="subtotal-cell">
+                            <div class="subtotal-cell" data-menu-item-id="@item.MenuItemId">
                                 $@item.Subtotal.ToString("F2")
                             </div>
                         </div>
@@ -489,19 +570,20 @@
                     <div class="summary-section">
                         <h3 class="summary-title">Suma</h3>
 
+                        <!-- CAMBIO: Agregados IDs para poder actualizarlos -->
                         <div class="summary-row">
                             <span class="summary-label">Subtotal:</span>
-                            <span class="summary-value">$@Model.Total.ToString("F2")</span>
+                            <span class="summary-value" id="cart-subtotal">$@Model.Total.ToString("F2")</span>
                         </div>
 
                         <div class="summary-row">
                             <span class="summary-label">Envío:</span>
-                            <span class="summary-value">$2.50</span>
+                            <span class="summary-value" id="cart-shipping">$2.50</span>
                         </div>
 
                         <div class="summary-total">
                             <span class="total-label">Total:</span>
-                            <span class="total-value">$@((Model.Total + 2.50m).ToString("F2"))</span>
+                            <span class="total-value" id="cart-total">$@((Model.Total + 2.50m).ToString("F2"))</span>
                         </div>
 
                         <a asp-action="Checkout" class="checkout-btn">Ir a Pagar</a>
@@ -523,25 +605,231 @@
     </div>
 </div>
 
+<!-- Modal para confirmar eliminación -->
+<div id="deleteModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <p id="deleteModalMessage">
+            ¿Estás seguro de eliminar este producto del carrito?
+        </p>
+        <div class="modal-buttons">
+            <button id="deleteConfirmBtn" class="btn btn-danger">Sí, eliminar</button>
+            <button id="deleteCancelBtn" class="btn btn-secondary">Cancelar</button>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
-        // Confirmación antes de eliminar
-        document.querySelectorAll('.remove-btn').forEach(btn => {
-            btn.closest('form').addEventListener('submit', function(e) {
-                if (!confirm('¿Estás seguro de eliminar este producto?')) {
-                    e.preventDefault();
-                }
-            });
-        });
+               let itemToDelete = null;
 
-        // Animación al actualizar cantidad
-        document.querySelectorAll('.quantity-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                this.style.transform = 'scale(0.9)';
-                setTimeout(() => {
-                    this.style.transform = 'scale(1)';
-                }, 100);
-            });
-        });
+               // Función para obtener el token antiforgery
+               function getAntiForgeryToken() {
+                   return document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+               }
+
+               // ========== ACTUALIZAR CANTIDAD ==========
+               document.querySelectorAll('.increase-btn, .decrease-btn').forEach(btn => {
+                   btn.addEventListener('click', async function() {
+                       const menuItemId = this.dataset.menuItemId;
+                       const quantityInput = document.querySelector(`.quantity-input[data-menu-item-id="${menuItemId}"]`);
+                       const currentQuantity = parseInt(quantityInput.value);
+
+                       let newQuantity = currentQuantity;
+                       if (this.classList.contains('increase-btn')) {
+                           newQuantity = currentQuantity + 1;
+                       } else if (this.classList.contains('decrease-btn')) {
+                           newQuantity = currentQuantity - 1;
+                       }
+
+                       // Animación del botón
+                       this.style.transform = 'scale(0.9)';
+                       setTimeout(() => {
+                           this.style.transform = 'scale(1)';
+                       }, 100);
+
+                       try {
+                           const response = await fetch('/Cart/UpdateQuantityAjax', {
+                               method: 'POST',
+                               headers: {
+                                   'Content-Type': 'application/x-www-form-urlencoded',
+                                   'RequestVerificationToken': getAntiForgeryToken()
+                               },
+                               body: `menuItemId=${menuItemId}&cantidad=${newQuantity}`
+                           });
+
+                           const result = await response.json();
+
+                           if (result.success) {
+                               if (result.removed) {
+                                   // Eliminar la fila con animación
+                                   const cartItem = document.querySelector(`.cart-item[data-menu-item-id="${menuItemId}"]`);
+                                   if (cartItem) {
+                                       cartItem.style.transition = 'all 0.3s ease-out';
+                                       cartItem.style.opacity = '0';
+                                       cartItem.style.transform = 'translateX(-20px)';
+                                       setTimeout(() => {
+                                           cartItem.remove();
+                                           verificarCarritoVacio(result.totalItems === 0);
+                                       }, 300);
+                                   }
+                               } else {
+                                   // Actualizar la cantidad y el subtotal
+                                   quantityInput.value = result.itemQuantity;
+
+                                   const subtotalCell = document.querySelector(`.subtotal-cell[data-menu-item-id="${menuItemId}"]`);
+                                   if (subtotalCell) {
+                                       subtotalCell.textContent = '$' + result.itemSubtotal.toFixed(2);        + result.itemSubtotal.toFixed(2);
+                                       // Animación de actualización
+                                       subtotalCell.style.transition = 'all 0.3s';
+                                       subtotalCell.style.transform = 'scale(1.1)';
+                                       subtotalCell.style.color = '#e74c3c';
+                                       setTimeout(() => {
+                                           subtotalCell.style.transform = 'scale(1)';
+                                           subtotalCell.style.color = '#2c3e50';
+                                       }, 300);
+                                   }
+                               }
+
+                               // Actualizar totales
+                               actualizarTotales(result.cartTotal, result.totalItems);
+                           } else {
+                               alert('Error: ' + result.message);
+                           }
+                       } catch (error) {
+                           console.error('Error al actualizar cantidad:', error);
+                           alert('Ocurrió un error al actualizar la cantidad.');
+                       }
+                   });
+               });
+
+               // ========== ELIMINAR ITEM ==========
+               document.querySelectorAll('.remove-item-btn').forEach(btn => {
+                   btn.addEventListener('click', function(e) {
+                       e.preventDefault();
+                       itemToDelete = this.dataset.menuItemId;
+                       mostrarModalEliminacion();
+                   });
+               });
+
+               async function eliminarItem() {
+                   if (!itemToDelete) return;
+
+                   try {
+                       const response = await fetch('/Cart/RemoveItemAjax', {
+                           method: 'POST',
+                           headers: {
+                               'Content-Type': 'application/x-www-form-urlencoded',
+                               'RequestVerificationToken': getAntiForgeryToken()
+                           },
+                           body: `menuItemId=${itemToDelete}`
+                       });
+
+                       const result = await response.json();
+
+                       if (result.success) {
+                           // Eliminar la fila con animación
+                           const cartItem = document.querySelector(`.cart-item[data-menu-item-id="${itemToDelete}"]`);
+                           if (cartItem) {
+                               cartItem.style.transition = 'all 0.3s ease-out';
+                               cartItem.style.opacity = '0';
+                               cartItem.style.transform = 'translateX(-20px)';
+                               setTimeout(() => {
+                                   cartItem.remove();
+                                   verificarCarritoVacio(result.isEmpty);
+                               }, 300);
+                           }
+
+                           // Actualizar totales
+                           actualizarTotales(result.cartTotal, result.totalItems);
+
+                           itemToDelete = null;
+                       } else {
+                           alert('Error: ' + result.message);
+                       }
+                   } catch (error) {
+                       console.error('Error al eliminar item:', error);
+                       alert('Ocurrió un error al eliminar el producto.');
+                   }
+               }
+
+               // ========== FUNCIONES AUXILIARES ==========
+               function actualizarTotales(subtotal, totalItems) {
+                   const shippingCost = 2.50;
+                   const total = subtotal + shippingCost;
+
+                   // Actualizar subtotal
+                   const subtotalElement = document.getElementById('cart-subtotal');
+                   if (subtotalElement) {
+                       subtotalElement.textContent = '$' + subtotal.toFixed(2);
+                   }
+
+                   // Actualizar total
+                   const totalElement = document.getElementById('cart-total');
+                   if (totalElement) {
+                       totalElement.textContent = '$' + total.toFixed(2);
+                       // Animación del total
+                       totalElement.style.transition = 'all 0.3s';
+                       totalElement.style.transform = 'scale(1.1)';
+                       setTimeout(() => {
+                           totalElement.style.transform = 'scale(1)';
+                       }, 300);
+                   }
+
+                   // Actualizar badge global del carrito
+                   actualizarBadgeGlobal(totalItems);
+               }
+
+               function actualizarBadgeGlobal(totalItems) {
+                   const badge = document.querySelector('.cart-badge');
+                   if (badge) {
+                       if (totalItems > 0) {
+                           badge.textContent = "";
+                           badge.style.display = 'flex';
+                       } else {
+                           badge.style.display = 'none';
+                       }
+                   }
+               }
+
+               function verificarCarritoVacio(isEmpty) {
+                   if (isEmpty) {
+                       // Recargar la página para mostrar el estado de carrito vacío
+                       setTimeout(() => {
+                           window.location.reload();
+                       }, 500);
+                   }
+               }
+
+               function mostrarModalEliminacion() {
+                   const modal = document.getElementById('deleteModal');
+                   const confirmBtn = document.getElementById('deleteConfirmBtn');
+                   const cancelBtn = document.getElementById('deleteCancelBtn');
+
+                   modal.style.display = 'flex';
+
+                   const confirmHandler = async () => {
+                       modal.style.display = 'none';
+                       confirmBtn.removeEventListener('click', confirmHandler);
+                       cancelBtn.removeEventListener('click', cancelHandler);
+                       await eliminarItem();
+                   };
+
+                   const cancelHandler = () => {
+                       modal.style.display = 'none';
+                       confirmBtn.removeEventListener('click', confirmHandler);
+                       cancelBtn.removeEventListener('click', cancelHandler);
+                       itemToDelete = null;
+                   };
+
+                   confirmBtn.addEventListener('click', confirmHandler);
+                   cancelBtn.addEventListener('click', cancelHandler);
+
+                   // Cerrar modal al hacer clic fuera de él
+                   modal.addEventListener('click', function(e) {
+                       if (e.target === modal) {
+                           cancelHandler();
+                       }
+                   });
+               }
     </script>
 }
