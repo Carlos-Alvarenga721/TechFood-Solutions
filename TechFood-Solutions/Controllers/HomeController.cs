@@ -5,7 +5,6 @@ using TechFood_Solutions.Models;
 
 namespace TechFood_Solutions.Controllers
 {
-    [Authorize(Roles = RoleNames.Client)]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -35,6 +34,7 @@ namespace TechFood_Solutions.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+        [Authorize]
         public IActionResult Cart()
         {
             return View();

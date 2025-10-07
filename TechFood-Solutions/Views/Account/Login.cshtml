@@ -1,8 +1,9 @@
 ﻿@{
     ViewBag.Title = "Iniciar Sesión";
-    Layout = null; // Para evitar que el layout general interfiera con el diseño
+    Layout = null;
+    var returnUrl = ViewData["ReturnUrl"] as string;
+    var showCartMessage = !string.IsNullOrEmpty(returnUrl) && (returnUrl.Contains("Menu") || returnUrl.Contains("Cart"));
 }
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -53,6 +54,7 @@
         .btn-custom {
             background-color: #dc3545;
             color: white;
+            transition: all 0.3s;
         }
 
             .btn-custom:hover {
@@ -68,6 +70,57 @@
             .forgot-link:hover {
                 text-decoration: underline;
             }
+
+        /* ✅ NUEVO: Alerta para el carrito */
+        .cart-alert {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideDown 0.4s ease-out;
+        }
+
+        @@keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cart-alert-icon {
+            font-size: 1.3rem;
+        }
+
+        .cart-alert-text {
+            color: #856404;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .left-img {
+                display: none;
+            }
+
+            .right-form {
+                padding: 30px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -81,24 +134,66 @@
         <h3 class="fw-bold">Iniciar sesión</h3>
         <p class="text-muted mb-4">Digite sus datos en los campos</p>
 
+        <!-- ✅ ALERTA CUANDO VIENE DEL CARRITO -->
+        @if (showCartMessage)
+        {
+            <div class="cart-alert">
+                <span class="cart-alert-icon">🛒</span>
+                <p class="cart-alert-text">
+                    <strong>Inicia sesión para agregar productos al carrito</strong>
+                </p>
+            </div>
+        }
+
+        <!-- Mensaje de error -->
         @if (ViewBag.Error != null)
         {
             <div class="alert alert-danger">@ViewBag.Error</div>
         }
 
+        <!-- Errores de validación del modelo -->
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+            </div>
+        }
+
         @using (Html.BeginForm("Login", "Account", FormMethod.Post))
         {
+            @Html.AntiForgeryToken()
+
+            <!-- ✅ CAMPO OCULTO PARA RETURNURL -->
+            @if (!string.IsNullOrEmpty(returnUrl))
+            {
+                <input type="hidden" name="returnUrl" value="@returnUrl" />
+            }
+
             <div class="mb-3">
-                @Html.TextBox("email", null, new { @class = "form-control", placeholder = "correo electrónico" })
+                @Html.TextBox("email", null, new { @class = "form-control", placeholder = "correo electrónico", type = "email", required = "required" })
             </div>
+
             <div class="mb-4">
-                @Html.Password("password", null, new { @class = "form-control", placeholder = "contraseña" })
+                @Html.Password("password", null, new { @class = "form-control", placeholder = "contraseña", required = "required" })
             </div>
+
             <div class="d-flex justify-content-between align-items-center">
-                <button type="submit" class="btn btn-custom">Iniciar sesión</button>
+                <button type="submit" class="btn btn-custom px-4 py-2">Iniciar sesión</button>
                 <a href="#" class="forgot-link">¿Olvidó su contraseña?</a>
             </div>
         }
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Animación suave del formulario al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('.right-form').style.opacity = '0';
+            setTimeout(() => {
+                document.querySelector('.right-form').style.transition = 'opacity 0.5s';
+                document.querySelector('.right-form').style.opacity = '1';
+            }, 100);
+        });
+    </script>
 </body>
 </html>

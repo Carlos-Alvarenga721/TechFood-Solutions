@@ -40,24 +40,36 @@
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-controller="Home" asp-action="SobreNosotros">Sobre Nosotros</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-controller="Asociado" asp-action="Index">🏪 Panel Asociado</a>
-                        </li>
 
                         @if (SignInManager.IsSignedIn(User))
-                                                {
-                        <!-- Si el usuario está logeado -->
-                        <li class="nav-item">
-                            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                <button type="submit" class="nav-link btn btn-link text-white fw-bold p-0" style="text-decoration:none;">
-                                    Cerrar sesión
-                                </button>
-                            </form>
-                        </li>
-                                                }
-                                                else
                         {
-                            <!-- Si NO está logeado -->
+                            if (User.IsInRole(RoleNames.Associated))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-controller="Asociado" asp-action="Index">🏪 Panel Asociado</a>
+                                </li>
+                            }
+                            else if (User.IsInRole(RoleNames.Admin))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-controller="Users" asp-action="Index">🛠 Panel Administrador</a>
+                                </li>
+                            }
+                        }
+
+                        @* Login / Logout *@
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                    <button type="submit" class="nav-link btn btn-link text-white fw-bold p-0" style="text-decoration:none;">
+                                        Cerrar sesión
+                                    </button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
                             <li class="nav-item">
                                 <a class="nav-link text-white fw-bold" asp-controller="Account" asp-action="Login">Iniciar Sesión</a>
                             </li>
