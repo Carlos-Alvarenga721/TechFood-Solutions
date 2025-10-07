@@ -189,6 +189,12 @@
         object-fit: cover;
     }
 
+    .image-placeholder {
+        color: #6c757d;
+        font-size: 3rem;
+        opacity: 0.3;
+    }
+
     .item-actions {
         position: absolute;
         top: 10px;
@@ -383,7 +389,10 @@
 <div class="menu-page">
     <div class="menu-container">
         <div class="restaurant-header">
-            <img src="~/images/restaurantes/@Model.LogoUrl" alt="@Model.Nombre" class="restaurant-logo">
+            <img src="~/images/restaurantes/@Model.LogoUrl" 
+                 alt="@Model.Nombre" 
+                 class="restaurant-logo"
+                 onerror="this.src='/images/default-restaurant.png';">
             <div class="restaurant-info">
                 <h1>@Model.Nombre</h1>
                 <p>@Model.Descripcion</p>
@@ -418,8 +427,19 @@
                             <span class="product-badge" style="display: flex;">@cartItemCount</span>
                         }
                         <div class="item-image-container">
-                            <img src="~/images/items/@Model.Nombre/@item.ImagenUrl" alt="@item.Nombre" class="item-image">
-
+                            @if (!string.IsNullOrEmpty(item.ImagenUrl))
+                            {
+                                <!-- 🚀 RUTA CORREGIDA: Usar ID del restaurante -->
+                                <img src="~/images/items/restaurant_@(Model.Id)/@item.ImagenUrl" 
+                                     alt="@item.Nombre" 
+                                     class="item-image"
+                                     onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=&quot;image-placeholder&quot;>🍽️</div>';"
+                                     onload="console.log('✅ Imagen del menú cargada:', this.src);">
+                            }
+                            else
+                            {
+                                <div class="image-placeholder">🍽️</div>
+                            }
                             <div class="item-actions">
                                 <button class="action-icon heart">♥</button>
                             </div>
@@ -444,9 +464,22 @@
                 }
             </div>
 
-            <div class="view-all-container">
-                <a asp-controller="Cliente" asp-action="Restaurantes" class="view-all-btn">Ver Todos los Restaurantes</a>
-            </div>
+            @if (!Model.MenuItems.Any())
+            {
+                <div style="text-align: center; padding: 60px 20px; color: #6c757d;">
+                    <div style="font-size: 4rem; margin-bottom: 20px; opacity: 0.3;">🍽️</div>
+                    <h3 style="color: #2c3e50; margin-bottom: 10px;">Menú en construcción</h3>
+                    <p style="font-size: 1.1rem;">Este restaurante está preparando deliciosos productos para ti.</p>
+                </div>
+            }
+
+            <!-- Botón Ver Todos -->
+            @if (Model.MenuItems.Count() > 8)
+            {
+                <div class="view-all-container">
+                    <button class="view-all-btn">Ver todos los productos (@Model.MenuItems.Count())</button>
+                </div>
+            }
         </div>
     </div>
 </div>

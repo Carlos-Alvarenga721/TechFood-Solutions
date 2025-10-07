@@ -1,0 +1,791 @@
+﻿@model TechFood_Solutions.Models.MenuItem
+
+@{
+    ViewData["Title"] = "Crear Producto - " + Model.Restaurant?.Nombre;
+}
+
+<style>
+    .create-product-page {
+        padding: 20px 0;
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 120px);
+    }
+
+    .create-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    /* Header */
+    .page-header {
+        background: linear-gradient(135deg, #27ae60, #219a52);
+        color: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .header-icon {
+        width: 70px;
+        height: 70px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+    }
+
+    .header-content h1 {
+        font-size: 2.2rem;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+
+    .header-content p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    /* Restaurant Info */
+    .restaurant-info {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        border-left: 4px solid #27ae60;
+    }
+
+    .restaurant-logo {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #e0e0e0;
+    }
+
+    .restaurant-details h3 {
+        margin: 0 0 5px 0;
+        font-size: 1.3rem;
+        color: #2c3e50;
+    }
+
+    .restaurant-details p {
+        margin: 0;
+        color: #7f8c8d;
+        font-size: 0.95rem;
+    }
+
+    /* Form Card */
+    .form-card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+    }
+
+    .form-title {
+        font-size: 1.8rem;
+        color: #2c3e50;
+        margin-bottom: 30px;
+        text-align: center;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    /* Image Upload Section */
+    .image-upload-section {
+        margin-bottom: 40px;
+        text-align: center;
+    }
+
+    .image-preview-container {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 20px;
+    }
+
+    .image-preview {
+        width: 300px;
+        height: 300px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border: 3px dashed #d0d0d0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+
+    .image-preview:hover {
+        border-color: #27ae60;
+        background: linear-gradient(135deg, #f0f8f5 0%, #e8f5e8 100%);
+    }
+
+    .image-preview.has-image {
+        border: 3px solid #27ae60;
+        background: none;
+    }
+
+    .image-preview.error {
+        border: 3px solid #dc3545;
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    }
+
+    .preview-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 17px;
+    }
+
+    .image-placeholder {
+        color: #6c757d;
+        font-size: 4rem;
+        opacity: 0.3;
+    }
+
+    .image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(39, 174, 96, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+        border-radius: 17px;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .image-preview:hover .image-overlay {
+        opacity: 1;
+    }
+
+    .file-input-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+
+    .file-input {
+        opacity: 0;
+        position: absolute;
+        z-index: -1;
+    }
+
+    .file-input-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 25px;
+        background: #27ae60;
+        color: white;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+    }
+
+    .file-input-label:hover {
+        background: #219a52;
+        transform: translateY(-2px);
+    }
+
+    .image-info {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        margin-top: 10px;
+    }
+
+    /* Form Groups */
+    .form-group {
+        margin-bottom: 30px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 10px;
+        display: block;
+        font-size: 1.1rem;
+    }
+
+    .required::after {
+        content: " *";
+        color: #e74c3c;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 15px 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s;
+        background: white;
+    }
+
+    .form-control:focus {
+        border-color: #27ae60;
+        box-shadow: 0 0 0 0.2rem rgba(39, 174, 96, 0.25);
+        outline: none;
+    }
+
+    .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+
+    .form-control.is-valid {
+        border-color: #28a745;
+    }
+
+    .invalid-feedback {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 8px;
+        display: block;
+    }
+
+    .form-text {
+        color: #6c757d;
+        font-size: 0.875rem;
+        margin-top: 8px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+    }
+
+    /* Price Input Special Style */
+    .price-input-group {
+        position: relative;
+    }
+
+    .price-input-group::before {
+        content: '$';
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #27ae60;
+        z-index: 2;
+    }
+
+    .price-input {
+        padding-left: 45px !important;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    /* Action Buttons */
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 2px solid #f0f0f0;
+    }
+
+    .btn {
+        padding: 15px 40px;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-primary {
+        background: #27ae60;
+        color: white;
+        box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        background: #219a52;
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+    }
+
+    .btn-primary:disabled {
+        background: #95a5a6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+
+    /* Alert Styles */
+    .alert {
+        border-radius: 12px;
+        padding: 15px 20px;
+        margin-bottom: 25px;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .alert-success {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        color: #155724;
+    }
+
+    .alert-danger {
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        color: #721c24;
+    }
+
+    /* Tips Section */
+    .tips-section {
+        background: linear-gradient(135deg, #e3f2fd 0%, #e1f5fe 100%);
+        border-left: 4px solid #2196f3;
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+
+    .tips-title {
+        color: #1976d2;
+        font-weight: bold;
+        margin-bottom: 15px;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .tips-list {
+        color: #1565c0;
+        font-size: 0.95rem;
+        margin: 0;
+        padding-left: 20px;
+    }
+
+    .tips-list li {
+        margin-bottom: 8px;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .form-card {
+            padding: 25px;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .image-preview {
+            width: 250px;
+            height: 250px;
+        }
+
+        .restaurant-info {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="create-product-page">
+    <div class="create-container">
+        <!-- Header -->
+        <div class="page-header">
+            <div class="header-icon">▶️</div>
+            <div class="header-content">
+                <h1>Crear Nuevo Producto</h1>
+                <p>Agrega un nuevo producto delicioso a tu menú</p>
+            </div>
+        </div>
+
+        <!-- Restaurant Info -->
+        @if (Model.Restaurant != null)
+        {
+            <div class="restaurant-info">
+                <img src="~/images/restaurantes/@Model.Restaurant.LogoUrl" 
+                     alt="@Model.Restaurant.Nombre" 
+                     class="restaurant-logo"
+                     onerror="this.src='/images/default-restaurant.png';">
+                <div class="restaurant-details">
+                    <h3>@Model.Restaurant.Nombre</h3>
+                    <p>Agregando nuevo producto al menú</p>
+                </div>
+            </div>
+        }
+
+        <!-- Tips Section -->
+        <div class="tips-section">
+            <div class="tips-title">
+                💡 Consejos para crear un producto exitoso
+            </div>
+            <ul class="tips-list">
+                <li>Usa un nombre descriptivo y atractivo que destaque</li>
+                <li>Incluye los ingredientes principales en la descripción</li>
+                <li>Establece un precio competitivo y justo</li>
+                <li>Sube una imagen de alta calidad que se vea apetitosa</li>
+                <li>Menciona características especiales (vegano, sin gluten, picante, etc.)</li>
+            </ul>
+        </div>
+
+        <!-- Alerts -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success" id="successAlert">
+                <span><strong>¡Éxito!</strong> @TempData["Success"]</span>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger" id="errorAlert">
+                <span><strong>Error:</strong> @TempData["Error"]</span>
+            </div>
+        }
+
+        <!-- Validation Summary -->
+        @if (ViewData.ModelState.Any(x => x.Value.Errors.Count > 0))
+        {
+            <div class="alert alert-danger">
+                <div>
+                    <strong>Por favor corrige los siguientes errores:</strong>
+                    <ul style="margin: 10px 0 0 20px;">
+                        @foreach (var error in ViewData.ModelState.Where(x => x.Value.Errors.Count > 0))
+                        {
+                            foreach (var errorMessage in error.Value.Errors)
+                            {
+                                <li>@errorMessage.ErrorMessage</li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+
+        <!-- Form Card -->
+        <div class="form-card">
+            <h2 class="form-title">Información del Producto</h2>
+
+            <form asp-action="CrearProducto" method="post" enctype="multipart/form-data" id="productForm">
+                <input type="hidden" asp-for="RestaurantId" />
+
+                <!-- Image Upload Section -->
+                <div class="image-upload-section">
+                    <div class="image-preview-container">
+                        <div class="image-preview" id="imagePreview">                           
+                            <div class="image-placeholder">
+                                <img src="~/images/App_Icon/camara.png" alt="ImagenCamara" style="width: 90px; height: 90px; object-fit: contain;">
+                            </div>
+                            <img class="preview-image" id="previewImg" style="display: none;" />
+                            <div class="image-overlay">
+                                Click para seleccionar imagen
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="file-input-wrapper">
+                        <input type="file" 
+                               id="imagenFile" 
+                               name="imagenFile" 
+                               class="file-input" 
+                               accept="image/*">
+                        <label for="imagenFile" class="file-input-label">
+                            Seleccionar Imagen
+                        </label>
+                    </div>
+                    
+                    <div class="image-info">
+                        Formatos soportados: JPG, PNG, GIF (máx. 5MB)<br>
+                        <span id="imageFileName">No hay archivo seleccionado</span>
+                    </div>
+
+                    <!-- Error de imagen -->
+                    @Html.ValidationMessageFor(m => m.ImagenUrl, "", new { @class = "invalid-feedback" })
+                    <span class="invalid-feedback" id="imageError" style="display: none;"></span>
+                </div>
+
+                <!-- Product Name -->
+                <div class="form-group">
+                    <label asp-for="Nombre" class="form-label required">Nombre del Producto</label>
+                    <input asp-for="Nombre" 
+                           class="form-control" 
+                           placeholder="Ej: Pizza Margherita Especial, Hamburguesa BBQ Premium..."
+                           maxlength="250">
+                    <span asp-validation-for="Nombre" class="invalid-feedback"></span>
+                    <div class="form-text">Un nombre atractivo y descriptivo que capture la atención</div>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label asp-for="Descripcion" class="form-label required">Descripción</label>
+                    <textarea asp-for="Descripcion" 
+                              class="form-control" 
+                              rows="4" 
+                              placeholder="Describe los ingredientes, preparación, sabor y características especiales del producto..."
+                              maxlength="500"></textarea>
+                    <span asp-validation-for="Descripcion" class="invalid-feedback"></span>
+                    <div class="form-text">Detalla qué hace especial a este producto y sus ingredientes principales</div>
+                </div>
+
+                <!-- Price -->
+                <div class="form-group">
+                    <label asp-for="Precio" class="form-label required">Precio</label>
+                    <div class="price-input-group">
+                        <input asp-for="Precio" 
+                               class="form-control price-input" 
+                               type="number" 
+                               step="0.01" 
+                               min="0.01"
+                               placeholder="0.00">
+                    </div>
+                    <span asp-validation-for="Precio" class="invalid-feedback"></span>
+                    <div class="form-text">Precio en dólares (ejemplo: 12.50)</div>
+                </div>
+
+                <!-- Hidden field for ImagenUrl -->
+                <input type="hidden" asp-for="ImagenUrl" id="hiddenImagenUrl" />
+
+                <!-- Action Buttons -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        Crear Producto
+                    </button>
+                    <a href="@Url.Action("GestionarMenu")" class="btn btn-secondary">
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('?? CrearProducto cargado correctamente');
+
+            const imageInput = document.getElementById('imagenFile');
+            const imagePreview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+            const placeholder = document.getElementById('placeholder');
+            const imageFileName = document.getElementById('imageFileName');
+            const hiddenImagenUrl = document.getElementById('hiddenImagenUrl');
+            const imageError = document.getElementById('imageError');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Manejo de upload de imagen
+            imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                
+                // Limpiar errores previos
+                imageError.style.display = 'none';
+                imagePreview.classList.remove('error');
+                
+                if (file) {
+                    console.log('?? Archivo seleccionado:', file.name);
+
+                    // Validar tipo de archivo
+                    if (!file.type.startsWith('image/')) {
+                        showImageError('? Por favor selecciona un archivo de imagen válido (JPG, PNG, GIF)');
+                        return;
+                    }
+
+                    // Validar tamaño (5MB max)
+                    if (file.size > 5 * 1024 * 1024) {
+                        showImageError('? La imagen es demasiado grande. Máximo 5MB permitido');
+                        return;
+                    }
+
+                    hiddenImagenUrl.value = file.name;
+                    console.log('?? ImagenUrl guardado:', file.name);
+
+                    // Actualizar UI
+                    imageFileName.textContent = file.name;
+                    imagePreview.classList.add('has-image');
+
+                    // Mostrar preview
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImg.src = e.target.result;
+                        previewImg.style.display = 'block';
+                        placeholder.style.display = 'none';
+                        console.log('? Preview de imagen mostrado');
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    // Limpiar preview
+                    clearImagePreview();
+                }
+            });
+
+            // Click en el preview para abrir selector
+            imagePreview.addEventListener('click', function() {
+                imageInput.click();
+            });
+
+            // Validación del formulario
+            const form = document.getElementById('productForm');
+            form.addEventListener('submit', function(e) {
+                console.log('?? Enviando formulario...');
+                
+                let isValid = true;
+
+                // Validar campos requeridos
+                const nombre = document.querySelector('[name="Nombre"]');
+                const descripcion = document.querySelector('[name="Descripcion"]');
+                const precio = document.querySelector('[name="Precio"]');
+
+                if (!nombre.value.trim()) {
+                    nombre.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    nombre.classList.remove('is-invalid');
+                    nombre.classList.add('is-valid');
+                }
+
+                if (!descripcion.value.trim()) {
+                    descripcion.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    descripcion.classList.remove('is-invalid');
+                    descripcion.classList.add('is-valid');
+                }
+
+                if (!precio.value || parseFloat(precio.value) <= 0) {
+                    precio.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    precio.classList.remove('is-invalid');
+                    precio.classList.add('is-valid');
+                }
+
+                // Validar imagen
+                if (!hiddenImagenUrl.value) {
+                    showImageError('? Se requiere una imagen para el producto');
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    console.log('? Formulario inválido, envío cancelado');
+                    
+                    // Scroll to first error
+                    const firstError = document.querySelector('.is-invalid, .error');
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    
+                    return false;
+                }
+
+                // Deshabilitar botón para evitar envío doble
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '? Creando Producto...';
+
+                console.log('? Formulario válido, enviando...');
+            });
+
+            // Funciones helper
+            function showImageError(message) {
+                imageError.textContent = message;
+                imageError.style.display = 'block';
+                imagePreview.classList.add('error');
+                clearImagePreview();
+            }
+
+            function clearImagePreview() {
+                hiddenImagenUrl.value = '';
+                imageFileName.textContent = 'No hay archivo seleccionado';
+                imagePreview.classList.remove('has-image');
+                previewImg.style.display = 'none';
+                placeholder.style.display = 'block';
+            }
+
+            // Animaciones de entrada
+            const elements = document.querySelectorAll('.form-card, .tips-section, .restaurant-info');
+            elements.forEach((element, index) => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    element.style.transition = 'all 0.5s ease';
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, index * 150);
+            });
+
+            // Auto-dismiss alertas
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    if (alert.parentNode) {
+                        alert.style.transition = 'all 0.5s ease';
+                        alert.style.opacity = '0';
+                        alert.style.transform = 'translateY(-20px)';
+                        
+                        setTimeout(() => {
+                            if (alert.parentNode) {
+                                alert.remove();
+                            }
+                        }, 500);
+                    }
+                }, 5000);
+            });
+
+            console.log('? Todos los scripts inicializados');
+        });
+    </script>
+}

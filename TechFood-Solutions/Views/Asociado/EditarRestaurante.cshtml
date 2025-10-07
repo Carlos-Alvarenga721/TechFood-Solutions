@@ -1,0 +1,786 @@
+﻿@model TechFood_Solutions.ViewModels.EditarRestauranteViewModel
+
+@{
+    ViewData["Title"] = "Editar Restaurante";
+}
+
+<style>
+    .editar-restaurante-page {
+        padding: 20px 0;
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 120px);
+    }
+
+    .editar-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    /* Header */
+    .page-header {
+        background: linear-gradient(135deg, #f39c12, #e67e22);
+        color: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(243,156,18,0.3);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .header-icon {
+        width: 70px;
+        height: 70px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+    }
+
+    .header-content h1 {
+        font-size: 2.2rem;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+
+    .header-content p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    /* Current Restaurant Info */
+    .current-restaurant-info {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        border-left: 4px solid #f39c12;
+    }
+
+    .current-logo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #e0e0e0;
+    }
+
+    .current-details h3 {
+        margin: 0 0 8px 0;
+        font-size: 1.4rem;
+        color: #2c3e50;
+    }
+
+    .current-details p {
+        margin: 0 0 8px 0;
+        color: #7f8c8d;
+        font-size: 1rem;
+    }
+
+    .current-details small {
+        color: #95a5a6;
+        font-size: 0.9rem;
+    }
+
+    /* Form Card */
+    .form-card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+    }
+
+    .form-title {
+        font-size: 1.8rem;
+        color: #2c3e50;
+        margin-bottom: 30px;
+        text-align: center;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    /* Logo Upload Section */
+    .logo-upload-section {
+        margin-bottom: 40px;
+        text-align: center;
+    }
+
+    .logo-preview-container {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 20px;
+    }
+
+    .logo-preview {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border: 3px dashed #d0d0d0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+
+    .logo-preview:hover {
+        border-color: #f39c12;
+        background: linear-gradient(135deg, #fef9e7 0%, #fcf3cf 100%);
+    }
+
+    .logo-preview.has-logo {
+        border: 3px solid #f39c12;
+        background: none;
+    }
+
+    .logo-preview.error {
+        border: 3px solid #dc3545;
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    }
+
+    .preview-logo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .logo-placeholder {
+        color: #6c757d;
+        font-size: 3rem;
+        opacity: 0.3;
+    }
+
+    .logo-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(243, 156, 18, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+        border-radius: 50%;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .logo-preview:hover .logo-overlay {
+        opacity: 1;
+    }
+
+    .file-input-wrapper {
+        position: relative;
+        display: inline-block;
+        margin-right: 15px;
+    }
+
+    .file-input {
+        opacity: 0;
+        position: absolute;
+        z-index: -1;
+    }
+
+    .file-input-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 25px;
+        background: #f39c12;
+        color: white;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(243,156,18,0.3);
+    }
+
+    .file-input-label:hover {
+        background: #e67e22;
+        transform: translateY(-2px);
+    }
+
+    .current-logo-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 25px;
+        background: #95a5a6;
+        color: white;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: default;
+    }
+
+    .logo-info {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        margin-top: 10px;
+    }
+
+    /* Form Groups */
+    .form-group {
+        margin-bottom: 30px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 10px;
+        display: block;
+        font-size: 1.1rem;
+    }
+
+    .required::after {
+        content: " *";
+        color: #e74c3c;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 15px 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s;
+        background: white;
+    }
+
+    .form-control:focus {
+        border-color: #f39c12;
+        box-shadow: 0 0 0 0.2rem rgba(243, 156, 18, 0.25);
+        outline: none;
+    }
+
+    .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+
+    .form-control.is-valid {
+        border-color: #28a745;
+    }
+
+    .invalid-feedback {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 8px;
+        display: block;
+    }
+
+    .form-text {
+        color: #6c757d;
+        font-size: 0.875rem;
+        margin-top: 8px;
+    }
+
+    /* Action Buttons */
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 2px solid #f0f0f0;
+    }
+
+    .btn {
+        padding: 15px 40px;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-primary {
+        background: #f39c12;
+        color: white;
+        box-shadow: 0 4px 15px rgba(243,156,18,0.3);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        background: #e67e22;
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(243,156,18,0.4);
+    }
+
+    .btn-primary:disabled {
+        background: #95a5a6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+
+    /* Alert Styles */
+    .alert {
+        border-radius: 12px;
+        padding: 15px 20px;
+        margin-bottom: 25px;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .alert-success {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        color: #155724;
+    }
+
+    .alert-danger {
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        color: #721c24;
+    }
+
+    /* Tips Section */
+    .tips-section {
+        background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+        border-left: 4px solid #ff9800;
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+
+    .tips-title {
+        color: #f57c00;
+        font-weight: bold;
+        margin-bottom: 15px;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .tips-list {
+        color: #e65100;
+        font-size: 0.95rem;
+        margin: 0;
+        padding-left: 20px;
+    }
+
+    .tips-list li {
+        margin-bottom: 8px;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .form-card {
+            padding: 25px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .logo-preview {
+            width: 150px;
+            height: 150px;
+        }
+
+        .current-restaurant-info {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .file-input-wrapper {
+            margin-right: 0;
+            margin-bottom: 10px;
+        }
+    }
+</style>
+
+<div class="editar-restaurante-page">
+    <div class="editar-container">
+        <!-- Header -->
+        <div class="page-header">
+            <div class="header-icon">🏪</div>
+            <div class="header-content">
+                <h1>Editar Restaurante</h1>
+                <p>Actualiza la información de tu restaurante</p>
+            </div>
+        </div>
+
+        <!-- Current Restaurant Info -->
+        <div class="current-restaurant-info">
+            <img src="~/images/restaurantes/@Model.LogoUrlActual" 
+                 alt="Logo actual" 
+                 class="current-logo"
+                 onerror="this.src='/images/default-restaurant.png';">
+            <div class="current-details">
+                <h3>@Model.Nombre</h3>
+                <p>@Model.Descripcion</p>
+                <small>Información del restaurante</small>
+            </div>
+        </div>
+
+        <!-- Tips Section -->
+        <div class="tips-section">
+            <div class="tips-title">
+                💡 Consejos para un restaurante exitoso
+            </div>
+            <ul class="tips-list">
+                <li>Usa un nombre memorable y fácil de pronunciar</li>
+                <li>Escribe una descripción que refleje tu especialidad culinaria</li>
+                <li>Sube un logo de alta calidad que represente tu marca</li>
+                <li>Mantén la información actualizada para atraer más clientes</li>
+                <li>Destaca lo que te hace único frente a la competencia</li>
+            </ul>
+        </div>
+
+        <!-- Alerts -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success" id="successAlert">
+                <span>✅</span>
+                <span><strong>¡Éxito!</strong> @TempData["Success"]</span>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger" id="errorAlert">
+                <span>❌</span>
+                <span><strong>Error:</strong> @TempData["Error"]</span>
+            </div>
+        }
+
+        <!-- Validation Summary -->
+        @if (ViewData.ModelState.Any(x => x.Value.Errors.Count > 0))
+        {
+            <div class="alert alert-danger">
+                <span>❌</span>
+                <div>
+                    <strong>Por favor corrige los siguientes errores:</strong>
+                    <ul style="margin: 10px 0 0 20px;">
+                        @foreach (var error in ViewData.ModelState.Where(x => x.Value.Errors.Count > 0))
+                        {
+                            foreach (var errorMessage in error.Value.Errors)
+                            {
+                                <li>@errorMessage.ErrorMessage</li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+
+        <!-- Form Card -->
+        <div class="form-card">
+            <h2 class="form-title">Información del Restaurante</h2>
+
+            <form asp-action="EditarRestaurante" method="post" enctype="multipart/form-data" id="restaurantForm">
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="LogoUrlActual" />
+
+                <!-- Logo Upload Section -->
+                <div class="logo-upload-section">
+                    <div class="logo-preview-container">
+                        <div class="logo-preview has-logo" id="logoPreview">
+                            @if (!string.IsNullOrEmpty(Model.LogoUrlActual))
+                            {
+                                <img src="~/images/restaurantes/@Model.LogoUrlActual" 
+                                     alt="Logo actual" 
+                                     class="preview-logo" 
+                                     id="previewLogo"
+                                     onerror="this.style.display='none'; document.getElementById('logoPlaceholder').style.display='block'; document.getElementById('logoPreview').classList.remove('has-logo');">
+                                <div class="logo-placeholder" id="logoPlaceholder" style="display: none;">🏪</div>
+                            }
+                            else
+                            {
+                                <div class="logo-placeholder" id="logoPlaceholder">🏪</div>
+                                <img class="preview-logo" id="previewLogo" style="display: none;" />
+                            }
+                            <div class="logo-overlay">
+                                Click para cambiar logo
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                        <div class="file-input-wrapper">
+                            <input type="file" 
+                                   id="logoFile" 
+                                   name="logoFile" 
+                                   class="file-input" 
+                                   accept="image/*">
+                            <label for="logoFile" class="file-input-label">
+                                Cambiar Logo
+                            </label>
+                        </div>
+                        
+                        <div class="current-logo-label">
+                            Logo Actual
+                        </div>
+                    </div>
+                    
+                    <div class="logo-info">
+                        Formatos soportados: JPG, PNG, GIF (máx. 5MB)<br>
+                        <span id="logoFileName">
+                            @if (!string.IsNullOrEmpty(Model.LogoUrlActual))
+                            {
+                                <text>Logo actual cargado</text>
+                            }
+                            else
+                            {
+                                <text>No hay logo actual</text>
+                            }
+                        </span>
+                    </div>
+
+                    <!-- Error de logo -->
+                    <span class="invalid-feedback" id="logoError" style="display: none;"></span>
+                </div>
+
+                <!-- Restaurant Name -->
+                <div class="form-group">
+                    <label asp-for="Nombre" class="form-label required">Nombre del Restaurante</label>
+                    <input asp-for="Nombre" 
+                           class="form-control" 
+                           placeholder="Ej: Pizzería Napoli, Sushi House, Burger Palace..."
+                           maxlength="250">
+                    <span asp-validation-for="Nombre" class="invalid-feedback"></span>
+                    <div class="form-text">Un nombre único y memorable para tu restaurante</div>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label asp-for="Descripcion" class="form-label required">Descripción</label>
+                    <textarea asp-for="Descripcion" 
+                              class="form-control" 
+                              rows="4" 
+                              placeholder="Describe tu restaurante, especialidades, ambiente, historia..."
+                              maxlength="500"></textarea>
+                    <span asp-validation-for="Descripcion" class="invalid-feedback"></span>
+                    <div class="form-text">Cuenta la historia y especialidades de tu restaurante</div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        Guardar Cambios
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔧 EditarRestaurante cargado correctamente');
+
+            const logoInput = document.getElementById('logoFile');
+            const logoPreview = document.getElementById('logoPreview');
+            const previewLogo = document.getElementById('previewLogo');
+            const logoPlaceholder = document.getElementById('logoPlaceholder');
+            const logoFileName = document.getElementById('logoFileName');
+            const logoError = document.getElementById('logoError');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Manejo de upload de logo
+            logoInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                
+                // Limpiar errores previos
+                logoError.style.display = 'none';
+                logoPreview.classList.remove('error');
+                
+                if (file) {
+                    console.log('📁 Nuevo logo seleccionado:', file.name);
+
+                    // Validar tipo de archivo
+                    if (!file.type.startsWith('image/')) {
+                        showLogoError('❌ Por favor selecciona un archivo de imagen válido (JPG, PNG, GIF)');
+                        return;
+                    }
+
+                    // Validar tamaño (5MB max)
+                    if (file.size > 5 * 1024 * 1024) {
+                        showLogoError('❌ La imagen es demasiado grande. Máximo 5MB permitido');
+                        return;
+                    }
+
+                    // Actualizar UI
+                    logoFileName.innerHTML = `Nuevo logo seleccionado`;
+                    logoPreview.classList.add('has-logo');
+
+                    // Mostrar preview
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewLogo.src = e.target.result;
+                        previewLogo.style.display = 'block';
+                        logoPlaceholder.style.display = 'none';
+                        console.log('✅ Preview de nuevo logo mostrado');
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    // Restaurar logo original
+                    restoreOriginalLogo();
+                }
+            });
+
+            // Click en el preview para abrir selector
+            logoPreview.addEventListener('click', function() {
+                logoInput.click();
+            });
+
+            // Validación del formulario
+            const form = document.getElementById('restaurantForm');
+            form.addEventListener('submit', function(e) {
+                console.log('📤 Enviando formulario de edición...');
+                
+                let isValid = true;
+
+                // Validar campos requeridos
+                const nombre = document.querySelector('[name="Nombre"]');
+                const descripcion = document.querySelector('[name="Descripcion"]');
+
+                if (!nombre.value.trim()) {
+                    nombre.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    nombre.classList.remove('is-invalid');
+                    nombre.classList.add('is-valid');
+                }
+
+                if (!descripcion.value.trim()) {
+                    descripcion.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    descripcion.classList.remove('is-invalid');
+                    descripcion.classList.add('is-valid');
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    console.log('❌ Formulario inválido, envío cancelado');
+                    
+                    // Scroll to first error
+                    const firstError = document.querySelector('.is-invalid, .error');
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    
+                    return false;
+                }
+
+                // Deshabilitar botón para evitar envío doble
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '⏳ Guardando Cambios...';
+
+                console.log('✅ Formulario válido, enviando edición...');
+            });
+
+            // Funciones helper
+            function showLogoError(message) {
+                logoError.textContent = message;
+                logoError.style.display = 'block';
+                logoPreview.classList.add('error');
+            }
+
+            function restoreOriginalLogo() {
+                logoFileName.innerHTML = '@(!string.IsNullOrEmpty(Model.LogoUrlActual) ? "Logo actual cargado" : "No hay logo actual")';
+                
+                // Restaurar logo original
+                @if (!string.IsNullOrEmpty(Model.LogoUrlActual))
+                {
+                    <text>
+                    previewLogo.src = '/images/restaurantes/@Model.LogoUrlActual';
+                    previewLogo.style.display = 'block';
+                    logoPlaceholder.style.display = 'none';
+                    logoPreview.classList.add('has-logo');
+                    </text>
+                }
+                else
+                {
+                    <text>
+                    previewLogo.style.display = 'none';
+                    logoPlaceholder.style.display = 'block';
+                    logoPreview.classList.remove('has-logo');
+                    </text>
+                }
+            }
+
+            // Animaciones de entrada
+            const elements = document.querySelectorAll('.form-card, .tips-section, .current-restaurant-info');
+            elements.forEach((element, index) => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    element.style.transition = 'all 0.5s ease';
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, index * 150);
+            });
+
+            // Auto-dismiss alertas
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    if (alert.parentNode) {
+                        alert.style.transition = 'all 0.5s ease';
+                        alert.style.opacity = '0';
+                        alert.style.transform = 'translateY(-20px)';
+                        
+                        setTimeout(() => {
+                            if (alert.parentNode) {
+                                alert.remove();
+                            }
+                        }, 500);
+                    }
+                }, 5000);
+            });
+
+            console.log('✅ Todos los scripts de edición inicializados');
+        });
+    </script>
+}

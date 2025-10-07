@@ -15,7 +15,7 @@ namespace TechFood_Solutions.Models.Seeds
                     Descripcion = "Tomate, mozzarella, albahaca",
                     Precio = 8.99m,
                     ImagenUrl = "margherita.jpg",
-                    RestaurantId = 1 // Importante: especificar la FK
+                    RestaurantId = 1
                 },
                 new MenuItem
                 {
