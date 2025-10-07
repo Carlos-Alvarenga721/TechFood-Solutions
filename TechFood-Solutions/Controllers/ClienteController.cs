@@ -16,7 +16,7 @@ namespace TechFood_Solutions.Controllers
         // GET: Cliente/Restaurantes - Vista principal de restaurantes para clientes
         public async Task<IActionResult> Restaurantes()
         {
-            var restaurantes = await _context.Restaurantes // Cambio: usar "Restaurants" no "Restaurantes"
+            var restaurantes = await _context.Restaurantes // Correcto: usar "Restaurantes"
                 .Include(r => r.MenuItems)
                 .ToListAsync();
 

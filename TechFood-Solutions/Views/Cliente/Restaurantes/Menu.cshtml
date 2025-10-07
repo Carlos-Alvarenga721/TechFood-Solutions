@@ -2,10 +2,10 @@
 
 @{
     ViewData["Title"] = $"{Model.Nombre} - Menú";
+    @inject TechFood_Solutions.Services.ICartService CartService
 }
 
 <style>
-    /* Reset solo para esta vista */
     .menu-page {
         padding: 20px 0;
         background-color: #f8f9fa;
@@ -18,7 +18,6 @@
         padding: 0 15px;
     }
 
-    /* Header del restaurante */
     .restaurant-header {
         background: white;
         border-radius: 20px;
@@ -88,7 +87,6 @@
             transform: scale(1.1);
         }
 
-    /* Sección de menú */
     .menu-section {
         background: white;
         border-radius: 20px;
@@ -152,7 +150,6 @@
             background: #fff5f5;
         }
 
-    /* Grid de productos */
     .menu-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -233,19 +230,6 @@
             color: #3498db;
         }
 
-    .promo-badge {
-        position: absolute;
-        bottom: 10px;
-        left: 0;
-        right: 0;
-        background: #2c3e50;
-        color: white;
-        padding: 8px;
-        text-align: center;
-        font-size: 0.85rem;
-        font-weight: bold;
-    }
-
     .item-info {
         padding: 5px;
     }
@@ -268,6 +252,7 @@
         display: flex;
         align-items: center;
         gap: 8px;
+        margin-bottom: 10px;
     }
 
     .item-stars {
@@ -280,7 +265,38 @@
         font-size: 0.85rem;
     }
 
-    /* Botón ver todos */
+    .add-to-cart-btn {
+        width: 100%;
+        padding: 10px 15px;
+        background: #e74c3c;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+    }
+
+        .add-to-cart-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+        }
+
+        .add-to-cart-btn:active {
+            transform: translateY(0);
+        }
+
+    .cart-icon {
+        font-size: 1.1rem;
+    }
+
     .view-all-container {
         text-align: center;
         margin-top: 30px;
@@ -305,7 +321,6 @@
             box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
         }
 
-    /* Responsive */
     @@media (max-width: 768px) {
         .restaurant-header {
             flex-direction: column;
@@ -325,11 +340,54 @@
             font-size: 1.5rem;
         }
     }
+
+    .menu-item {
+        position: relative; /* necesario para posicionar el badge dentro */
+    }
+
+    .product-badge {
+        position: absolute;
+        top: -8px;
+        left: -8px;
+        background: #e74c3c;
+        color: white;
+        border: 2px solid white;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        animation: pulse 2s infinite;
+    }
+
+
+
+    @@keyframes pop {
+        0%
+
+    {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+    }
+
+    }
 </style>
 
 <div class="menu-page">
     <div class="menu-container">
-        <!-- Header del Restaurante -->
         <div class="restaurant-header">
             <img src="~/images/restaurantes/@Model.LogoUrl" 
                  alt="@Model.Nombre" 
@@ -346,7 +404,6 @@
             <button class="favorite-btn">♥</button>
         </div>
 
-        <!-- Sección de Menú -->
         <div class="menu-section">
             <div class="menu-header">
                 <div>
@@ -359,11 +416,16 @@
                 </div>
             </div>
 
-            <!-- Grid de Items del Menú -->
             <div class="menu-grid">
                 @foreach (var item in Model.MenuItems)
                 {
-                    <div class="menu-item">
+                    var cartItemCount = CartService.GetItemQuantity(item.Id);
+
+                    <div class="menu-item" data-menu-item-id="@item.Id">
+                        @if (cartItemCount > 0)
+                        {
+                            <span class="product-badge" style="display: flex;">@cartItemCount</span>
+                        }
                         <div class="item-image-container">
                             @if (!string.IsNullOrEmpty(item.ImagenUrl))
                             {
@@ -389,6 +451,14 @@
                                 <span class="item-stars">★★★★★</span>
                                 <span class="item-reviews">(65)</span>
                             </div>
+                            <form class="add-to-cart-form" method="post" data-menu-item-id="@item.Id" data-restaurant-id="@item.RestaurantId">
+                                <input type="hidden" name="menuItemId" value="@item.Id" />
+                                <input type="hidden" name="cantidad" value="1" />
+                                <button type="submit" class="add-to-cart-btn">
+                                    <span class="cart-icon">🛒</span> Agregar
+                                </button>
+                            </form>
+
                         </div>
                     </div>
                 }
@@ -414,48 +484,187 @@
     </div>
 </div>
 
+<!-- Modal para confirmar cambio de restaurante -->
+<div id="confirmModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <p id="modalMessage">
+            Ya tienes productos de otro restaurante en tu carrito.<br>
+            ¿Deseas vaciar el carrito y comenzar una nueva orden con este restaurante?
+        </p>
+        <div class="modal-buttons">
+            <button id="modalConfirmBtn" class="btn btn-danger">Sí, vaciar carrito</button>
+            <button id="modalCancelBtn" class="btn btn-secondary">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 20px 30px;
+        border-radius: 8px;
+        text-align: center;
+        max-width: 400px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+
+    .modal-buttons {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-around;
+    }
+
+        .modal-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+</style>
+
+
 @section Scripts {
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🏠 Menú del cliente cargado');
-            console.log('🆔 Restaurant ID:', @Model.Id);
-            console.log('🍽️ Total productos:', @Model.MenuItems.Count());
+        document.querySelectorAll('.add-to-cart-form').forEach(form => {
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
 
-            @foreach (var item in Model.MenuItems)
-            {
-                <text>console.log('📷 Imagen esperada: /images/items/restaurant_@(Model.Id)/@item.ImagenUrl');</text>
+                const menuItemId = this.dataset.menuItemId;
+                const cantidad = this.querySelector('input[name="cantidad"]').value;
+
+                try {
+                    const response = await fetch('/Cart/AddToCartAjax', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                        },
+                        body: `menuItemId=${menuItemId}&cantidad=${cantidad}`
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        actualizarBadgeGlobal(result.totalItems);
+                        actualizarBadgeProducto(menuItemId, result.itemQuantity);
+                    } else if (result.requiresClear) {
+                        // Mostrar modal visual
+                        mostrarModalConfirmacion(result.message, () => {
+                            // Si el usuario confirma, limpiamos el carrito y volvemos a intentar agregar
+                            fetch('/Cart/ClearAndAdd', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                                },
+                                body: `menuItemId=${menuItemId}&cantidad=${cantidad}`
+                            })
+                            .then(resp => resp.json())
+                            .then(clearResult => {
+                                if (clearResult.success) {
+                                    actualizarBadgeGlobal(clearResult.totalItems);
+                                    actualizarBadgeProducto(menuItemId, clearResult.itemQuantity);
+                                } else {
+                                    alert("Error al limpiar y agregar: " + clearResult.message);
+                                }
+                            });
+
+                        });
+                    } else {
+                        alert("Error al agregar al carrito: " + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error al agregar al carrito:', error);
+                    alert('Ocurrió un error al procesar tu solicitud.');
+                }
+            });
+        });
+
+        // Actualizar badge global del carrito en el header
+        function actualizarBadgeGlobal(totalItems) {
+            const badge = document.querySelector('.cart-badge');
+            if (badge) {
+                if (totalItems > 0) {
+                    badge.textContent = ""; // Lo dejamos vacío
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
             }
-        });
+        }
 
-        // Funcionalidad para botones de favoritos
-        document.querySelectorAll('.action-icon.heart, .favorite-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                this.style.transform = 'scale(1.3)';
-                setTimeout(() => {
-                    this.style.transform = 'scale(1)';
-                }, 200);
-            });
-        });
+        // Mostrar contador sobre el producto individual
+        function actualizarBadgeProducto(menuItemId, cantidad) {
+            const container = document.querySelector(`.menu-item[data-menu-item-id="${menuItemId}"]`);
+            if (!container) return;
 
-        // Funcionalidad para las flechas de navegación
-        const leftArrow = document.querySelector('.arrow-btn:first-child');
-        const rightArrow = document.querySelector('.arrow-btn:last-child');
-        const menuGrid = document.querySelector('.menu-grid');
+            let badge = container.querySelector('.product-badge');
 
-        leftArrow.addEventListener('click', () => {
-            menuGrid.scrollBy({ left: -300, behavior: 'smooth' });
-        });
+            if (!badge) {
+                badge = document.createElement('span');
+                badge.classList.add('product-badge');
+                container.appendChild(badge);
+            }
 
-        rightArrow.addEventListener('click', () => {
-            menuGrid.scrollBy({ left: 300, behavior: 'smooth' });
-        });
+            if (cantidad > 0) {
+                badge.textContent = cantidad;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
 
-        // Efecto hover en items del menú
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.addEventListener('click', function() {
-                console.log('Item seleccionado:', this.querySelector('.item-name').textContent);
-            });
-        });
+        function mostrarModalConfirmacion(mensaje, onConfirm) {
+            const modal = document.getElementById('confirmModal');
+            const message = document.getElementById('modalMessage');
+            const confirmBtn = document.getElementById('modalConfirmBtn');
+            const cancelBtn = document.getElementById('modalCancelBtn');
+
+            message.textContent = mensaje;
+
+            modal.style.display = 'flex';
+
+            const confirmHandler = () => {
+                modal.style.display = 'none';
+                confirmBtn.removeEventListener('click', confirmHandler);
+                cancelBtn.removeEventListener('click', cancelHandler);
+                onConfirm(); // Ejecuta callback de confirmación
+            };
+
+            const cancelHandler = () => {
+                modal.style.display = 'none';
+                confirmBtn.removeEventListener('click', confirmHandler);
+                cancelBtn.removeEventListener('click', cancelHandler);
+            };
+
+            confirmBtn.addEventListener('click', confirmHandler);
+            cancelBtn.addEventListener('click', cancelHandler);
+        }
+
     </script>
 }
+

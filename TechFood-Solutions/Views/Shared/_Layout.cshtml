@@ -29,6 +29,9 @@
                         <li class="nav-item"><a class="nav-link text-white" href="/Asociado">🏪 Panel Asociado</a></li>
                         <li class="nav-item"><a class="nav-link text-white fw-bold" href="/Account/Login">Iniciar Sesión</a></li>
                     </ul>
+                    <div class="navbar-nav ms-auto">
+                        @await Html.PartialAsync("_CartBadge")
+                    </div>
                 </div>
             </div>
         </nav>
