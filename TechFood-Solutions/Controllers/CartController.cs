@@ -228,21 +228,6 @@ namespace TechFood_Solutions.Controllers
             return View(model);
         }
 
-        // GET: Cart/MyOrders - Ver mis órdenes
-        public async Task<IActionResult> MyOrders()
-        {
-            if (!User.Identity.IsAuthenticated)
-                return RedirectToAction("Login", "Account");
-
-            var orders = await _context.Orders
-                .Include(o => o.Restaurant)
-                .Include(o => o.OrderItems)
-                .OrderByDescending(o => o.FechaOrden)
-                .ToListAsync();
-
-            return View(orders);
-        }
-
         // GET: Cart/OrderDetails/5 - Ver detalles de una orden
         public async Task<IActionResult> OrderDetails(int id)
         {

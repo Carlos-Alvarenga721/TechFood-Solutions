@@ -12,7 +12,7 @@ using TechFood_Solutions.Models;
 namespace TechFood_Solutions.Migrations
 {
     [DbContext(typeof(TechFoodDbContext))]
-    [Migration("20251007203153_First")]
+    [Migration("20251007215416_First")]
     partial class First
     {
         /// <inheritdoc />
