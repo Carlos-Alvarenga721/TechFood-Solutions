@@ -17,14 +17,12 @@ namespace TechFood_Solutions.Controllers
             _cartService = cartService;
         }
 
-        // GET: Cart/Index - Ver carrito
         public IActionResult Index()
         {
             var cart = _cartService.GetCart();
             return View(cart);
         }
 
-        // POST: Cart/UpdateQuantity - Actualizar cantidad
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult UpdateQuantity(int menuItemId, int cantidad)
@@ -33,7 +31,6 @@ namespace TechFood_Solutions.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // POST: Cart/RemoveItem - Eliminar item del carrito
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult RemoveItem(int menuItemId)
@@ -43,12 +40,10 @@ namespace TechFood_Solutions.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Cart/GetCartInfo - Obtener info del carrito (para validación)
         [HttpGet]
         public IActionResult GetCartInfo()
         {
             var cart = _cartService.GetCart();
-
             return Json(new
             {
                 hasItems = cart.Items.Any(),
@@ -58,7 +53,6 @@ namespace TechFood_Solutions.Controllers
             });
         }
 
-        // GET: Cart/Checkout - Página de checkout
         public IActionResult Checkout()
         {
             var cart = _cartService.GetCart();
@@ -77,7 +71,6 @@ namespace TechFood_Solutions.Controllers
             return View(model);
         }
 
-        // POST: Cart/ProcessCheckout - Procesar la orden
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProcessCheckout(CheckoutViewModel model)
@@ -90,10 +83,7 @@ namespace TechFood_Solutions.Controllers
                 return RedirectToAction("Restaurantes", "Cliente");
             }
 
-            // IMPORTANTE: Recargar el Cart en el modelo antes de validar
             model.Cart = cart;
-
-            // Ahora validar solo los campos del formulario, ignorando Cart
             ModelState.Remove("Cart");
             ModelState.Remove("Cart.Items");
 
@@ -102,9 +92,16 @@ namespace TechFood_Solutions.Controllers
                 return View("Checkout", model);
             }
 
-            // Crear la orden
+            // OBTENER UserId - Hardcoded para testing
+            // TODO: Cuando el login esté listo, reemplazar por:
+            // var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            int userId = GetCurrentUserId();
+
+            // Crear la orden CON UserId
             var order = new Order
             {
+                UserId = userId,
                 NombreCliente = model.NombreCliente,
                 TelefonoCliente = model.TelefonoCliente,
                 DireccionEntrega = model.DireccionEntrega,
@@ -134,7 +131,6 @@ namespace TechFood_Solutions.Controllers
                 _context.Orders.Add(order);
                 await _context.SaveChangesAsync();
 
-                // Limpiar el carrito
                 _cartService.ClearCart();
 
                 TempData["Success"] = "¡Orden realizada con éxito!";
@@ -147,7 +143,47 @@ namespace TechFood_Solutions.Controllers
             }
         }
 
-        // GET: Cart/OrderConfirmation/5 - Confirmación de orden
+        // MyOrders
+        // Solo muestra órdenes del usuario loguead
+        public async Task<IActionResult> MyOrders()
+        {
+            // OBTENER UserId - Hardcoded para testing
+            // TODO: Cuando el login esté listo, reemplazar por:
+            // var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            int userId = GetCurrentUserId();
+
+            // FILTRAR solo órdenes del usuario actual
+            var orders = await _context.Orders
+                .Include(o => o.Restaurant)
+                .Include(o => o.OrderItems)
+                .Where(o => o.UserId == userId)
+                .OrderByDescending(o => o.FechaOrden)
+                .ToListAsync();
+
+            return View(orders);
+        }
+
+        // Simular usuario logueado
+        private int GetCurrentUserId()
+        {
+            // TEMPORAL: Usuario hardcoded para testing
+            // Se puede cambiar este ID para probar diferentes usuarios
+
+            // Obtener de sesión si existe (para simular login)
+            var userIdSession = HttpContext.Session.GetInt32("TestUserId");
+            if (userIdSession.HasValue)
+            {
+                return userIdSession.Value;
+            }
+
+            // Por defecto, usar el usuario con Id = 1
+            return 1;
+
+            // TODO: Reemplazar con esto cuando el login esté listo:
+            // return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        }
+
         public async Task<IActionResult> OrderConfirmation(int id)
         {
             var order = await _context.Orders
@@ -159,6 +195,14 @@ namespace TechFood_Solutions.Controllers
             if (order == null)
             {
                 return NotFound();
+            }
+
+            // Verificar que la orden pertenece al usuario actual
+            int currentUserId = GetCurrentUserId();
+            if (order.UserId != currentUserId)
+            {
+                TempData["Error"] = "No tienes permiso para ver esta orden";
+                return RedirectToAction(nameof(MyOrders));
             }
 
             var model = new OrderConfirmationViewModel
@@ -176,19 +220,6 @@ namespace TechFood_Solutions.Controllers
             return View(model);
         }
 
-        // GET: Cart/MyOrders - Ver mis órdenes (opcional, para historial)
-        public async Task<IActionResult> MyOrders()
-        {
-            var orders = await _context.Orders
-                .Include(o => o.Restaurant)
-                .Include(o => o.OrderItems)
-                .OrderByDescending(o => o.FechaOrden)
-                .ToListAsync();
-
-            return View(orders);
-        }
-
-        // GET: Cart/OrderDetails/5 - Ver detalles de una orden
         public async Task<IActionResult> OrderDetails(int id)
         {
             var order = await _context.Orders
@@ -202,10 +233,17 @@ namespace TechFood_Solutions.Controllers
                 return NotFound();
             }
 
+            // Verificar que la orden pertenece al usuario actual
+            int currentUserId = GetCurrentUserId();
+            if (order.UserId != currentUserId)
+            {
+                TempData["Error"] = "No tienes permiso para ver esta orden";
+                return RedirectToAction(nameof(MyOrders));
+            }
+
             return View(order);
         }
 
-        // API: Get cart count para mostrar en navbar
         [HttpGet]
         public IActionResult GetCartCount()
         {
@@ -213,7 +251,6 @@ namespace TechFood_Solutions.Controllers
             return Json(new { count });
         }
 
-        // POST: Cart/AddToCartAjax
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddToCartAjax(int menuItemId, int cantidad = 1)
@@ -257,7 +294,6 @@ namespace TechFood_Solutions.Controllers
             }
         }
 
-        // Utilizado por el modal para la eliminacion del carrito actual y agregar el nuevo elemento de otro restaurante
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ClearAndAdd(int menuItemId, int cantidad = 1, string? notas = null)
@@ -303,7 +339,6 @@ namespace TechFood_Solutions.Controllers
             }
         }
 
-        // POST: Cart/UpdateQuantityAjax - Actualizar cantidad sin recargar
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult UpdateQuantityAjax(int menuItemId, int cantidad)
@@ -348,7 +383,6 @@ namespace TechFood_Solutions.Controllers
             }
         }
 
-        // POST: Cart/RemoveItemAjax - Eliminar item sin recargar
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult RemoveItemAjax(int menuItemId)
@@ -376,6 +410,5 @@ namespace TechFood_Solutions.Controllers
                 });
             }
         }
-
     }
 }
