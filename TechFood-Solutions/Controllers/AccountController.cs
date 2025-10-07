@@ -41,7 +41,16 @@ namespace TechFood_Solutions.Controllers
                 return View();
             }
 
-            var result = await _signInManager.PasswordSignInAsync(user, password, isPersistent: true, lockoutOnFailure: false);
+            Console.WriteLine($"user.Id: {user.Id}");
+            Console.WriteLine($"user.Email: {user.Email}");
+            Console.WriteLine($"user.UserName: {user.UserName}");
+
+            if (string.IsNullOrWhiteSpace(user.UserName))
+            {
+                Console.WriteLine("⚠️ UserName está vacío o null. Este es el valor que causa la excepción.");
+            }
+
+            var result = await _signInManager.PasswordSignInAsync(user.UserName, password, isPersistent: true, lockoutOnFailure: false);
             if (!result.Succeeded)
             {
                 ModelState.AddModelError("", "Usuario o contraseña incorrectos.");
