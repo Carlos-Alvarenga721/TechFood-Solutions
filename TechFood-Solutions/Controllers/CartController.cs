@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TechFood_Solutions.Models;
 using TechFood_Solutions.Services;
@@ -7,7 +6,6 @@ using TechFood_Solutions.ViewModels;
 
 namespace TechFood_Solutions.Controllers
 {
-    [Authorize(Roles = RoleNames.Client)]
     public class CartController : Controller
     {
         private readonly TechFoodDbContext _context;
@@ -29,6 +27,9 @@ namespace TechFood_Solutions.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult UpdateQuantity(int menuItemId, int cantidad)
         {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+
             _cartService.UpdateQuantity(menuItemId, cantidad);
             return RedirectToAction(nameof(Index));
         }
@@ -37,6 +38,9 @@ namespace TechFood_Solutions.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult RemoveItem(int menuItemId)
         {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+
             _cartService.RemoveFromCart(menuItemId);
             TempData["Success"] = "Item eliminado del carrito";
             return RedirectToAction(nameof(Index));
@@ -45,6 +49,9 @@ namespace TechFood_Solutions.Controllers
         [HttpGet]
         public IActionResult GetCartInfo()
         {
+            if (!User.Identity.IsAuthenticated)
+                return Json(new { hasItems = false, itemCount = 0 });
+
             var cart = _cartService.GetCart();
             return Json(new
             {
@@ -57,8 +64,10 @@ namespace TechFood_Solutions.Controllers
 
         public IActionResult Checkout()
         {
-            var cart = _cartService.GetCart();
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
 
+            var cart = _cartService.GetCart();
             if (!cart.Items.Any())
             {
                 TempData["Error"] = "Tu carrito está vacío";
@@ -77,8 +86,10 @@ namespace TechFood_Solutions.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProcessCheckout(CheckoutViewModel model)
         {
-            var cart = _cartService.GetCart();
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
 
+            var cart = _cartService.GetCart();
             if (!cart.Items.Any())
             {
                 TempData["Error"] = "Tu carrito está vacío";
@@ -90,9 +101,7 @@ namespace TechFood_Solutions.Controllers
             ModelState.Remove("Cart.Items");
 
             if (!ModelState.IsValid)
-            {
                 return View("Checkout", model);
-            }
 
             // OBTENER UserId - Hardcoded para testing
             // TODO: Cuando el login esté listo, reemplazar por:
@@ -115,7 +124,6 @@ namespace TechFood_Solutions.Controllers
                 OrderItems = new List<OrderItem>()
             };
 
-            // Crear los items de la orden
             foreach (var item in cart.Items)
             {
                 order.OrderItems.Add(new OrderItem
@@ -195,9 +203,7 @@ namespace TechFood_Solutions.Controllers
                 .FirstOrDefaultAsync(o => o.Id == id);
 
             if (order == null)
-            {
                 return NotFound();
-            }
 
             // Verificar que la orden pertenece al usuario actual
             int currentUserId = GetCurrentUserId();
@@ -222,8 +228,27 @@ namespace TechFood_Solutions.Controllers
             return View(model);
         }
 
+        // GET: Cart/MyOrders - Ver mis órdenes
+        public async Task<IActionResult> MyOrders()
+        {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+
+            var orders = await _context.Orders
+                .Include(o => o.Restaurant)
+                .Include(o => o.OrderItems)
+                .OrderByDescending(o => o.FechaOrden)
+                .ToListAsync();
+
+            return View(orders);
+        }
+
+        // GET: Cart/OrderDetails/5 - Ver detalles de una orden
         public async Task<IActionResult> OrderDetails(int id)
         {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+
             var order = await _context.Orders
                 .Include(o => o.Restaurant)
                 .Include(o => o.OrderItems)
@@ -231,9 +256,7 @@ namespace TechFood_Solutions.Controllers
                 .FirstOrDefaultAsync(o => o.Id == id);
 
             if (order == null)
-            {
                 return NotFound();
-            }
 
             // Verificar que la orden pertenece al usuario actual
             int currentUserId = GetCurrentUserId();
@@ -246,9 +269,13 @@ namespace TechFood_Solutions.Controllers
             return View(order);
         }
 
+        // GET: Cart/GetCartCount
         [HttpGet]
         public IActionResult GetCartCount()
         {
+            if (!User.Identity.IsAuthenticated)
+                return Json(new { count = 0 });
+
             var count = _cartService.GetCartItemCount();
             return Json(new { count });
         }
@@ -257,14 +284,15 @@ namespace TechFood_Solutions.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddToCartAjax(int menuItemId, int cantidad = 1)
         {
+            if (!User.Identity.IsAuthenticated)
+                return Json(new { success = false, requiresLogin = true, message = "Debes iniciar sesión para agregar al carrito." });
+
             var menuItem = await _context.MenuItems
                 .Include(m => m.Restaurant)
                 .FirstOrDefaultAsync(m => m.Id == menuItemId);
 
             if (menuItem == null)
-            {
                 return Json(new { success = false, message = "Item no encontrado." });
-            }
 
             var cartItem = new CartItem
             {
@@ -296,10 +324,14 @@ namespace TechFood_Solutions.Controllers
             }
         }
 
+        // POST: Cart/ClearAndAdd
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ClearAndAdd(int menuItemId, int cantidad = 1, string? notas = null)
         {
+            if (!User.Identity.IsAuthenticated)
+                return Json(new { success = false, requiresLogin = true, message = "Debes iniciar sesión para agregar al carrito." });
+
             try
             {
                 var menuItem = await _context.MenuItems
@@ -307,9 +339,7 @@ namespace TechFood_Solutions.Controllers
                     .FirstOrDefaultAsync(m => m.Id == menuItemId);
 
                 if (menuItem == null)
-                {
                     return Json(new { success = false, message = "Item no encontrado." });
-                }
 
                 var cartItem = new CartItem
                 {
@@ -341,10 +371,14 @@ namespace TechFood_Solutions.Controllers
             }
         }
 
+        // POST: Cart/UpdateQuantityAjax
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult UpdateQuantityAjax(int menuItemId, int cantidad)
         {
+            if (!User.Identity.IsAuthenticated)
+                return Json(new { success = false, requiresLogin = true, message = "Debes iniciar sesión para modificar el carrito." });
+
             try
             {
                 if (cantidad <= 0)
@@ -377,18 +411,18 @@ namespace TechFood_Solutions.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new
-                {
-                    success = false,
-                    message = "Error al actualizar: " + ex.Message
-                });
+                return Json(new { success = false, message = "Error al actualizar: " + ex.Message });
             }
         }
 
+        // POST: Cart/RemoveItemAjax
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult RemoveItemAjax(int menuItemId)
         {
+            if (!User.Identity.IsAuthenticated)
+                return Json(new { success = false, requiresLogin = true, message = "Debes iniciar sesión para modificar el carrito." });
+
             try
             {
                 _cartService.RemoveFromCart(menuItemId);
@@ -405,11 +439,7 @@ namespace TechFood_Solutions.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new
-                {
-                    success = false,
-                    message = "Error al eliminar: " + ex.Message
-                });
+                return Json(new { success = false, message = "Error al eliminar: " + ex.Message });
             }
         }
     }

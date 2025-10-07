@@ -42,17 +42,17 @@
         flex: 1;
     }
 
-    .restaurant-info h1 {
-        font-size: 2.5rem;
-        color: #2c3e50;
-        margin-bottom: 10px;
-    }
+        .restaurant-info h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
 
-    .restaurant-info p {
-        color: #7f8c8d;
-        font-size: 1.1rem;
-        line-height: 1.6;
-    }
+        .restaurant-info p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
 
     .rating {
         display: flex;
@@ -83,9 +83,9 @@
         transition: transform 0.2s;
     }
 
-    .favorite-btn:hover {
-        transform: scale(1.1);
-    }
+        .favorite-btn:hover {
+            transform: scale(1.1);
+        }
 
     .menu-section {
         background: white;
@@ -110,13 +110,13 @@
         gap: 10px;
     }
 
-    .menu-title::before {
-        content: '';
-        width: 5px;
-        height: 30px;
-        background: #e74c3c;
-        border-radius: 5px;
-    }
+        .menu-title::before {
+            content: '';
+            width: 5px;
+            height: 30px;
+            background: #e74c3c;
+            border-radius: 5px;
+        }
 
     .menu-subtitle {
         color: #7f8c8d;
@@ -144,11 +144,11 @@
         transition: all 0.3s;
     }
 
-    .arrow-btn:hover {
-        border-color: #e74c3c;
-        color: #e74c3c;
-        background: #fff5f5;
-    }
+        .arrow-btn:hover {
+            border-color: #e74c3c;
+            color: #e74c3c;
+            background: #fff5f5;
+        }
 
     .menu-grid {
         display: grid;
@@ -166,10 +166,10 @@
         position: relative;
     }
 
-    .menu-item:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    }
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
 
     .item-image-container {
         position: relative;
@@ -218,17 +218,17 @@
         transition: all 0.3s;
     }
 
-    .action-icon:hover {
-        transform: scale(1.1);
-    }
+        .action-icon:hover {
+            transform: scale(1.1);
+        }
 
-    .action-icon.heart {
-        color: #e74c3c;
-    }
+        .action-icon.heart {
+            color: #e74c3c;
+        }
 
-    .action-icon.eye {
-        color: #3498db;
-    }
+        .action-icon.eye {
+            color: #3498db;
+        }
 
     .item-info {
         padding: 5px;
@@ -283,15 +283,20 @@
         box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
     }
 
-    .add-to-cart-btn:hover {
-        background: #c0392b;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
-    }
+        .add-to-cart-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+        }
 
-    .add-to-cart-btn:active {
-        transform: translateY(0);
-    }
+        .add-to-cart-btn:active {
+            transform: translateY(0);
+        }
+
+        .add-to-cart-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
 
     .cart-icon {
         font-size: 1.1rem;
@@ -315,36 +320,13 @@
         box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
     }
 
-    .view-all-btn:hover {
-        background: #c0392b;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
-    }
-
-    @@media (max-width: 768px) {
-        .restaurant-header {
-            flex-direction: column;
-            text-align: center;
+        .view-all-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
         }
 
-        .restaurant-info h1 {
-            font-size: 2rem;
-        }
-
-        .menu-grid {
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .menu-title {
-            font-size: 1.5rem;
-        }
-    }
-
-    .menu-item {
-        position: relative; /* necesario para posicionar el badge dentro */
-    }
-
+    /* Badge de cantidad en el producto */
     .product-badge {
         position: absolute;
         top: -8px;
@@ -353,44 +335,145 @@
         color: white;
         border: 2px solid white;
         border-radius: 50%;
-        width: 24px;
-        height: 24px;
-        font-size: 0.75rem;
+        width: 28px;
+        height: 28px;
+        font-size: 0.85rem;
         font-weight: bold;
         display: flex;
         align-items: center;
         justify-content: center;
         z-index: 10;
-        animation: pulse 2s infinite;
+        box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+        animation: popIn 0.3s ease;
     }
 
 
-
-    @@keyframes pop {
-        0%
-
-    {
-        transform: scale(0.8);
-        opacity: 0;
+    /* Modal */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        animation: fadeIn 0.3s ease;
     }
 
-    50% {
-        transform: scale(1.1);
-        opacity: 1;
+    .modal-content {
+        background: white;
+        padding: 30px 40px;
+        border-radius: 12px;
+        text-align: center;
+        max-width: 450px;
+        box-shadow: 0 0 30px rgba(0,0,0,0.3);
+        animation: slideUp 0.3s ease;
     }
 
-    100% {
-        transform: scale(1);
+
+    .modal-content p {
+        font-size: 1.1rem;
+        color: #2c3e50;
+        line-height: 1.6;
+        margin-bottom: 0;
     }
 
+    .modal-buttons {
+        margin-top: 25px;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
     }
+
+        .modal-buttons button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+    .btn-danger {
+        background-color: #e74c3c;
+        color: white;
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+
+    .btn-secondary {
+        background-color: #95a5a6;
+        color: white;
+        box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
+    }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(149, 165, 166, 0.4);
+        }
+
+    /* Notificaciones Toast */
+    .notification-toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        z-index: 9999;
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        font-size: 1rem;
+        min-width: 300px;
+    }
+
+        .notification-toast.show {
+            transform: translateX(0);
+        }
+
+    .notification-success {
+        background: #27ae60;
+        color: white;
+    }
+
+    .notification-error {
+        background: #e74c3c;
+        color: white;
+    }
+
+    .notification-content {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .notification-icon {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .notification-message {
+        flex: 1;
+    }
+
+
 </style>
 
 <div class="menu-page">
     <div class="menu-container">
+        <!-- Header del restaurante -->
         <div class="restaurant-header">
-            <img src="~/images/restaurantes/@Model.LogoUrl" 
-                 alt="@Model.Nombre" 
+            <img src="~/images/restaurantes/@Model.LogoUrl"
+                 alt="@Model.Nombre"
                  class="restaurant-logo"
                  onerror="this.src='/images/default-restaurant.png';">
             <div class="restaurant-info">
@@ -404,6 +487,7 @@
             <button class="favorite-btn">♥</button>
         </div>
 
+        <!-- Sección del menú -->
         <div class="menu-section">
             <div class="menu-header">
                 <div>
@@ -416,6 +500,7 @@
                 </div>
             </div>
 
+            <!-- Grid de productos -->
             <div class="menu-grid">
                 @foreach (var item in Model.MenuItems)
                 {
@@ -424,17 +509,16 @@
                     <div class="menu-item" data-menu-item-id="@item.Id">
                         @if (cartItemCount > 0)
                         {
-                            <span class="product-badge" style="display: flex;">@cartItemCount</span>
+                            <span class="product-badge">@cartItemCount</span>
                         }
+
                         <div class="item-image-container">
                             @if (!string.IsNullOrEmpty(item.ImagenUrl))
                             {
-                                <!-- 🚀 RUTA CORREGIDA: Usar ID del restaurante -->
-                                <img src="~/images/items/restaurant_@(Model.Id)/@item.ImagenUrl" 
-                                     alt="@item.Nombre" 
+                                <img src="~/images/items/restaurant_@(Model.Id)/@item.ImagenUrl"
+                                     alt="@item.Nombre"
                                      class="item-image"
-                                     onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=&quot;image-placeholder&quot;>🍽️</div>';"
-                                     onload="console.log('✅ Imagen del menú cargada:', this.src);">
+                                     onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=&quot;image-placeholder&quot;>🍽️</div>';">
                             }
                             else
                             {
@@ -444,6 +528,7 @@
                                 <button class="action-icon heart">♥</button>
                             </div>
                         </div>
+
                         <div class="item-info">
                             <h3 class="item-name">@item.Nombre</h3>
                             <div class="item-price">$@item.Precio.ToString("F2")</div>
@@ -451,20 +536,17 @@
                                 <span class="item-stars">★★★★★</span>
                                 <span class="item-reviews">(65)</span>
                             </div>
-                            <form class="add-to-cart-form" method="post" data-menu-item-id="@item.Id" data-restaurant-id="@item.RestaurantId">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="menuItemId" value="@item.Id" />
-                                <input type="hidden" name="cantidad" value="1" />
-                                <button type="submit" class="add-to-cart-btn">
-                                    <span class="cart-icon">🛒</span> Agregar
-                                </button>
-                            </form>
-
+                            <button type="button"
+                                    class="add-to-cart-btn"
+                                    data-menu-item-id="@item.Id">
+                                <span class="cart-icon">🛒</span> Agregar
+                            </button>
                         </div>
                     </div>
                 }
             </div>
 
+            <!-- Mensaje si no hay items -->
             @if (!Model.MenuItems.Any())
             {
                 <div style="text-align: center; padding: 60px 20px; color: #6c757d;">
@@ -499,127 +581,156 @@
     </div>
 </div>
 
-<style>
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.6);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-    }
-
-    .modal-content {
-        background: white;
-        padding: 20px 30px;
-        border-radius: 8px;
-        text-align: center;
-        max-width: 400px;
-        box-shadow: 0 0 20px rgba(0,0,0,0.2);
-    }
-
-    .modal-buttons {
-        margin-top: 20px;
-        display: flex;
-        justify-content: space-around;
-    }
-
-    .modal-buttons button {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    .btn-danger {
-        background-color: #dc3545;
-        color: white;
-    }
-
-    .btn-secondary {
-        background-color: #6c757d;
-        color: white;
-    }
-</style>
-
-
 @section Scripts {
-    <script>
-        document.querySelectorAll('.add-to-cart-form').forEach(form => {
-            form.addEventListener('submit', async function (e) {
-                e.preventDefault();
+    @Html.AntiForgeryToken()
 
+    <script>
+        // ====== FUNCIÓN: OBTENER TOKEN ANTIFORGERY ======
+        function getAntiForgeryToken() {
+            return document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+        }
+
+        // ====== AGREGAR AL CARRITO CON VALIDACIÓN DE LOGIN ======
+        document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
                 const menuItemId = this.dataset.menuItemId;
-                const cantidad = this.querySelector('input[name="cantidad"]').value;
+                const cantidad = 1;
+
+                // Guardar estado del botón
+                this.disabled = true;
+                const originalText = this.innerHTML;
+                this.innerHTML = '<span class="cart-icon">⏳</span> Agregando...';
 
                 try {
                     const response = await fetch('/Cart/AddToCartAjax', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded',
-                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                            'RequestVerificationToken': getAntiForgeryToken()
                         },
                         body: `menuItemId=${menuItemId}&cantidad=${cantidad}`
                     });
 
                     const result = await response.json();
 
+                    // ✅ SI REQUIERE LOGIN, REDIRIGIR
+                    if (result.requiresLogin) {
+                        const currentUrl = window.location.pathname + window.location.search;
+                        window.location.href = `/Account/Login?returnUrl=${encodeURIComponent(currentUrl)}`;
+                        return;
+                    }
+
+                    // Si necesita limpiar el carrito (otro restaurante)
+                    if (result.requiresClear) {
+                        mostrarModalConfirmacion(result.message, async () => {
+                            await clearAndAddToCart(menuItemId, cantidad, this, originalText);
+                        }, () => {
+                            this.disabled = false;
+                            this.innerHTML = originalText;
+                        });
+                        return;
+                    }
+
+                    // Éxito
                     if (result.success) {
+                        showNotification('success', result.message);
                         actualizarBadgeGlobal(result.totalItems);
                         actualizarBadgeProducto(menuItemId, result.itemQuantity);
-                    } else if (result.requiresClear) {
-                        // Mostrar modal visual
-                        mostrarModalConfirmacion(result.message, () => {
-                            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
 
-                            // Si el usuario confirma, limpiamos el carrito y volvemos a intentar agregar
-                            fetch('/Cart/ClearAndAdd', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded',
-                                },
-                                body: `__RequestVerificationToken=${encodeURIComponent(token)}&menuItemId=${menuItemId}&cantidad=${cantidad}`
-                            })
-                            .then(resp => resp.json())
-                            .then(clearResult => {
-                                if (clearResult.success) {
-                                    actualizarBadgeGlobal(clearResult.totalItems);
-                                    actualizarBadgeProducto(menuItemId, clearResult.itemQuantity);
-                                } else {
-                                    alert("Error al limpiar y agregar: " + clearResult.message);
-                                }
-                            });
+                        this.innerHTML = '<span class="cart-icon">✓</span> Agregado';
+                        this.style.background = '#27ae60';
 
-                        });
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                            this.style.background = '';
+                            this.disabled = false;
+                        }, 2000);
                     } else {
-                        alert("Error al agregar al carrito: " + result.message);
+                        showNotification('error', result.message);
+                        this.disabled = false;
+                        this.innerHTML = originalText;
                     }
                 } catch (error) {
-                    console.error('Error al agregar al carrito:', error);
-                    alert('Ocurrió un error al procesar tu solicitud.');
+                    console.error('Error:', error);
+                    showNotification('error', 'Error al agregar al carrito');
+                    this.disabled = false;
+                    this.innerHTML = originalText;
                 }
             });
         });
 
-        // Actualizar badge global del carrito en el header
+        // ====== FUNCIÓN: LIMPIAR Y AGREGAR ======
+        async function clearAndAddToCart(menuItemId, cantidad, button, originalText) {
+            try {
+                const response = await fetch('/Cart/ClearAndAdd', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'RequestVerificationToken': getAntiForgeryToken()
+                    },
+                    body: `menuItemId=${menuItemId}&cantidad=${cantidad}`
+                });
+
+                const result = await response.json();
+
+                if (result.requiresLogin) {
+                    const currentUrl = window.location.pathname + window.location.search;
+                    window.location.href = `/Account/Login?returnUrl=${encodeURIComponent(currentUrl)}`;
+                    return;
+                }
+
+                if (result.success) {
+                    showNotification('success', result.message);
+                    actualizarBadgeGlobal(result.totalItems);
+                    actualizarBadgeProducto(menuItemId, result.itemQuantity);
+
+                    // Limpiar badges de otros productos
+                    document.querySelectorAll('.product-badge').forEach(badge => {
+                        const item = badge.closest('.menu-item');
+                        if (item && item.dataset.menuItemId !== menuItemId.toString()) {
+                            badge.style.display = 'none';
+                        }
+                    });
+
+                    button.innerHTML = '<span class="cart-icon">✓</span> Agregado';
+                    button.style.background = '#27ae60';
+
+                    setTimeout(() => {
+                        button.innerHTML = originalText;
+                        button.style.background = '';
+                        button.disabled = false;
+                    }, 2000);
+                } else {
+                    showNotification('error', result.message);
+                    button.disabled = false;
+                    button.innerHTML = originalText;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('error', 'Error al procesar la solicitud');
+                button.disabled = false;
+                button.innerHTML = originalText;
+            }
+        }
+
+        // ====== FUNCIÓN: ACTUALIZAR BADGE GLOBAL DEL CARRITO ======
         function actualizarBadgeGlobal(totalItems) {
             const badge = document.querySelector('.cart-badge');
             if (badge) {
                 if (totalItems > 0) {
-                    badge.textContent = ""; // Lo dejamos vacío
+                    badge.textContent = totalItems;
                     badge.style.display = 'flex';
+                    badge.style.transform = 'scale(1.3)';
+                    setTimeout(() => {
+                        badge.style.transform = 'scale(1)';
+                    }, 200);
                 } else {
                     badge.style.display = 'none';
                 }
             }
         }
 
-        // Mostrar contador sobre el producto individual
+        // ====== FUNCIÓN: ACTUALIZAR BADGE DEL PRODUCTO ======
         function actualizarBadgeProducto(menuItemId, cantidad) {
             const container = document.querySelector(`.menu-item[data-menu-item-id="${menuItemId}"]`);
             if (!container) return;
@@ -640,33 +751,79 @@
             }
         }
 
-        function mostrarModalConfirmacion(mensaje, onConfirm) {
+        // ====== FUNCIÓN: MOSTRAR MODAL DE CONFIRMACIÓN ======
+        function mostrarModalConfirmacion(mensaje, onConfirm, onCancel) {
             const modal = document.getElementById('confirmModal');
             const message = document.getElementById('modalMessage');
             const confirmBtn = document.getElementById('modalConfirmBtn');
             const cancelBtn = document.getElementById('modalCancelBtn');
 
-            message.textContent = mensaje;
-
+            message.innerHTML = mensaje;
             modal.style.display = 'flex';
 
             const confirmHandler = () => {
                 modal.style.display = 'none';
                 confirmBtn.removeEventListener('click', confirmHandler);
                 cancelBtn.removeEventListener('click', cancelHandler);
-                onConfirm(); // Ejecuta callback de confirmación
+                modal.removeEventListener('click', outsideClickHandler);
+                onConfirm();
             };
 
             const cancelHandler = () => {
                 modal.style.display = 'none';
                 confirmBtn.removeEventListener('click', confirmHandler);
                 cancelBtn.removeEventListener('click', cancelHandler);
+                modal.removeEventListener('click', outsideClickHandler);
+                if (onCancel) onCancel();
+            };
+
+            const outsideClickHandler = (e) => {
+                if (e.target === modal) {
+                    cancelHandler();
+                }
             };
 
             confirmBtn.addEventListener('click', confirmHandler);
             cancelBtn.addEventListener('click', cancelHandler);
+            modal.addEventListener('click', outsideClickHandler);
         }
 
+        // ====== FUNCIÓN: MOSTRAR NOTIFICACIONES TOAST ======
+        function showNotification(type, message) {
+            const existing = document.querySelectorAll('.notification-toast');
+            existing.forEach(n => n.remove());
+
+            const notification = document.createElement('div');
+            notification.className = `notification-toast notification-${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <span class="notification-icon">${type === 'success' ? '✓' : '✕'}</span>
+                    <span class="notification-message">${message}</span>
+                </div>
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => notification.classList.add('show'), 10);
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // ====== CARGAR BADGE DEL CARRITO AL INICIAR ======
+        async function cargarBadgeCarrito() {
+            try {
+                const response = await fetch('/Cart/GetCartCount');
+                const result = await response.json();
+                actualizarBadgeGlobal(result.count);
+            } catch (error) {
+                console.error('Error al cargar badge del carrito:', error);
+            }
+        }
+
+        // Ejecutar al cargar la página
+        document.addEventListener('DOMContentLoaded', cargarBadgeCarrito);
     </script>
 }
-

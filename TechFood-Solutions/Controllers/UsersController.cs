@@ -337,7 +337,6 @@ namespace TechFood_Solutions.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
-
         // ELIMINAR USUARIO - POST
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -345,36 +344,55 @@ namespace TechFood_Solutions.Controllers
         {
             try
             {
-                var user = await _context.Users.FindAsync(id);
+                // Cargar usuario y restaurante
+                var user = await _context.Users
+                    .Include(u => u.Restaurant)
+                    .FirstOrDefaultAsync(u => u.Id == id);
 
                 if (user == null)
                 {
-                    TempData["Error"] = "Usuario no encontrado";
+                    TempData["Error"] = "Usuario no encontrado.";
                     return RedirectToAction(nameof(Index));
                 }
 
+                // Guardar nombre del restaurante antes de eliminar para logging
+                string nombreRestaurante = user.Restaurant?.Nombre;
+
+                // Eliminar restaurante si existe
+                if (user.Restaurant != null)
+                {
+                    _context.Restaurantes.Remove(user.Restaurant);
+                    _logger.LogInformation($"Restaurante '{nombreRestaurante}' eliminado junto con el usuario {user.Email}");
+                }
+
+                // Eliminar usuario con Identity
                 var result = await _userManager.DeleteAsync(user);
 
-                if (result.Succeeded)
+                if (!result.Succeeded)
                 {
-                    _logger.LogInformation($"Usuario eliminado: {user.Email}");
-                    TempData["Info"] = "Usuario eliminado correctamente";
+                    string errores = string.Join(", ", result.Errors.Select(e => e.Description));
+                    _logger.LogError($"Error al eliminar usuario {user.Email}: {errores}");
+                    TempData["Error"] = "Error al eliminar el usuario.";
+                    return RedirectToAction(nameof(Index));
                 }
-                else
-                {
-                    _logger.LogError($"Error al eliminar usuario: {string.Join(", ", result.Errors.Select(e => e.Description))}");
-                    TempData["Error"] = "Error al eliminar el usuario";
-                }
+
+                // Guardar cambios pendientes en EF Core (por ejemplo, eliminar restaurante)
+                await _context.SaveChangesAsync();
+
+                TempData["Info"] = $"Usuario '{user.Email}' y su restaurante han sido eliminados correctamente.";
+                _logger.LogInformation($"Usuario '{user.Email}' eliminado correctamente.");
 
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Excepción al eliminar usuario: {ex.Message}");
-                TempData["Error"] = "Error inesperado al eliminar el usuario";
+                TempData["Error"] = "Ocurrió un error inesperado al eliminar el usuario.";
                 return RedirectToAction(nameof(Index));
             }
         }
+
+
 
         // MÉTODO AUXILIAR: Cargar restaurantes para dropdown
         private async Task LoadRestaurantsAsync(int? selectedId = null)
