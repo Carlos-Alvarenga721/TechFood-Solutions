@@ -7,7 +7,7 @@ using TechFood_Solutions.ViewModels;
 
 namespace TechFood_Solutions.Controllers
 {
-    [Authorize(Roles = "Cliente")]
+    [Authorize(Roles = RoleNames.Client)]
     public class CartController : Controller
     {
         private readonly TechFoodDbContext _context;

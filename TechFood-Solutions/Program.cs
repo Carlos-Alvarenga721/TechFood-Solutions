@@ -1,4 +1,4 @@
-using TechFood_Solutions.Models;
+﻿using TechFood_Solutions.Models;
 using Microsoft.EntityFrameworkCore;
 using TechFood_Solutions.Services;
 using Microsoft.AspNetCore.Identity;
@@ -23,7 +23,7 @@ builder.Services.AddIdentity<User, ApplicationRole>(options =>
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
-    options.AccessDeniedPath = "/Account/AccessDenied";
+    options.AccessDeniedPath = "/Account/Login";
     options.Cookie.Name = "TechFoodAuth";
     options.ExpireTimeSpan = TimeSpan.FromHours(8);
 });
@@ -59,11 +59,15 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+// 🌱 Ejecutar los Seeds
 await SeedRolesAndAdminAsync(app);
+await SeedClientsAsync(app);
 
 app.Run();
 
-// ---------------- M�TODO DE SEED ----------------
+
+// ---------------- MÉTODOS DE SEED ----------------
+
 async Task SeedRolesAndAdminAsync(WebApplication app)
 {
     using var scope = app.Services.CreateScope();
@@ -110,4 +114,15 @@ async Task SeedRolesAndAdminAsync(WebApplication app)
                 logger.LogError("Error al crear el admin: {Error}", error.Description);
         }
     }
+}
+
+
+// ---------------- SEED DE CLIENTES ----------------
+
+async Task SeedClientsAsync(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
+    var services = scope.ServiceProvider;
+
+    await TechFood_Solutions.Models.Seed.ClientSeed.SeedClientsAsync(services);
 }

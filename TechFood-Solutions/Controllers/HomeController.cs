@@ -5,7 +5,7 @@ using TechFood_Solutions.Models;
 
 namespace TechFood_Solutions.Controllers
 {
-    [Authorize(Roles = "Cliente")]
+    [Authorize(Roles = RoleNames.Client)]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

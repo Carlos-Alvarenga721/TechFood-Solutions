@@ -5,9 +5,8 @@ namespace TechFood_Solutions.Models
 {
     public class ApplicationRole : IdentityRole<int>
     {
-        [Required]
-        [StringLength(100)]
-        public string Description { get; set; }
+
+        public string? Description { get; set; }
 
         public ApplicationRole() : base() { }
 

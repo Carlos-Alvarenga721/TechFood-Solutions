@@ -1,162 +1,74 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using TechFood_Solutions.Models;
 
 namespace TechFood_Solutions.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
-        private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly UserManager<User> _userManager;
+        private readonly ILogger<AccountController> _logger;
 
-        public AccountController(
-            UserManager<User> userManager,
-            SignInManager<User> signInManager,
-            RoleManager<ApplicationRole> roleManager)
+        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, ILogger<AccountController> logger)
         {
-            _userManager = userManager;
             _signInManager = signInManager;
-            _roleManager = roleManager;
+            _userManager = userManager;
+            _logger = logger;
         }
 
-        // ============================================
-        // LOGIN
-        // ============================================
         [HttpGet]
-        public IActionResult Login() => View();
+        public IActionResult Login()
+        {
+            return View();
+        }
 
         [HttpPost]
-        public async Task<IActionResult> Login(string email, string password, bool rememberMe = false)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(string email, string password)
         {
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
-                ModelState.AddModelError("", "Debe ingresar correo y contraseña.");
+                ModelState.AddModelError("", "Email y contraseña son requeridos.");
                 return View();
             }
 
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                ModelState.AddModelError("", "Usuario no encontrado.");
+                ModelState.AddModelError("", "Usuario o contraseña incorrectos.");
                 return View();
             }
 
-            var result = await _signInManager.PasswordSignInAsync(user, password, rememberMe, lockoutOnFailure: false);
-
+            var result = await _signInManager.PasswordSignInAsync(user, password, isPersistent: true, lockoutOnFailure: false);
             if (!result.Succeeded)
             {
-                ModelState.AddModelError("", "Credenciales incorrectas.");
+                ModelState.AddModelError("", "Usuario o contraseña incorrectos.");
                 return View();
             }
 
-            if (await _userManager.IsInRoleAsync(user, "Admin"))
-                return RedirectToAction("Index", "Admin");
-            if (await _userManager.IsInRoleAsync(user, "Associated"))
-                return RedirectToAction("Index", "Associated");
+            _logger.LogInformation($"Usuario {user.Email} inició sesión correctamente.");
 
-            return RedirectToAction("Index", "Client");
+            // ✅ Redirección según rol
+            if (await _userManager.IsInRoleAsync(user, RoleNames.Admin))
+                return RedirectToAction("Index", "Users"); // Vista Admin
+            else if (await _userManager.IsInRoleAsync(user, RoleNames.Associated))
+                return RedirectToAction("Index", "Asociado"); // Vista Asociado
+            else
+                return RedirectToAction("Index", "Home"); // Otros (cliente)
         }
 
-        // ============================================
-        // LOGOUT
-        // ============================================
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Login");
+            _logger.LogInformation("Sesión cerrada correctamente.");
+            return RedirectToAction("Login", "Account");
         }
 
-        // ============================================
-        // REGISTRO DE CLIENTE
-        // ============================================
-        [HttpGet]
-        public IActionResult Register() => View();
-
-        [HttpPost]
-        public async Task<IActionResult> Register(string nombre, string apellido, string dui, string email, string password)
-        {
-            if (string.IsNullOrEmpty(nombre) || string.IsNullOrEmpty(apellido) ||
-                string.IsNullOrEmpty(dui) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
-            {
-                ModelState.AddModelError("", "Todos los campos son obligatorios.");
-                return View();
-            }
-
-            var user = new User
-            {
-                UserName = email,
-                Email = email,
-                Nombre = nombre,
-                Apellido = apellido,
-                Dui = dui,
-                Rol = UserRole.Client
-            };
-
-            var result = await _userManager.CreateAsync(user, password);
-            if (!result.Succeeded)
-            {
-                foreach (var e in result.Errors)
-                    ModelState.AddModelError("", e.Description);
-
-                return View();
-            }
-
-            if (!await _roleManager.RoleExistsAsync("Client"))
-                await _roleManager.CreateAsync(new ApplicationRole { Name = "Client" });
-
-            await _userManager.AddToRoleAsync(user, "Client");
-            await _signInManager.SignInAsync(user, isPersistent: false);
-
-            return RedirectToAction("Index", "Client");
-        }
-
-        // ============================================
-        // CREAR USUARIO ASOCIADO (ADMIN)
-        // ============================================
-        [HttpGet]
-        [Authorize(Roles = "Admin")]
-        public IActionResult CreateAssociated() => View();
-
-        [HttpPost]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> CreateAssociated(string nombre, string apellido, string dui, string email, string password, int restaurantId)
-        {
-            if (string.IsNullOrEmpty(nombre) || string.IsNullOrEmpty(apellido) ||
-                string.IsNullOrEmpty(dui) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
-            {
-                ModelState.AddModelError("", "Todos los campos son obligatorios.");
-                return View();
-            }
-
-            var user = new User
-            {
-                UserName = email,
-                Email = email,
-                Nombre = nombre,
-                Apellido = apellido,
-                Dui = dui,
-                RestaurantId = restaurantId,
-                Rol = UserRole.Associated
-            };
-
-            var result = await _userManager.CreateAsync(user, password);
-            if (!result.Succeeded)
-            {
-                foreach (var e in result.Errors)
-                    ModelState.AddModelError("", e.Description);
-
-                return View();
-            }
-
-            if (!await _roleManager.RoleExistsAsync("Associated"))
-                await _roleManager.CreateAsync(new ApplicationRole { Name = "Associated" });
-
-            await _userManager.AddToRoleAsync(user, "Associated");
-
-            return RedirectToAction("ManageAssociatedUsers", "Admin");
-        }
+        public IActionResult AccessDenied() => View();
     }
 }

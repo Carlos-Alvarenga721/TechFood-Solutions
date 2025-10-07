@@ -1,9 +1,15 @@
 ﻿@model IEnumerable<TechFood_Solutions.Models.User>
 @{
-    ViewData["Title"] = "Usuarios";
+    ViewData["Title"] = "Usuarios Asociados";
 }
 
-<h2>Usuarios Asociados</h2>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Usuarios Asociados</h2>
+
+    <form asp-controller="Account" asp-action="Logout" method="post" class="mb-0">
+        <button type="submit" class="btn btn-danger">Cerrar sesión</button>
+    </form>
+</div>
 
 <p>
     <a asp-controller="Users" asp-action="Create" class="btn btn-primary">Agregar Usuario</a>

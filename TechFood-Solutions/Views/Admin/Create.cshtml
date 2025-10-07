@@ -1,49 +1,77 @@
 ﻿@model TechFood_Solutions.Models.User
 @{
-    ViewData["Title"] = "Crear Usuario";
+    ViewData["Title"] = "Crear Usuario Asociado";
 }
-
 <h2>@ViewData["Title"]</h2>
 
+@if (TempData["Info"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Info"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
+
 <form asp-action="Create" method="post" enctype="multipart/form-data">
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label asp-for="Nombre"></label>
         <input asp-for="Nombre" class="form-control" />
         <span asp-validation-for="Nombre" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label asp-for="Apellido"></label>
         <input asp-for="Apellido" class="form-control" />
         <span asp-validation-for="Apellido" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label asp-for="Dui"></label>
-        <input asp-for="Dui" class="form-control" placeholder="12345678-9" />
+    <div class="form-group mb-3">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" placeholder="usuario@techfood.com" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="password">Contraseña</label>
+        <input type="password" name="password" id="password" class="form-control" required />
+        <small class="form-text text-muted">Mínimo 6 caracteres</small>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Dui">DUI (opcional)</label>
+        <input asp-for="Dui" class="form-control" placeholder="00000000-0" />
         <span asp-validation-for="Dui" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label>Restaurante</label>
         <select asp-for="RestaurantId" asp-items="ViewBag.Restaurantes" class="form-control">
-            <option value="">-- Seleccionar Restaurante --</option>
         </select>
         <small class="form-text text-muted">
-            Selecciona "Crear Restaurante Genérico" para crear uno automáticamente,
-            o elige un restaurante existente de la lista.
+            Selecciona "Crear Restaurante Genérico" o elige uno existente.
         </small>
     </div>
 
-    <!-- Nuevo input para la imagen del restaurante -->
-    <div class="form-group mt-2">
+    <div class="form-group mb-3">
         <label for="logoFile">Logo del Restaurante (opcional)</label>
-        <input type="file" name="logoFile" class="form-control" accept="image/*" />
-        <small class="form-text text-muted">Se guardará en wwwroot/images/restaurantes</small>
+        <input type="file" name="logoFile" id="logoFile" class="form-control" accept="image/*" />
+        <small class="form-text text-muted">Solo se usará si creas un restaurante genérico</small>
     </div>
 
-    <button type="submit" class="btn btn-success mt-3">Guardar</button>
-    <a asp-controller="Users" asp-action="Index" class="btn btn-secondary mt-3">Cancelar</a>
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
 </form>
 
 @section Scripts {
