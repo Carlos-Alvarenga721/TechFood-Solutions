@@ -42,17 +42,17 @@
         flex: 1;
     }
 
-        .restaurant-info h1 {
-            font-size: 2.5rem;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
+    .restaurant-info h1 {
+        font-size: 2.5rem;
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
 
-        .restaurant-info p {
-            color: #7f8c8d;
-            font-size: 1.1rem;
-            line-height: 1.6;
-        }
+    .restaurant-info p {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
 
     .rating {
         display: flex;
@@ -83,9 +83,9 @@
         transition: transform 0.2s;
     }
 
-        .favorite-btn:hover {
-            transform: scale(1.1);
-        }
+    .favorite-btn:hover {
+        transform: scale(1.1);
+    }
 
     .menu-section {
         background: white;
@@ -110,13 +110,13 @@
         gap: 10px;
     }
 
-        .menu-title::before {
-            content: '';
-            width: 5px;
-            height: 30px;
-            background: #e74c3c;
-            border-radius: 5px;
-        }
+    .menu-title::before {
+        content: '';
+        width: 5px;
+        height: 30px;
+        background: #e74c3c;
+        border-radius: 5px;
+    }
 
     .menu-subtitle {
         color: #7f8c8d;
@@ -144,11 +144,11 @@
         transition: all 0.3s;
     }
 
-        .arrow-btn:hover {
-            border-color: #e74c3c;
-            color: #e74c3c;
-            background: #fff5f5;
-        }
+    .arrow-btn:hover {
+        border-color: #e74c3c;
+        color: #e74c3c;
+        background: #fff5f5;
+    }
 
     .menu-grid {
         display: grid;
@@ -166,10 +166,10 @@
         position: relative;
     }
 
-        .menu-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
+    .menu-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
 
     .item-image-container {
         position: relative;
@@ -218,17 +218,17 @@
         transition: all 0.3s;
     }
 
-        .action-icon:hover {
-            transform: scale(1.1);
-        }
+    .action-icon:hover {
+        transform: scale(1.1);
+    }
 
-        .action-icon.heart {
-            color: #e74c3c;
-        }
+    .action-icon.heart {
+        color: #e74c3c;
+    }
 
-        .action-icon.eye {
-            color: #3498db;
-        }
+    .action-icon.eye {
+        color: #3498db;
+    }
 
     .item-info {
         padding: 5px;
@@ -283,15 +283,15 @@
         box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
     }
 
-        .add-to-cart-btn:hover {
-            background: #c0392b;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
-        }
+    .add-to-cart-btn:hover {
+        background: #c0392b;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+    }
 
-        .add-to-cart-btn:active {
-            transform: translateY(0);
-        }
+    .add-to-cart-btn:active {
+        transform: translateY(0);
+    }
 
     .cart-icon {
         font-size: 1.1rem;
@@ -315,11 +315,11 @@
         box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
     }
 
-        .view-all-btn:hover {
-            background: #c0392b;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
-        }
+    .view-all-btn:hover {
+        background: #c0392b;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+    }
 
     @@media (max-width: 768px) {
         .restaurant-header {
@@ -452,6 +452,7 @@
                                 <span class="item-reviews">(65)</span>
                             </div>
                             <form class="add-to-cart-form" method="post" data-menu-item-id="@item.Id" data-restaurant-id="@item.RestaurantId">
+                                @Html.AntiForgeryToken()
                                 <input type="hidden" name="menuItemId" value="@item.Id" />
                                 <input type="hidden" name="cantidad" value="1" />
                                 <button type="submit" class="add-to-cart-btn">
@@ -527,13 +528,13 @@
         justify-content: space-around;
     }
 
-        .modal-buttons button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+    .modal-buttons button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+    }
 
     .btn-danger {
         background-color: #dc3545;
@@ -574,14 +575,15 @@
                     } else if (result.requiresClear) {
                         // Mostrar modal visual
                         mostrarModalConfirmacion(result.message, () => {
+                            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+
                             // Si el usuario confirma, limpiamos el carrito y volvemos a intentar agregar
                             fetch('/Cart/ClearAndAdd', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/x-www-form-urlencoded',
-                                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
                                 },
-                                body: `menuItemId=${menuItemId}&cantidad=${cantidad}`
+                                body: `__RequestVerificationToken=${encodeURIComponent(token)}&menuItemId=${menuItemId}&cantidad=${cantidad}`
                             })
                             .then(resp => resp.json())
                             .then(clearResult => {
