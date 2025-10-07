@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TechFood_Solutions.Models;
 using TechFood_Solutions.Services;
@@ -6,6 +7,7 @@ using TechFood_Solutions.ViewModels;
 
 namespace TechFood_Solutions.Controllers
 {
+    [Authorize(Roles = RoleNames.Client)]
     public class CartController : Controller
     {
         private readonly TechFoodDbContext _context;

@@ -2,7 +2,7 @@
 
 namespace TechFood_Solutions.ViewModels
 {
-    public class RegisterViewModel
+    public class CreateAssociatedViewModel
     {
         [Required]
         [EmailAddress]
@@ -17,7 +17,6 @@ namespace TechFood_Solutions.ViewModels
         [Compare("Password", ErrorMessage = "Las contraseñas no coinciden.")]
         public string ConfirmPassword { get; set; }
 
-        // **Aquí** estaban fallando las referencias: Nombre, Apellido y Dui
         [Required, MaxLength(50)]
         public string Nombre { get; set; }
 
@@ -26,5 +25,8 @@ namespace TechFood_Solutions.ViewModels
 
         [Required, MaxLength(10)]
         public string Dui { get; set; }
+
+        [Required]
+        public int RestaurantId { get; set; } // Asociado requiere restaurantId
     }
 }

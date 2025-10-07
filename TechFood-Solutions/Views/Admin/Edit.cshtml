@@ -1,0 +1,53 @@
+﻿@model TechFood_Solutions.Models.User
+@{
+    ViewData["Title"] = "Editar Usuario";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="Nombre"></label>
+        <input asp-for="Nombre" class="form-control" />
+        <span asp-validation-for="Nombre" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Apellido"></label>
+        <input asp-for="Apellido" class="form-control" />
+        <span asp-validation-for="Apellido" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Dui"></label>
+        <input asp-for="Dui" class="form-control" placeholder="12345678-9" />
+        <span asp-validation-for="Dui" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Restaurante</label>
+        <select asp-for="RestaurantId" asp-items="ViewBag.Restaurantes" class="form-control">
+            <option value="">-- Seleccionar Restaurante --</option>
+        </select>
+        <small class="form-text text-muted">
+            Selecciona "Crear Restaurante Genérico" para crear uno nuevo automáticamente,
+            o elige un restaurante existente de la lista.
+        </small>
+    </div>
+
+    <!-- Input para el logo del restaurante -->
+    <div class="form-group mt-2">
+        <label for="logoFile">Logo del Restaurante (opcional)</label>
+        <input type="file" name="logoFile" class="form-control" accept="image/*" />
+        <small class="form-text text-muted">Si subes una imagen, reemplazará la anterior en wwwroot/images/restaurantes</small>
+    </div>
+
+    <button type="submit" class="btn btn-success mt-3">Guardar cambios</button>
+    <a asp-controller="Users" asp-action="Index" class="btn btn-secondary mt-3">Cancelar</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

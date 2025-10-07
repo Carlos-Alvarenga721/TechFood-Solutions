@@ -1,16 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TechFood_Solutions.Models
 {
     public enum UserRole
     {
-        Admin,
-        Client,
-        Associated
+        Admin = 0,
+        Client = 1,
+        Associated = 2
     }
 
-    public class User : IValidatableObject
+    public class User : IdentityUser<int>, IValidatableObject
     {
         [Key]
         public int Id { get; set; }
@@ -30,7 +32,7 @@ namespace TechFood_Solutions.Models
         [Required]
         public UserRole Rol { get; set; }
 
-        [ForeignKey("RestaurantId")]
+        [ForeignKey(nameof(RestaurantId))]
         public virtual Restaurant? Restaurant { get; set; }
 
         // ✅ Validación: si es Associated debe tener RestaurantId
@@ -40,7 +42,16 @@ namespace TechFood_Solutions.Models
             {
                 yield return new ValidationResult(
                     "El RestaurantId es obligatorio para usuarios con rol 'Associated'.",
-                    new[] { nameof(RestaurantId) });
+                    new[] { nameof(RestaurantId) }
+                );
+            }
+
+            if (Rol != UserRole.Associated && RestaurantId != null)
+            {
+                yield return new ValidationResult(
+                    "Sólo los usuarios con rol 'Associated' pueden tener RestaurantId.",
+                    new[] { nameof(RestaurantId) }
+                );
             }
         }
     }

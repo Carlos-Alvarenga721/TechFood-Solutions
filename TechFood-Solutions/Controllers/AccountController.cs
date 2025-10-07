@@ -1,53 +1,74 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 using TechFood_Solutions.Models;
 
 namespace TechFood_Solutions.Controllers
 {
     public class AccountController : Controller
     {
-        public IActionResult Index()
+        private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<User> _userManager;
+        private readonly ILogger<AccountController> _logger;
+
+        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, ILogger<AccountController> logger)
         {
-            return View();
+            _signInManager = signInManager;
+            _userManager = userManager;
+            _logger = logger;
         }
-        // GET: /Account/Login
-        public ActionResult Login()
+
+        [HttpGet]
+        public IActionResult Login()
         {
             return View();
         }
 
-        // POST: /Account/Login
         [HttpPost]
-        public ActionResult Login(string email, string password)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(string email, string password)
         {
-            // (temporal: redirigir al Home)
-            if (email == "admin@correo.com" && password == "123456")
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
-                return RedirectToAction("Index", "Home");
+                ModelState.AddModelError("", "Email y contraseña son requeridos.");
+                return View();
             }
 
-            ViewBag.Error = "Correo o contraseña incorrectos.";
-            return View();
-        }
-
-        // GET: /Account/Register
-        public IActionResult Register()
-        {
-            return View();
-        }
-
-        // POST: /Account/Register
-        [HttpPost]
-        public IActionResult Register(RegisterViewModel model)
-        {
-            if (ModelState.IsValid)
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
             {
-                // Aquí iría la lógica para guardar usuario en BD
-                TempData["Success"] = "Usuario registrado correctamente.";
-                return RedirectToAction("Login");
+                ModelState.AddModelError("", "Usuario o contraseña incorrectos.");
+                return View();
             }
 
-            return View(model);
+            var result = await _signInManager.PasswordSignInAsync(user, password, isPersistent: true, lockoutOnFailure: false);
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError("", "Usuario o contraseña incorrectos.");
+                return View();
+            }
+
+            _logger.LogInformation($"Usuario {user.Email} inició sesión correctamente.");
+
+            // ✅ Redirección según rol
+            if (await _userManager.IsInRoleAsync(user, RoleNames.Admin))
+                return RedirectToAction("Index", "Users"); // Vista Admin
+            else if (await _userManager.IsInRoleAsync(user, RoleNames.Associated))
+                return RedirectToAction("Index", "Asociado"); // Vista Asociado
+            else
+                return RedirectToAction("Index", "Home"); // Otros (cliente)
         }
 
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            _logger.LogInformation("Sesión cerrada correctamente.");
+            return RedirectToAction("Login", "Account");
+        }
+
+        public IActionResult AccessDenied() => View();
     }
 }
