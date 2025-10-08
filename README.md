@@ -5,7 +5,7 @@
 ![SQL Server](https://img.shields.io/badge/SQL%20Server-CC2927?style=for-the-badge&logo=microsoft-sql-server&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)
 
-Sistema de delivery de comida desarrollado con ASP.NET Core MVC, similar a Uber Eats y Pedidos Ya.
+Sistema de delivery de comida desarrollado con ASP.NET Core MVC.
 
 ## 📋 Descripción
 
@@ -17,9 +17,8 @@ TechFood Solutions es una aplicación web que conecta a clientes con restaurante
 - **Catálogo de Restaurantes**: Exploración y búsqueda de restaurantes disponibles
 - **Carrito de Compras**: Gestión de productos antes de confirmar el pedido
 - **Seguimiento de Pedidos**: Actualización en tiempo real del estado de los pedidos
-- **Panel de Administración**: Control completo de restaurantes, usuarios y estadísticas
-- **Panel de Asociado**: Gestión de menú, pedidos y reportes de ventas
-- **API REST**: Endpoints documentados con Swagger para integración externa
+- **Panel de Administración**: Control completo de asociados.
+- **Panel de Asociado**: Gestión de menú y pedidos. 
 
 ## 🛠️ Stack Tecnológico
 
@@ -28,7 +27,6 @@ TechFood Solutions es una aplicación web que conecta a clientes con restaurante
 - **Base de Datos**: SQL Server
 - **ORM**: Entity Framework Core
 - **Arquitectura**: MVC (Model-View-Controller)
-- **Documentación API**: Swagger/OpenAPI
 - **Frontend**: Razor Pages, HTML, CSS, JavaScript
 
 ## 📁 Estructura del Proyecto
@@ -40,7 +38,7 @@ TechFood-Solutions/
 ├── Views/               # Vistas Razor organizadas por área
 │   ├── Account/         # Autenticación y registro
 │   ├── Admin/           # Panel de administración
-│   ├── Asociado/        # Panel del restaurante
+│   ├── Asociado/        # Panel del asociado
 │   ├── Cliente/         # Panel del cliente
 │   ├── Cart/            # Carrito de compras
 │   ├── Home/            # Página principal
@@ -56,7 +54,7 @@ TechFood-Solutions/
 ### 👤 Cliente
 - Explorar restaurantes y menús
 - Agregar productos al carrito
-- Realizar y rastrear pedidos
+- Realizar pedidos
 - Ver historial de compras
 
 ### 🏪 Asociado (Dueño de Restaurante)
@@ -66,10 +64,9 @@ TechFood-Solutions/
 - Ver reportes de ventas
 
 ### 👨‍💼 Administrador
-- Agregar y gestionar restaurantes
-- Administrar usuarios del sistema
+- Agregar y gestionar asociados
+- Administrar asociados del sistema
 - Asignar asociados a restaurantes
-- Acceso a estadísticas globales
 
 ## ⚙️ Instalación y Configuración
 
@@ -110,7 +107,6 @@ dotnet run
 
 5. **Acceder a la aplicación**
 - Aplicación: `https://localhost:5001`
-- Swagger: `https://localhost:5001/swagger`
 
 ## 🔧 Configuración Adicional
 
@@ -129,28 +125,6 @@ dotnet ef database update MigracionAnterior
 dotnet ef migrations remove
 ```
 
-## 📚 API Endpoints
-
-La API REST está documentada con Swagger. Principales endpoints:
-
-- `GET /api/restaurantes` - Obtener lista de restaurantes
-- `GET /api/restaurantes/{id}/productos` - Obtener menú de un restaurante
-- `POST /api/pedidos` - Crear nuevo pedido
-- `PUT /api/pedidos/{id}/estado` - Actualizar estado de pedido
-- `POST /api/usuarios/login` - Autenticar usuario
-- `POST /api/usuarios/register` - Registrar nuevo usuario
-
-Documentación completa disponible en `/swagger` al ejecutar la aplicación.
-
-## 🗃️ Modelo de Datos Principal
-
-- **Usuario**: Información base de todos los usuarios
-- **Restaurante**: Datos de los establecimientos
-- **Producto**: Items del menú de cada restaurante
-- **Pedido**: Órdenes realizadas por clientes
-- **DetallePedido**: Items individuales de cada pedido
-- **Categoria**: Clasificación de productos
-
 ## 🔐 Seguridad
 
 - Autenticación mediante Cookie Authentication
@@ -168,34 +142,8 @@ Documentación completa disponible en `/swagger` al ejecutar la aplicación.
 - [ ] Sistema de cupones y promociones
 - [ ] Rastreo GPS del repartidor
 
-## 🤝 Contribución
+## Manual Tecnico
+[Manual Tecnico.pdf](https://github.com/user-attachments/files/22783241/Manual.Tecnico.pdf)
 
-Las contribuciones son bienvenidas. Por favor:
-
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
-
-## 📞 Contacto
-
-- **Proyecto**: TechFood Solutions
-- **Email**: soporte@techfood.com
-- **Website**: https://techfood-solutions.com
-
-## 🙏 Agradecimientos
-
-- ASP.NET Core Team
-- Entity Framework Team
-- Comunidad de desarrolladores .NET
-
----
-
-⭐ Si este proyecto te ha sido útil, considera darle una estrella en GitHub
-
-**Desarrollado con ❤️ usando .NET Core**
+## Manual de Usuario
+[MANUAL USUARIO.pdf](https://github.com/user-attachments/files/22783251/MANUAL.USUARIO.pdf)
