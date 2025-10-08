@@ -15,6 +15,18 @@ namespace TechFood_Solutions.Controllers
         private readonly UserManager<User> _userManager;
         private readonly ILogger<UsersController> _logger;
 
+        public UsersController(
+            TechFoodDbContext context,
+            IWebHostEnvironment env,
+            UserManager<User> userManager,
+            ILogger<UsersController> logger)
+        {
+            _context = context;
+            _env = env;
+            _userManager = userManager;
+            _logger = logger;
+        }
+
         // LISTAR USUARIOS ASOCIADOS
         public async Task<IActionResult> Index()
         {
