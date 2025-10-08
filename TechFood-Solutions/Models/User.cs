@@ -13,23 +13,16 @@ namespace TechFood_Solutions.Models
 
     public class User : IdentityUser<int>
     {
-        [Key]
-        public int Id { get; set; }
 
         [Required, MaxLength(50)]
-        public string Nombre { get; set; }
+        public string Nombre { get; set; } = string.Empty;
 
         [Required, MaxLength(50)]
-        public string Apellido { get; set; }
+        public string Apellido { get; set; } = string.Empty;
 
         [Required, MaxLength(10)]
-        public string Dui { get; set; }
+        public string Dui { get; set; } = string.Empty;
 
-<<<<<<< HEAD
-        // Ahora todos los usuarios pueden tener RestaurantId nulo
-=======
-        // 🔑 FK -> un usuario pertenece a un restaurante
->>>>>>> c87c0089811d33fc1ba4f19fe74516cd48890466
         public int? RestaurantId { get; set; }
 
         [Required]
@@ -37,28 +30,5 @@ namespace TechFood_Solutions.Models
 
         [ForeignKey(nameof(RestaurantId))]
         public virtual Restaurant? Restaurant { get; set; }
-<<<<<<< HEAD
-=======
-
-        // ✅ Validación: si es Associated debe tener RestaurantId
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            if (Rol == UserRole.Associated && RestaurantId == null)
-            {
-                yield return new ValidationResult(
-                    "El RestaurantId es obligatorio para usuarios con rol 'Associated'.",
-                    new[] { nameof(RestaurantId) }
-                );
-            }
-
-            if (Rol != UserRole.Associated && RestaurantId != null)
-            {
-                yield return new ValidationResult(
-                    "Sólo los usuarios con rol 'Associated' pueden tener RestaurantId.",
-                    new[] { nameof(RestaurantId) }
-                );
-            }
-        }
->>>>>>> c87c0089811d33fc1ba4f19fe74516cd48890466
     }
 }

@@ -50,7 +50,6 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
@@ -65,19 +64,15 @@ await SeedClientsAsync(app);
 
 app.Run();
 
-
 // ---------------- MÉTODOS DE SEED ----------------
-
 async Task SeedRolesAndAdminAsync(WebApplication app)
 {
     using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
-
     var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
     var userManager = services.GetRequiredService<UserManager<User>>();
 
     string[] roles = new[] { "Admin", "Associated", "Client" };
-
     foreach (var roleName in roles)
     {
         if (!await roleManager.RoleExistsAsync(roleName))
@@ -94,12 +89,15 @@ async Task SeedRolesAndAdminAsync(WebApplication app)
     {
         var adminUser = new User
         {
-            UserName = adminEmail,
+            UserName = adminEmail,              // ✅ CRÍTICO: UserName debe tener un valor
             Email = adminEmail,
+            EmailConfirmed = true,
             Nombre = "Administrador",
             Apellido = "General",
             Dui = "00000000-0",
-            Rol = UserRole.Admin
+            Rol = UserRole.Admin,
+            NormalizedUserName = adminEmail.ToUpper(),  // ✅ IMPORTANTE
+            NormalizedEmail = adminEmail.ToUpper()      // ✅ IMPORTANTE
         };
 
         var createResult = await userManager.CreateAsync(adminUser, adminPassword);
@@ -116,13 +114,10 @@ async Task SeedRolesAndAdminAsync(WebApplication app)
     }
 }
 
-
 // ---------------- SEED DE CLIENTES ----------------
-
 async Task SeedClientsAsync(WebApplication app)
 {
     using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
-
     await TechFood_Solutions.Models.Seed.ClientSeed.SeedClientsAsync(services);
 }
