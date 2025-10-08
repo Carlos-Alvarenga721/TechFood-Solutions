@@ -1,0 +1,576 @@
+﻿@model TechFood_Solutions.Models.Order
+
+@{
+    ViewData["Title"] = $"Orden #{Model.Id}";
+}
+
+<style>
+    .order-details-page {
+        padding: 40px 0;
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 200px);
+    }
+
+    .order-details-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 30px;
+        font-size: 0.95rem;
+    }
+
+    .breadcrumb a {
+        color: #7f8c8d;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    .breadcrumb a:hover {
+        color: #2c3e50;
+    }
+
+    .breadcrumb span {
+        color: #7f8c8d;
+    }
+
+    .breadcrumb .current {
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    /* Header de la orden */
+    .order-header {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .order-title-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .order-title {
+        font-size: 2rem;
+        color: #2c3e50;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .order-status-badge {
+        padding: 10px 25px;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .status-pendiente {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-preparando {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .status-encamino {
+        background: #cce5ff;
+        color: #004085;
+    }
+
+    .status-entregado {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-cancelado {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .order-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+
+    .info-box {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 12px;
+    }
+
+    .info-label {
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        margin-bottom: 8px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .info-value {
+        font-size: 1.1rem;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .info-icon {
+        font-size: 1.2rem;
+        margin-right: 8px;
+    }
+
+    /* Sección del restaurante */
+    .restaurant-section {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        color: #2c3e50;
+        font-weight: bold;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .section-icon {
+        font-size: 1.8rem;
+    }
+
+    .restaurant-info-content {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .restaurant-logo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #f0f0f0;
+    }
+
+    .restaurant-details h3 {
+        font-size: 1.3rem;
+        color: #2c3e50;
+        margin: 0 0 8px 0;
+    }
+
+    .restaurant-details p {
+        color: #7f8c8d;
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    /* Items de la orden */
+    .items-section {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .order-items-list {
+        margin-top: 20px;
+    }
+
+    .order-item {
+        display: flex;
+        gap: 20px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        margin-bottom: 15px;
+        align-items: center;
+    }
+
+    .item-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 10px;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    .item-details {
+        flex: 1;
+    }
+
+    .item-name {
+        font-size: 1.2rem;
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .item-description {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+
+    .item-quantity-price {
+        display: flex;
+        gap: 15px;
+        font-size: 0.95rem;
+        color: #7f8c8d;
+    }
+
+    .item-subtotal {
+        text-align: right;
+        flex-shrink: 0;
+    }
+
+    .item-subtotal-value {
+        font-size: 1.3rem;
+        color: #2c3e50;
+        font-weight: bold;
+    }
+
+    .item-notes {
+        margin-top: 10px;
+        padding: 10px;
+        background: white;
+        border-left: 3px solid #e74c3c;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        color: #7f8c8d;
+    }
+
+    /* Totales */
+    .totals-section {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 2px solid #e0e0e0;
+    }
+
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        font-size: 1.1rem;
+    }
+
+    .total-label {
+        color: #7f8c8d;
+    }
+
+    .total-value {
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .grand-total {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px;
+        margin-top: 15px;
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+
+    .grand-total-label {
+        font-size: 1.4rem;
+        color: #2c3e50;
+        font-weight: bold;
+    }
+
+    .grand-total-value {
+        font-size: 1.8rem;
+        color: #e74c3c;
+        font-weight: bold;
+    }
+
+    /* Información de entrega */
+    .delivery-section {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .delivery-details {
+        display: grid;
+        gap: 20px;
+    }
+
+    .delivery-item {
+        display: flex;
+        gap: 15px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+
+    .delivery-icon {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .delivery-content {
+        flex: 1;
+    }
+
+    .delivery-label {
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .delivery-value {
+        font-size: 1.1rem;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    /* Botones de acción */
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .btn-action {
+        flex: 1;
+        padding: 15px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        text-align: center;
+        display: block;
+    }
+
+    .btn-secondary {
+        background: white;
+        border: 2px solid #e0e0e0;
+        color: #2c3e50;
+    }
+
+    .btn-secondary:hover {
+        border-color: #2c3e50;
+        background: #f8f9fa;
+        color: #2c3e50;
+    }
+
+    .btn-primary {
+        background: #e74c3c;
+        color: white;
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+
+    .btn-primary:hover {
+        background: #c0392b;
+        transform: translateY(-2px);
+        color: white;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .order-title-section {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .order-info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .order-item {
+            flex-direction: column;
+        }
+
+        .item-subtotal {
+            text-align: left;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="order-details-page">
+    <div class="order-details-container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+            <a asp-controller="Home" asp-action="Index">Home</a>
+            <span>/</span>
+            <a asp-action="MyOrders">Mis Órdenes</a>
+            <span>/</span>
+            <span class="current">Orden #@Model.Id.ToString("D6")</span>
+        </nav>
+
+        <!-- Header de la orden -->
+        <div class="order-header">
+            <div class="order-title-section">
+                <h1 class="order-title">Orden #@Model.Id.ToString("D6")</h1>
+                <span class="order-status-badge status-@Model.Estado.ToLower()">
+                    @Model.Estado
+                </span>
+            </div>
+
+            <div class="order-info-grid">
+                <div class="info-box">
+                    <div class="info-label">📅 Fecha</div>
+                    <div class="info-value">@Model.FechaOrden.ToString("dd/MM/yyyy")</div>
+                </div>
+
+                <div class="info-box">
+                    <div class="info-label">🕐 Hora</div>
+                    <div class="info-value">@Model.FechaOrden.ToString("hh:mm tt")</div>
+                </div>
+
+                <div class="info-box">
+                    <div class="info-label">👤 Cliente</div>
+                    <div class="info-value">@Model.NombreCliente</div>
+                </div>
+
+                <div class="info-box">
+                    <div class="info-label">📱 Teléfono</div>
+                    <div class="info-value">@Model.TelefonoCliente</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información del restaurante -->
+        <div class="restaurant-section">
+            <h2 class="section-title">
+                <span class="section-icon">🍽️</span>
+                Restaurante
+            </h2>
+            <div class="restaurant-info-content">
+                <img src="@Model.Restaurant.LogoUrl" alt="@Model.Restaurant.Nombre" class="restaurant-logo">
+                <div class="restaurant-details">
+                    <h3>@Model.Restaurant.Nombre</h3>
+                    <p>@Model.Restaurant.Descripcion</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items de la orden -->
+        <div class="items-section">
+            <h2 class="section-title">
+                <span class="section-icon">🛒</span>
+                Productos Ordenados
+            </h2>
+
+            <div class="order-items-list">
+                @foreach (var item in Model.OrderItems)
+                {
+                    <div class="order-item">
+                        <img src="~/images/items/@Model.Restaurant.Nombre/@item.MenuItem.ImagenUrl"
+                             alt="@item.MenuItem.Nombre"
+                             class="item-image">
+
+                        <div class="item-details">
+                            <h3 class="item-name">@item.MenuItem.Nombre</h3>
+                            <p class="item-description">@item.MenuItem.Descripcion</p>
+                            <div class="item-quantity-price">
+                                <span><strong>Cantidad:</strong> @item.Cantidad</span>
+                                <span><strong>Precio unitario:</strong> $@item.PrecioUnitario.ToString("F2")</span>
+                            </div>
+                            @if (!string.IsNullOrEmpty(item.NotasEspeciales))
+                            {
+                                <div class="item-notes">
+                                    <strong>📝 Notas:</strong> @item.NotasEspeciales
+                                </div>
+                            }
+                        </div>
+
+                        <div class="item-subtotal">
+                            <div class="info-label">Subtotal</div>
+                            <div class="item-subtotal-value">$@item.Subtotal.ToString("F2")</div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Totales -->
+            <div class="totals-section">
+                <div class="total-row">
+                    <span class="total-label">Subtotal:</span>
+                    <span class="total-value">$@Model.OrderItems.Sum(oi => oi.Subtotal).ToString("F2")</span>
+                </div>
+                <div class="total-row">
+                    <span class="total-label">Envío:</span>
+                    <span class="total-value">$2.50</span>
+                </div>
+                <div class="grand-total">
+                    <span class="grand-total-label">Total:</span>
+                    <span class="grand-total-value">$@Model.Total.ToString("F2")</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información de entrega -->
+        <div class="delivery-section">
+            <h2 class="section-title">
+                <span class="section-icon">🚚</span>
+                Información de Entrega
+            </h2>
+
+            <div class="delivery-details">
+                <div class="delivery-item">
+                    <div class="delivery-icon">📍</div>
+                    <div class="delivery-content">
+                        <div class="delivery-label">Dirección</div>
+                        <div class="delivery-value">@Model.DireccionEntrega</div>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Notas))
+                {
+                    <div class="delivery-item">
+                        <div class="delivery-icon">📝</div>
+                        <div class="delivery-content">
+                            <div class="delivery-label">Notas adicionales</div>
+                            <div class="delivery-value">@Model.Notas</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="action-buttons">
+            <a asp-action="MyOrders" class="btn-action btn-secondary">
+                ← Ver Mis Órdenes
+            </a>
+            <a asp-controller="Cliente" asp-action="Menu" asp-route-id="@Model.RestaurantId" class="btn-action btn-primary">
+                Ordenar de Nuevo
+            </a>
+        </div>
+    </div>
+</div>
