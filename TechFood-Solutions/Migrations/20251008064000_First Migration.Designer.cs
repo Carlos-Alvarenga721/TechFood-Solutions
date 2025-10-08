@@ -12,8 +12,8 @@ using TechFood_Solutions.Models;
 namespace TechFood_Solutions.Migrations
 {
     [DbContext(typeof(TechFoodDbContext))]
-    [Migration("20251008012628_initial")]
-    partial class initial
+    [Migration("20251008064000_First Migration")]
+    partial class FirstMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -269,9 +269,14 @@ namespace TechFood_Solutions.Migrations
                     b.Property<decimal>("Total")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("RestaurantId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Orders");
                 });
@@ -518,7 +523,15 @@ namespace TechFood_Solutions.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("TechFood_Solutions.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Restaurant");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TechFood_Solutions.Models.OrderItem", b =>

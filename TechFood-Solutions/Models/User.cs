@@ -13,16 +13,16 @@ namespace TechFood_Solutions.Models
 
     public class User : IdentityUser<int>
     {
-        [Required, MaxLength(50)]
-        public string Nombre { get; set; }
 
         [Required, MaxLength(50)]
-        public string Apellido { get; set; }
+        public string Nombre { get; set; } = string.Empty;
+
+        [Required, MaxLength(50)]
+        public string Apellido { get; set; } = string.Empty;
 
         [Required, MaxLength(10)]
-        public string Dui { get; set; }
+        public string Dui { get; set; } = string.Empty;
 
-        // Ahora todos los usuarios pueden tener RestaurantId nulo
         public int? RestaurantId { get; set; }
 
         [Required]

@@ -15,6 +15,7 @@ namespace TechFood_Solutions.Controllers
         private readonly UserManager<User> _userManager;
         private readonly ILogger<UsersController> _logger;
 
+        // ✅ CONSTRUCTOR FALTANTE - Inyección de dependencias
         public UsersController(
             TechFoodDbContext context,
             IWebHostEnvironment env,
@@ -114,10 +115,24 @@ namespace TechFood_Solutions.Controllers
                     SecurityStamp = Guid.NewGuid().ToString()
                 };
 
+                // ✅ Deshabilitar validación temporal para evitar conflicto con IValidatableObject
+                _context.ChangeTracker.AutoDetectChangesEnabled = false;
                 var result = await _userManager.CreateAsync(newUser, password);
+                _context.ChangeTracker.AutoDetectChangesEnabled = true;
 
                 if (!result.Succeeded)
                 {
+                    // Limpiar restaurante creado si falló
+                    if (selectedRestaurantId != user.RestaurantId && selectedRestaurantId.HasValue)
+                    {
+                        var tempRestaurant = await _context.Restaurantes.FindAsync(selectedRestaurantId.Value);
+                        if (tempRestaurant != null)
+                        {
+                            _context.Restaurantes.Remove(tempRestaurant);
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+
                     foreach (var error in result.Errors)
                         ModelState.AddModelError("", error.Description);
 
@@ -169,6 +184,9 @@ namespace TechFood_Solutions.Controllers
 
             try
             {
+                // ✅ Remover validación de RestaurantId del ModelState
+                ModelState.Remove("RestaurantId");
+
                 var user = await _context.Users
                     .Include(u => u.Restaurant)
                     .FirstOrDefaultAsync(u => u.Id == id && u.Rol == UserRole.Associated);
@@ -179,16 +197,16 @@ namespace TechFood_Solutions.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
+                // Actualizar datos personales
                 user.Nombre = updatedUser.Nombre;
                 user.Apellido = updatedUser.Apellido;
                 user.Dui = updatedUser.Dui;
+                user.Rol = UserRole.Associated; // Mantener rol
 
-                // 🔒 Solo rol asociado
-                user.Rol = UserRole.Associated;
-
-                // Manejar cambio de restaurante
+                // ✅ Manejar cambio de restaurante
                 if (updatedUser.RestaurantId == 0 || updatedUser.RestaurantId == null)
                 {
+                    // Crear nuevo restaurante
                     var nuevoRestaurante = new Restaurant
                     {
                         Nombre = $"Restaurante {user.Nombre} {user.Apellido}",
@@ -214,13 +232,29 @@ namespace TechFood_Solutions.Controllers
 
                     user.RestaurantId = nuevoRestaurante.Id;
                 }
-                else
+                else if (user.RestaurantId != updatedUser.RestaurantId)
                 {
+                    // Validar que el restaurante existe
+                    var restaurantExists = await _context.Restaurantes
+                        .AnyAsync(r => r.Id == updatedUser.RestaurantId);
+
+                    if (!restaurantExists)
+                    {
+                        ModelState.AddModelError("", "El restaurante seleccionado no existe.");
+                        await LoadRestaurantsAsync(updatedUser.RestaurantId);
+                        return View("~/Views/Admin/Edit.cshtml", updatedUser);
+                    }
+
                     user.RestaurantId = updatedUser.RestaurantId;
                 }
 
-                _context.Update(user);
+                // ✅ Actualizar con EF Core evitando validación de IValidatableObject
+                _context.Entry(user).State = EntityState.Modified;
+                _context.ChangeTracker.AutoDetectChangesEnabled = false;
                 await _context.SaveChangesAsync();
+                _context.ChangeTracker.AutoDetectChangesEnabled = true;
+
+                _logger.LogInformation($"Usuario {user.Email} actualizado exitosamente.");
 
                 TempData["Info"] = "Usuario asociado actualizado correctamente.";
                 return RedirectToAction(nameof(Index));
@@ -234,10 +268,8 @@ namespace TechFood_Solutions.Controllers
             }
         }
 
-        // ELIMINAR USUARIO ASOCIADO
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        // ✅ MOSTRAR CONFIRMACIÓN DE ELIMINACIÓN (GET)
+        public async Task<IActionResult> Delete(int id)
         {
             var user = await _context.Users
                 .Include(u => u.Restaurant)
@@ -249,19 +281,70 @@ namespace TechFood_Solutions.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Eliminar restaurante solo si no hay más asociados a él
-            var otros = await _context.Users
-                .Where(u => u.RestaurantId == user.RestaurantId && u.Id != user.Id)
-                .AnyAsync();
+            return View("~/Views/Admin/Delete.cshtml", user);
+        }
 
-            if (user.Restaurant != null && !otros)
-                _context.Restaurantes.Remove(user.Restaurant);
+        // ✅ ELIMINAR USUARIO ASOCIADO (POST)
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            try
+            {
+                var user = await _context.Users
+                    .Include(u => u.Restaurant)
+                    .FirstOrDefaultAsync(u => u.Id == id && u.Rol == UserRole.Associated);
 
-            await _userManager.DeleteAsync(user);
-            await _context.SaveChangesAsync();
+                if (user == null)
+                {
+                    TempData["Error"] = "Usuario no encontrado o no es un asociado.";
+                    return RedirectToAction(nameof(Index));
+                }
 
-            TempData["Info"] = "Usuario asociado eliminado correctamente.";
-            return RedirectToAction(nameof(Index));
+                // Guardar info del restaurante antes de eliminar
+                int? restaurantId = user.RestaurantId;
+                Restaurant? restaurant = user.Restaurant;
+
+                // Eliminar usuario primero usando UserManager
+                var result = await _userManager.DeleteAsync(user);
+
+                if (!result.Succeeded)
+                {
+                    TempData["Error"] = "Error al eliminar el usuario.";
+                    foreach (var error in result.Errors)
+                        _logger.LogError($"Error al eliminar usuario: {error.Description}");
+
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Verificar si hay otros usuarios asociados al mismo restaurante
+                if (restaurantId.HasValue)
+                {
+                    var otrosUsuarios = await _context.Users
+                        .Where(u => u.RestaurantId == restaurantId.Value && u.Id != id)
+                        .AnyAsync();
+
+                    // Solo eliminar el restaurante si no hay más usuarios asociados
+                    if (restaurant != null && !otrosUsuarios)
+                    {
+                        _context.Restaurantes.Remove(restaurant);
+                        _logger.LogInformation($"Restaurante {restaurant.Nombre} eliminado junto con el usuario.");
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"Usuario con ID {id} eliminado exitosamente.");
+
+                TempData["Info"] = "Usuario asociado eliminado correctamente.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al eliminar usuario asociado: {ex.Message}");
+                TempData["Error"] = $"Error al eliminar el usuario: {ex.Message}";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         // Cargar restaurantes al ViewBag
