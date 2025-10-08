@@ -43,7 +43,17 @@
 
                         @if (SignInManager.IsSignedIn(User))
                         {
-                            if (User.IsInRole(RoleNames.Associated))
+                            @* ✅ Enlace a Mis Órdenes para usuarios autenticados *@
+                            @if (User.IsInRole(RoleNames.Client))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-controller="Cart" asp-action="MyOrders">
+                                        <i class="bi bi-receipt"></i> Mis Órdenes
+                                    </a>
+                                </li>
+                            }
+
+                            @if (User.IsInRole(RoleNames.Associated))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-white" asp-controller="Asociado" asp-action="Index">🏪 Panel Asociado</a>
@@ -76,9 +86,13 @@
                         }
                     </ul>
 
-                    <div class="navbar-nav ms-auto">
-                        @await Html.PartialAsync("_CartBadge")
-                    </div>
+                    @* Carrito solo para usuarios autenticados *@
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <div class="navbar-nav ms-auto">
+                            @await Html.PartialAsync("_CartBadge")
+                        </div>
+                    }
                 </div>
             </div>
         </nav>
@@ -115,8 +129,12 @@
                             <a href="/Account/Login" class="text-white">Iniciar Sesión / Registrarse</a>
                         }
                     </p>
-                    <p><a href="/Carrito" class="text-white">Carrito</a></p>
-                    <p><a href="/Tienda" class="text-white">Tienda</a></p>
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <p><a asp-controller="Cart" asp-action="Index" class="text-white">Carrito</a></p>
+                        <p><a asp-controller="Cart" asp-action="MyOrders" class="text-white">Mis Órdenes</a></p>
+                    }
+                    <p><a asp-controller="Cliente" asp-action="Restaurantes" class="text-white">Restaurantes</a></p>
                 </div>
                 <div class="col-md-4">
                     <h5>Redes Sociales</h5>

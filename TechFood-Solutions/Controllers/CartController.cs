@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using TechFood_Solutions.Models;
 using TechFood_Solutions.Services;
 using TechFood_Solutions.ViewModels;
+using System.Security.Claims;
 
 namespace TechFood_Solutions.Controllers
 {
@@ -103,10 +104,7 @@ namespace TechFood_Solutions.Controllers
             if (!ModelState.IsValid)
                 return View("Checkout", model);
 
-            // OBTENER UserId - Hardcoded para testing
-            // TODO: Cuando el login esté listo, reemplazar por:
-            // var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-
+            // ✅ OBTENER UserId del usuario autenticado
             int userId = GetCurrentUserId();
 
             // Crear la orden CON UserId
@@ -153,20 +151,20 @@ namespace TechFood_Solutions.Controllers
             }
         }
 
-        // MyOrders
-        // Solo muestra órdenes del usuario loguead
+        // ✅ MyOrders - Muestra SOLO órdenes del usuario autenticado
         public async Task<IActionResult> MyOrders()
         {
-            // OBTENER UserId - Hardcoded para testing
-            // TODO: Cuando el login esté listo, reemplazar por:
-            // var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
 
+            // Obtener UserId del usuario autenticado
             int userId = GetCurrentUserId();
 
             // FILTRAR solo órdenes del usuario actual
             var orders = await _context.Orders
                 .Include(o => o.Restaurant)
                 .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.MenuItem)
                 .Where(o => o.UserId == userId)
                 .OrderByDescending(o => o.FechaOrden)
                 .ToListAsync();
@@ -174,28 +172,29 @@ namespace TechFood_Solutions.Controllers
             return View(orders);
         }
 
-        // Simular usuario logueado
+        // ✅ Obtener UserId del usuario autenticado
         private int GetCurrentUserId()
         {
-            // TEMPORAL: Usuario hardcoded para testing
-            // Se puede cambiar este ID para probar diferentes usuarios
-
-            // Obtener de sesión si existe (para simular login)
-            var userIdSession = HttpContext.Session.GetInt32("TestUserId");
-            if (userIdSession.HasValue)
+            if (!User.Identity.IsAuthenticated)
             {
-                return userIdSession.Value;
+                throw new UnauthorizedAccessException("Usuario no autenticado");
             }
 
-            // Por defecto, usar el usuario con Id = 1
-            return 1;
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            // TODO: Reemplazar con esto cuando el login esté listo:
-            // return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                throw new InvalidOperationException("No se pudo obtener el ID del usuario");
+            }
+
+            return int.Parse(userIdClaim);
         }
 
         public async Task<IActionResult> OrderConfirmation(int id)
         {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+
             var order = await _context.Orders
                 .Include(o => o.Restaurant)
                 .Include(o => o.OrderItems)
@@ -205,7 +204,7 @@ namespace TechFood_Solutions.Controllers
             if (order == null)
                 return NotFound();
 
-            // Verificar que la orden pertenece al usuario actual
+            // ✅ Verificar que la orden pertenece al usuario actual
             int currentUserId = GetCurrentUserId();
             if (order.UserId != currentUserId)
             {
@@ -228,7 +227,7 @@ namespace TechFood_Solutions.Controllers
             return View(model);
         }
 
-        // GET: Cart/OrderDetails/5 - Ver detalles de una orden
+        // ✅ GET: Cart/OrderDetails/5 - Ver detalles de una orden
         public async Task<IActionResult> OrderDetails(int id)
         {
             if (!User.Identity.IsAuthenticated)
@@ -243,7 +242,7 @@ namespace TechFood_Solutions.Controllers
             if (order == null)
                 return NotFound();
 
-            // Verificar que la orden pertenece al usuario actual
+            // ✅ Verificar que la orden pertenece al usuario actual
             int currentUserId = GetCurrentUserId();
             if (order.UserId != currentUserId)
             {
