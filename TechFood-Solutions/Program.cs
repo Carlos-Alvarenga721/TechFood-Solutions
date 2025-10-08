@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using TechFood_Solutions.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +21,9 @@ builder.Services.AddIdentity<User, ApplicationRole>(options =>
 })
 .AddEntityFrameworkStores<TechFoodDbContext>()
 .AddDefaultTokenProviders();
+
+// Registramos una fábrica de Claims segura (evita pasar null a Claim ctor)
+builder.Services.AddScoped<IUserClaimsPrincipalFactory<User>, SafeClaimsPrincipalFactory>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -99,7 +104,8 @@ async Task SeedRolesAndAdminAsync(WebApplication app)
             Nombre = "Administrador",
             Apellido = "General",
             Dui = "00000000-0",
-            Rol = UserRole.Admin
+            Rol = UserRole.Admin,
+            EmailConfirmed = true // opcional pero útil para evitar problemas al crear claims de email
         };
 
         var createResult = await userManager.CreateAsync(adminUser, adminPassword);
@@ -125,4 +131,76 @@ async Task SeedClientsAsync(WebApplication app)
     var services = scope.ServiceProvider;
 
     await TechFood_Solutions.Models.Seed.ClientSeed.SeedClientsAsync(services);
+}
+
+
+// ---------------- FABRICA SEGURA DE CLAIMS ----------------
+// Esta clase evita crear Claim con valor null (que provoca System.ArgumentNullException).
+public class SafeClaimsPrincipalFactory : UserClaimsPrincipalFactory<User, ApplicationRole>
+{
+    private readonly UserManager<User> _userManager;
+    private readonly RoleManager<ApplicationRole> _roleManager;
+    private readonly IOptions<IdentityOptions> _options;
+
+    public SafeClaimsPrincipalFactory(
+        UserManager<User> userManager,
+        RoleManager<ApplicationRole> roleManager,
+        IOptions<IdentityOptions> optionsAccessor)
+        : base(userManager, roleManager, optionsAccessor)
+    {
+        _userManager = userManager;
+        _roleManager = roleManager;
+        _options = optionsAccessor;
+    }
+
+    protected override async Task<ClaimsIdentity> GenerateClaimsAsync(User user)
+    {
+        // Intentamos usar la implementación base, pero protegemos contra excepciones de Claim null
+        try
+        {
+            return await base.GenerateClaimsAsync(user);
+        }
+        catch (ArgumentNullException)
+        {
+            // Si la implementación base lanza por algún valor null, construimos una identidad segura manualmente.
+            var identity = new ClaimsIdentity(
+                _options.Value.ClaimsIdentity.UserIdClaimType,
+                _options.Value.ClaimsIdentity.UserNameClaimType,
+                _options.Value.ClaimsIdentity.RoleClaimType);
+
+            // Id y nombre de usuario (si existen)
+            var id = await _userManager.GetUserIdAsync(user);
+            var userName = await _userManager.GetUserNameAsync(user);
+            if (!string.IsNullOrEmpty(id))
+                identity.AddClaim(new Claim(_options.Value.ClaimsIdentity.UserIdClaimType, id));
+            if (!string.IsNullOrEmpty(userName))
+                identity.AddClaim(new Claim(_options.Value.ClaimsIdentity.UserNameClaimType, userName));
+
+            // Email (si existe)
+            var email = await _userManager.GetEmailAsync(user);
+            if (!string.IsNullOrEmpty(email))
+                identity.AddClaim(new Claim(ClaimTypes.Email, email));
+
+            // Nombre y apellido si tus propiedades existen
+            if (!string.IsNullOrEmpty(user.Nombre))
+                identity.AddClaim(new Claim(ClaimTypes.GivenName, user.Nombre));
+            if (!string.IsNullOrEmpty(user.Apellido))
+                identity.AddClaim(new Claim(ClaimTypes.Surname, user.Apellido));
+
+            // Roles
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var role in roles ?? Enumerable.Empty<string>())
+            {
+                if (!string.IsNullOrEmpty(role))
+                    identity.AddClaim(new Claim(_options.Value.ClaimsIdentity.RoleClaimType, role));
+            }
+
+            // Puedes añadir aquí más claims seguros (usando null-coalescing o comprobaciones)
+            // Ejemplo: TenantId (si tu User tiene TenantId)
+            // var tenantId = user.TenantId;
+            // identity.AddClaim(new Claim("TenantId", tenantId ?? string.Empty));
+
+            return identity;
+        }
+    }
 }

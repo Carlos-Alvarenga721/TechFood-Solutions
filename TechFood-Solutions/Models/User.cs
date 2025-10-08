@@ -25,11 +25,8 @@ namespace TechFood_Solutions.Models
         [Required, MaxLength(10)]
         public string Dui { get; set; }
 
-<<<<<<< HEAD
-        // Ahora todos los usuarios pueden tener RestaurantId nulo
-=======
         // 🔑 FK -> un usuario pertenece a un restaurante
->>>>>>> c87c0089811d33fc1ba4f19fe74516cd48890466
+
         public int? RestaurantId { get; set; }
 
         [Required]
@@ -37,8 +34,6 @@ namespace TechFood_Solutions.Models
 
         [ForeignKey(nameof(RestaurantId))]
         public virtual Restaurant? Restaurant { get; set; }
-<<<<<<< HEAD
-=======
 
         // ✅ Validación: si es Associated debe tener RestaurantId
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
@@ -59,6 +54,5 @@ namespace TechFood_Solutions.Models
                 );
             }
         }
->>>>>>> c87c0089811d33fc1ba4f19fe74516cd48890466
     }
 }
