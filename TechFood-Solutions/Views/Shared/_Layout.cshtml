@@ -13,140 +13,164 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TechFood_Solutions.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        /* ===== STICKY FOOTER STYLES ===== */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container.main-content {
+            flex: 1;
+        }
+
+        footer {
+            margin-top: auto; /* Esto empuja el footer hacia abajo */
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#e74c3c;">
-            <div class="container">
-                <a class="navbar-brand fw-bold text-white" asp-controller="Home" asp-action="Index">
-                    <img src="~/images/login-bag.png" alt="TechFood" width="40" class="me-2">
-                    TechFood
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+    <div class="main-wrapper">
+        <header>
+            <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#e74c3c;">
+                <div class="container">
+                    <a class="navbar-brand fw-bold text-white" asp-controller="Home" asp-action="Index">
+                        <img src="~/images/login-bag.png" alt="TechFood" width="40" class="me-2">
+                        TechFood
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
 
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-controller="Cliente" asp-action="Restaurantes">Restaurantes</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-controller="Home" asp-action="Menu">Menú</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-controller="Home" asp-action="Contacto">Contacto</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-controller="Home" asp-action="SobreNosotros">Sobre Nosotros</a>
-                        </li>
-
-                        @if (SignInManager.IsSignedIn(User))
-                        {
-                            @* ✅ Enlace a Mis Órdenes para usuarios autenticados *@
-                            @if (User.IsInRole(RoleNames.Client))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-white" asp-controller="Cart" asp-action="MyOrders">
-                                        <i class="bi bi-receipt"></i> Mis Órdenes
-                                    </a>
-                                </li>
-                            }
-
-                            @if (User.IsInRole(RoleNames.Associated))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-white" asp-controller="Asociado" asp-action="Index">🏪 Panel Asociado</a>
-                                </li>
-                            }
-                            else if (User.IsInRole(RoleNames.Admin))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-white" asp-controller="Users" asp-action="Index">🛠 Panel Administrador</a>
-                                </li>
-                            }
-                        }
-
-                        @* Login / Logout *@
-                        @if (SignInManager.IsSignedIn(User))
-                        {
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ms-auto">
                             <li class="nav-item">
+                                <a class="nav-link text-white" asp-controller="Cliente" asp-action="Restaurantes">Restaurantes</a>
+                            </li>     
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-controller="Home" asp-action="SobreNosotros">Sobre Nosotros</a>
+                            </li>
+
+                            @if (SignInManager.IsSignedIn(User))
+                            {
+                                @* ✅ Enlace a Mis Órdenes para usuarios autenticados *@
+                                @if (User.IsInRole(RoleNames.Client))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-white" asp-controller="Cart" asp-action="MyOrders">
+                                            <i class="bi bi-receipt"></i> Mis Órdenes
+                                        </a>
+                                    </li>
+                                }
+
+                                @if (User.IsInRole(RoleNames.Associated))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-white" asp-controller="Asociado" asp-action="Index">🏪 Panel Asociado</a>
+                                    </li>
+                                }
+                                else if (User.IsInRole(RoleNames.Admin))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-white" asp-controller="Users" asp-action="Index">🛠 Panel Administrador</a>
+                                    </li>
+                                }
+                            }
+
+                            @* Login / Logout *@
+                            @if (SignInManager.IsSignedIn(User))
+                            {
+                                <li class="nav-item">
+                                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                        <button type="submit" class="nav-link btn btn-link text-white fw-bold p-0" style="text-decoration:none;">
+                                            Cerrar sesión
+                                        </button>
+                                    </form>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-white fw-bold" asp-controller="Account" asp-action="Login">Iniciar Sesión</a>
+                                </li>
+                            }
+                        </ul>
+
+                        @* Carrito solo para usuarios autenticados *@
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <div class="navbar-nav ms-auto">
+                                @await Html.PartialAsync("_CartBadge")
+                            </div>
+                        }
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <div class="container main-content">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+
+        <footer class="bg-dark text-white mt-5 py-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h5>Soporte Técnico</h5>
+                        <p>Antiguo Cuscatlán, El Salvador</p>
+                        <p>TechFood@gmail.com</p>
+                        <p>+503-7258-1524</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Cuenta</h5>
+                        <p>
+                            @if (SignInManager.IsSignedIn(User))
+                            {
                                 <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                    <button type="submit" class="nav-link btn btn-link text-white fw-bold p-0" style="text-decoration:none;">
-                                        Cerrar sesión
+                                    <button type="submit" class="btn btn-link text-white p-0" style="text-decoration:none;">
+                                        Cerrar Sesión
                                     </button>
                                 </form>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-white fw-bold" asp-controller="Account" asp-action="Login">Iniciar Sesión</a>
-                            </li>
-                        }
-                    </ul>
-
-                    @* Carrito solo para usuarios autenticados *@
-                    @if (SignInManager.IsSignedIn(User))
-                    {
-                        <div class="navbar-nav ms-auto">
-                            @await Html.PartialAsync("_CartBadge")
-                        </div>
-                    }
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    <footer class="bg-dark text-white mt-5 py-4">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>Soporte Técnico</h5>
-                    <p>Antiguo Cuscatlán, El Salvador</p>
-                    <p>TechFood@gmail.com</p>
-                    <p>+503-7258-1524</p>
-                </div>
-                <div class="col-md-4">
-                    <h5>Cuenta</h5>
-                    <p>
+                            }
+                            else
+                            {
+                                <a href="/Account/Login" class="text-white">Iniciar Sesión / Registrarse</a>
+                            }
+                        </p>
                         @if (SignInManager.IsSignedIn(User))
                         {
-                            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                <button type="submit" class="btn btn-link text-white p-0" style="text-decoration:none;">
-                                    Cerrar Sesión
-                                </button>
-                            </form>
+                            <p><a asp-controller="Cart" asp-action="Index" class="text-white">Carrito</a></p>
+                            <p><a asp-controller="Cart" asp-action="MyOrders" class="text-white">Mis Órdenes</a></p>
                         }
-                        else
-                        {
-                            <a href="/Account/Login" class="text-white">Iniciar Sesión / Registrarse</a>
-                        }
-                    </p>
-                    @if (SignInManager.IsSignedIn(User))
-                    {
-                        <p><a asp-controller="Cart" asp-action="Index" class="text-white">Carrito</a></p>
-                        <p><a asp-controller="Cart" asp-action="MyOrders" class="text-white">Mis Órdenes</a></p>
-                    }
-                    <p><a asp-controller="Cliente" asp-action="Restaurantes" class="text-white">Restaurantes</a></p>
+                        <p><a asp-controller="Cliente" asp-action="Restaurantes" class="text-white">Restaurantes</a></p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Redes Sociales</h5>
+                        <a href="#" class="text-white me-2"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-white me-2"><i class="bi bi-linkedin"></i></a>
+                        <a href="#" class="text-white me-2"><i class="bi bi-facebook"></i></a>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <h5>Redes Sociales</h5>
-                    <a href="#" class="text-white me-2"><i class="bi bi-instagram"></i></a>
-                    <a href="#" class="text-white me-2"><i class="bi bi-linkedin"></i></a>
-                    <a href="#" class="text-white me-2"><i class="bi bi-facebook"></i></a>
-                </div>
+                <hr class="border-light">
+                <p class="text-center mb-0">© Copyright Rimmel 2025. All rights reserved</p>
             </div>
-            <hr class="border-light">
-            <p class="text-center mb-0">© Copyright Rimmel 2025. All rights reserved</p>
-        </div>
-    </footer>
+        </footer>
+    </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
