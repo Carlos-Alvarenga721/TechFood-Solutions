@@ -5,6 +5,8 @@ VisualStudioVersion = 17.14.36310.24
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechFood-Solutions", "TechFood-Solutions\TechFood-Solutions.csproj", "{9C064ADC-099B-4EAF-AA7A-61813C2B1BEB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechFood_Solutions.Tests", "TechFood_Solutions.Tests\TechFood_Solutions.Tests.csproj", "{955FE850-E282-4635-B270-143D04EBFC81}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{9C064ADC-099B-4EAF-AA7A-61813C2B1BEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C064ADC-099B-4EAF-AA7A-61813C2B1BEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C064ADC-099B-4EAF-AA7A-61813C2B1BEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{955FE850-E282-4635-B270-143D04EBFC81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{955FE850-E282-4635-B270-143D04EBFC81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{955FE850-E282-4635-B270-143D04EBFC81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{955FE850-E282-4635-B270-143D04EBFC81}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

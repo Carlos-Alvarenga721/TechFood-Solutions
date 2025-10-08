@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using TechFood_Solutions.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 

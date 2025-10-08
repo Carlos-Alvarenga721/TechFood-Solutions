@@ -12,8 +12,8 @@ using TechFood_Solutions.Models;
 namespace TechFood_Solutions.Migrations
 {
     [DbContext(typeof(TechFoodDbContext))]
-    [Migration("20251008052009_Inicio")]
-    partial class Inicio
+    [Migration("20251008063416_Final")]
+    partial class Final
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

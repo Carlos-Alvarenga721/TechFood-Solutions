@@ -627,7 +627,7 @@
                    return document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
                }
 
-               // ACTUALIZAR CANTIDAD
+               // ========== ACTUALIZAR CANTIDAD ==========
                document.querySelectorAll('.increase-btn, .decrease-btn').forEach(btn => {
                    btn.addEventListener('click', async function() {
                        const menuItemId = this.dataset.menuItemId;

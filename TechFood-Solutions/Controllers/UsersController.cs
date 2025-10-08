@@ -15,11 +15,12 @@ namespace TechFood_Solutions.Controllers
         private readonly UserManager<User> _userManager;
         private readonly ILogger<UsersController> _logger;
 
+        // ✅ CONSTRUCTOR FALTANTE - Inyección de dependencias
         public UsersController(
-            TechFoodDbContext context,
-            IWebHostEnvironment env,
-            UserManager<User> userManager,
-            ILogger<UsersController> logger)
+        TechFoodDbContext context,
+        IWebHostEnvironment env,
+        UserManager<User> userManager,
+        ILogger<UsersController> logger)
         {
             _context = context;
             _env = env;
