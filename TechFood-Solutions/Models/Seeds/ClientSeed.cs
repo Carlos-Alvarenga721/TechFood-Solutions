@@ -55,7 +55,6 @@ namespace TechFood_Solutions.Models.Seed
                     };
 
                     var result = await userManager.CreateAsync(user, c.Password);
-
                     if (result.Succeeded)
                     {
                         await userManager.AddToRoleAsync(user, "Client");

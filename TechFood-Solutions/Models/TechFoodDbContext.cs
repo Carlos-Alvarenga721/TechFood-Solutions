@@ -51,7 +51,6 @@ namespace TechFood_Solutions.Models
                 .HasForeignKey(o => o.RestaurantId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Order: Valores por defecto
             modelBuilder.Entity<Order>()
                 .Property(o => o.Estado)
                 .HasDefaultValue("Pendiente");
