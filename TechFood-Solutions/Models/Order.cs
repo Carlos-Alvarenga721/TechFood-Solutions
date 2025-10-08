@@ -8,11 +8,6 @@ namespace TechFood_Solutions.Models
         public int Id { get; set; }
 
         [Required]
-        [ForeignKey("User")]
-        public int UserId { get; set; }
-        public User User { get; set; }
-
-        [Required]
         [StringLength(100)]
         public string NombreCliente { get; set; }
 
@@ -39,13 +34,13 @@ namespace TechFood_Solutions.Models
         [StringLength(500)]
         public string? Notas { get; set; }
 
-        // Relación con Restaurant
+        // Relación con Restaurant (opcional - saber de qué restaurante es la orden)
         [Required]
         [ForeignKey("Restaurant")]
         public int RestaurantId { get; set; }
         public Restaurant Restaurant { get; set; }
 
-        // Relación con OrderItems
+        // Relación con OrderItems (detalle de la orden)
         public ICollection<OrderItem> OrderItems { get; set; }
     }
 }
