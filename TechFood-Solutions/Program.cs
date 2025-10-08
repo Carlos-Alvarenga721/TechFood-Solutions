@@ -22,8 +22,6 @@ builder.Services.AddIdentity<User, ApplicationRole>(options =>
 .AddEntityFrameworkStores<TechFoodDbContext>()
 .AddDefaultTokenProviders();
 
-// Registramos una fábrica de Claims segura (evita pasar null a Claim ctor)
-builder.Services.AddScoped<IUserClaimsPrincipalFactory<User>, SafeClaimsPrincipalFactory>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {

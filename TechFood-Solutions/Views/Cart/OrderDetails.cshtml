@@ -471,7 +471,7 @@
                 Restaurante
             </h2>
             <div class="restaurant-info-content">
-                <img src="@Model.Restaurant.LogoUrl" alt="@Model.Restaurant.Nombre" class="restaurant-logo">
+                <img src="~/images/restaurantes/@Model.Restaurant.LogoUrl" alt="@Model.Restaurant.Nombre" class="restaurant-logo">
                 <div class="restaurant-details">
                     <h3>@Model.Restaurant.Nombre</h3>
                     <p>@Model.Restaurant.Descripcion</p>
@@ -490,7 +490,7 @@
                 @foreach (var item in Model.OrderItems)
                 {
                     <div class="order-item">
-                        <img src="~/images/items/@Model.Restaurant.Nombre/@item.MenuItem.ImagenUrl"
+                        <img src="~/images/items/restaurant_@Model.Restaurant.Id/@item.MenuItem.ImagenUrl"
                              alt="@item.MenuItem.Nombre"
                              class="item-image">
 
