@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -12,7 +11,7 @@ namespace TechFood_Solutions.Models
         Associated = 2
     }
 
-    public class User : IdentityUser<int>, IValidatableObject
+    public class User : IdentityUser<int>
     {
         [Required, MaxLength(50)]
         public string Nombre { get; set; }
@@ -23,6 +22,7 @@ namespace TechFood_Solutions.Models
         [Required, MaxLength(10)]
         public string Dui { get; set; }
 
+        // Ahora todos los usuarios pueden tener RestaurantId nulo
         public int? RestaurantId { get; set; }
 
         [Required]
@@ -30,24 +30,5 @@ namespace TechFood_Solutions.Models
 
         [ForeignKey(nameof(RestaurantId))]
         public virtual Restaurant? Restaurant { get; set; }
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            if (Rol == UserRole.Associated && RestaurantId == null)
-            {
-                yield return new ValidationResult(
-                    "El RestaurantId es obligatorio para usuarios con rol 'Associated'.",
-                    new[] { nameof(RestaurantId) }
-                );
-            }
-
-            if (Rol != UserRole.Associated && RestaurantId != null)
-            {
-                yield return new ValidationResult(
-                    "Sólo los usuarios con rol 'Associated' pueden tener RestaurantId.",
-                    new[] { nameof(RestaurantId) }
-                );
-            }
-        }
     }
 }
